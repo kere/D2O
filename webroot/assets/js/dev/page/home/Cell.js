@@ -19,7 +19,13 @@ require(
       },
       methods : {
         _onSaved : function(dat){
-          console.log(dat);
+          var obj = {
+
+          }
+
+      		ajax.NewClient("/api/app").send("SaveSElem", obj).then(function(result){
+      	    console.log(result)
+      	  })
         }
       },
 

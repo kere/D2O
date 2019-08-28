@@ -1,20 +1,14 @@
-drop index i_hdata_mid;
-
-drop table h_datas;
-
-drop index i_hele_usr;
-
-drop table h_eles;
-
 drop index i_mdatas_mid;
 
 drop table m_datas;
 
-drop index i_mele_rele;
+drop index i_mele_dateon;
+
+drop index i_mele_reles;
 
 drop index i_mele_tags;
 
-drop table m_eles;
+drop table m_elems;
 
 drop index i_notice;
 
@@ -22,62 +16,17 @@ drop table notices;
 
 drop table objects;
 
-drop index i_sele_uid;
+drop index i_sele_miid;
 
-drop index i_sele_rele;
+drop index i_sele_reles;
 
 drop index i_sele_tags;
 
-drop table s_eles;
+drop table s_elems;
 
 drop index u_uid;
 
 drop table users;
-
-/*==============================================================*/
-/* Table: h_datas                                               */
-/*==============================================================*/
-create table h_datas (
-   m_iid                INT8                 not null,
-   lang                 INT4                 not null,
-   title                VARCHAR(200)         not null,
-   text                 TEXT                 not null
-);
-
-/*==============================================================*/
-/* Index: i_hdata_mid                                           */
-/*==============================================================*/
-create  index i_hdata_mid on h_datas (
-m_iid,
-lang
-);
-
-/*==============================================================*/
-/* Table: h_eles                                                */
-/*==============================================================*/
-create table h_eles (
-   iid                  INT8                 not null,
-   user_id              INT4                 not null,
-   date_on              DATE                 not null,
-   tags                 INT4[]               null,
-   reles                 INT4[]               null,
-   o_json               JSONB                null,
-   created_at           TIMESTAMP WITH TIME ZONE not null default CURRENT_TIMESTAMP,
-   constraint PK_H_ELES primary key (iid)
-);
-
-comment on table h_eles is
-'审核提交后，的历史数据';
-
-comment on column h_eles.reles is
-'相关联IDs';
-
-/*==============================================================*/
-/* Index: i_hele_usr                                            */
-/*==============================================================*/
-create  index i_hele_usr on h_eles (
-
-);
 
 /*==============================================================*/
 /* Table: m_datas                                               */
@@ -98,32 +47,40 @@ lang
 );
 
 /*==============================================================*/
-/* Table: m_eles                                                */
+/* Table: m_elems                                               */
 /*==============================================================*/
-create table m_eles (
+create table m_elems (
    iid                  INT8                 not null,
    date_on              DATE                 not null,
    tags                 INT4[]               null,
-   reles                 INT4[]               null,
+   reles                INT4[]               null,
    o_json               JSONB                null,
-   constraint PK_M_ELES primary key (iid)
+   itype                INT4                 null default 0,
+   constraint PK_M_ELEMS primary key (iid)
 );
 
-comment on column m_eles.reles is
+comment on column m_elems.reles is
 '相关联IDs';
 
 /*==============================================================*/
 /* Index: i_mele_tags                                           */
 /*==============================================================*/
-create  index i_mele_tags on m_eles using GIN (
+create  index i_mele_tags on m_elems using GIN (
 tags
 );
 
 /*==============================================================*/
-/* Index: i_mele_rele                                           */
+/* Index: i_mele_reles                                          */
 /*==============================================================*/
-create  index i_mele_rele on m_eles using GIN (
+create  index i_mele_reles on m_elems using GIN (
 reles
+);
+
+/*==============================================================*/
+/* Index: i_mele_dateon                                         */
+/*==============================================================*/
+create  index i_mele_dateon on m_elems (
+date_on
 );
 
 /*==============================================================*/
@@ -152,6 +109,7 @@ create table objects (
    iid                  INT8                 not null,
    text                 TEXT                 not null,
    itype                INT4                 not null default 0,
+   reles                INT4[]               null,
    o_json               JSONb                not null,
    created_at           TIMESTAMP WITH TIME ZONE not null default CURRENT_TIMESTAMP,
    constraint PK_OBJECTS primary key (iid)
@@ -163,45 +121,57 @@ comment on table objects is
 2 country
 ';
 
+comment on column objects.reles is
+'相关联IDs';
+
 /*==============================================================*/
-/* Table: s_eles                                                */
+/* Table: s_elems                                               */
 /*==============================================================*/
-create table s_eles (
+create table s_elems (
    iid                  INT8                 not null,
    m_iid                INT8                 not null default 0,
    date_on              DATE                 not null,
    user_id              INT4                 not null,
    o_json               JSONB                not null,
    tags                 INT4[]               null,
-   reles                 INT4[]               null,
+   reles                INT4[]               null,
    review_json          JSONb                null default '0',
-   status               INT4                 not null default 0,
+   status               INT2                 not null default 0,
+   itype                INT2                 not null default 0,
    updated_at           TIMESTAMP WITH TIME ZONE not null default CURRENT_TIMESTAMP,
-   constraint PK_S_ELES primary key (iid)
+   constraint PK_S_ELEMS primary key (iid)
 );
 
-comment on table s_eles is
+comment on table s_elems is
 '编辑状态的内容
 ';
 
-comment on column s_eles.m_iid is
+comment on column s_elems.m_iid is
 '主表ID，如果没有，默认为0';
 
-comment on column s_eles.reles is
+comment on column s_elems.reles is
 '相关联IDs';
 
 /*==============================================================*/
 /* Index: i_sele_tags                                           */
 /*==============================================================*/
-create  index i_sele_tags on s_eles using GIN (
+create  index i_sele_tags on s_elems using GIN (
 tags
 );
 
 /*==============================================================*/
-/* Index: i_sele_rele                                           */
+/* Index: i_sele_reles                                          */
 /*==============================================================*/
-create  index i_sele_rele on s_eles using GIN (
-reles
+create  index i_sele_reles on s_elems using GIN (
+rele
+);
+
+/*==============================================================*/
+/* Index: i_sele_miid                                           */
+/*==============================================================*/
+create  index i_sele_miid on s_elems (
+user_id,
+m_iid
 );
 
 /*==============================================================*/

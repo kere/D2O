@@ -9,12 +9,35 @@ import (
 )
 
 const (
-	// LangEN en
-	LangEN = 1
 	// LangCH  ch
-	LangCH = 2
+	LangCH = 1
+	// LangEN en
+	LangEN = 2
+	// LangJP  jpan
+	LangJP = 3
+	// LangArab  arab
+	LangArab = 4
 	// LangSP  西班牙 Spanish
-	LangSP = 3
+	LangSP = 5
+
+	// FieldNick nick
+	FieldNick = "nick"
+	// FieldOJSON ojson
+	FieldOJSON = "ojson"
+	// FieldIType itype
+	FieldIType = "itype"
+	// FieldStatus status
+	FieldStatus = "status"
+	// FieldImage image
+	FieldImage = "image"
+	// FieldDateON date_on
+	FieldDateON = "date_on"
+	// FieldIID iid
+	FieldIID = "iid"
+	// FieldTags tags
+	FieldTags = "tags"
+	// FieldReles reles
+	FieldReles = "reles"
 )
 
 // IID int64
