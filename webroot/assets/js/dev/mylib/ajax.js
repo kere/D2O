@@ -230,12 +230,12 @@ define(
         this.verField = "_data_version";
     }
 
-    Upload.prototype.upload = function(blob, opt){
+    Upload.prototype.upload = function(file, opt){
       var xhr = new XMLHttpRequest();
       var ts = comp.serverTime.utctime().toString(), ptoken = window[this.pfield] || '';
       xhr.open('POST', this.path, true);
 
-      var str = ts+blob.name +  blob.size + blob.lastModified + blob.type+navigator.userAgent+ts+ptoken + window.location.hostname;
+      var str = ts+file.name +  file.size + file.lastModified + file.type+navigator.userAgent+ts+ptoken + window.location.hostname;
       // console.log(str);
       // xhr.setRequestHeader("Content-Type", "multipart/form-data");
       xhr.setRequestHeader('Accto', accto(str));
@@ -243,21 +243,34 @@ define(
       xhr.setRequestHeader('AccPage', ptoken);
       var promise = new Promise(function(resolve, reject){
         xhr.onload = function(e) {
+          if (xhr.status < 200 || xhr.status >= 300) {
+            return reject(e);
+          }
           resolve(e.currentTarget.responseText);
+          if(opt && opt.onSuccess) opt.onSuccess(e.currentTarget.responseText, file);
         };
+
         xhr.onerror = function(e) {
           reject(e);
         };
       });
-      if(opt && opt.onprogress) xhr.onprogress = opt.onprogress;
+
+      if(opt && opt.onProgress) {
+        xhr.upload.onprogress = function(e) {
+          if (e.total > 0) {
+            e.percent = e.loaded / e.total * 100;
+          }
+          opt.onProgress(e, file);
+        };
+      }
 
       var formData = new FormData();
 			formData.append('filename', (opt && opt.filename) ? opt.filename : "");
-			formData.append('file', blob);
-			formData.append('name', blob.name);
-			formData.append('size', blob.size);
-			formData.append('lastModified', blob.lastModified);
-			formData.append('type', blob.type);
+			formData.append('file', file);
+			formData.append('name', file.name);
+			formData.append('size', file.size);
+			formData.append('lastModified', file.lastModified);
+			formData.append('type', file.type);
       xhr.send(formData);
 
       return promise;

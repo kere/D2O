@@ -19,15 +19,18 @@ func Init(pd *httpd.PageData, isElement bool) {
 	if siteConf == nil {
 		siteConf = httpd.GetConfig().GetConf("site")
 	}
+	viewport := render.NewHead(`<meta name="viewport" content="width=device-width, initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0, user-scalable=no">`)
 
 	if isElement {
 		pd.Head = []render.IRender{
+			viewport,
 			render.NewCSS("main.css"),
 			render.NewCSS(siteConf.Get("elementcss")),
 			render.NewScript(requireOpt()),
 		}
 	} else {
 		pd.Head = []render.IRender{
+			viewport,
 			render.NewCSS("main.css"),
 			render.NewScript(requireOpt()),
 		}

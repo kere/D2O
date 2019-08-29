@@ -8,26 +8,69 @@
 body,html{
 }
 
+// 编辑组件
 .gno-notepad{
+  .gno-note-title input{
+    border: none;
+    padding: 5px 10px;
+  }
+  .gno-textarea textarea{
+    border: none;
+    padding: 5px 10px;
+  }
+  
   .el-date-editor > input{
     border:none;
   }
+  .el-upload-list--picture-card .el-upload-list__item{
+    width: 80px;
+    height: 80px;
+  }
+  .el-upload--picture-card{
+    width: 80px;
+    height: 80px;
+    line-height: 90px;
+    margin-top: 10px;
+  }
+  .el-date-editor.el-input, .el-date-editor.el-input__inner{
+    width:180px;
+  }
 
-  .el-tag + .el-tag {
-    margin-left: 10px;
+  .el-tag {
+    margin-left: 5px;
+    margin-right: 5px;
+    margin-top: 5px;
+  }
+
+  .gno-tag-divider .el-divider--horizontal{
+    margin-bottom: 19px;
   }
 
   .button-new-tag {
-    margin-left: 10px;
+    margin-top: 5px;
+    margin-left: 5px;
     height: 32px;
     line-height: 30px;
     padding-top: 0;
     padding-bottom: 0;
   }
 
-  .input-new-tag {
-    width: 90px;
-    margin-left: 10px;
-    vertical-align: bottom;
+  .formbox .el-card + .el-card{
+    margin-top: 5px;
   }
+
+  .el-card__header{
+    padding: 5px;
+    padding-left: 10px
+  }
+  .gno-btn-close {
+    float: right;
+    padding: 3px 0;
+    margin-top: 8px;
+  }
+
+  .formbox .el-select .el-input{
+    width: 160px;
+  }
+
 }

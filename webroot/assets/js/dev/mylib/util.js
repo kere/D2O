@@ -596,11 +596,11 @@ define('util', [], function(){
 			if(util.$.hasClass(el, 'open')){
 				util.$.hide(box);
 				util.$.removeClass(el, 'open');
-				return 'close';
+				return false;
 			}
 			util.$.show(box);
 			util.$.addClass(el, 'open');
-			return 'open'
+			return true;
 	  }
 
 	}
