@@ -5,36 +5,47 @@ import (
 
 	"github.com/kere/gno/httpd"
 	"github.com/kere/gno/httpd/render"
-	"github.com/kere/gno/libs/conf"
 	"github.com/kere/gno/libs/util"
 )
 
 var (
-	siteConf conf.Conf
-	rqs      string
+	rqs string
 )
 
 // Init page
 func Init(pd *httpd.PageData, isElement bool) {
-	if siteConf == nil {
-		siteConf = httpd.GetConfig().GetConf("site")
-	}
+	siteConf := httpd.Site.C.GetConf("site")
+
 	viewport := render.NewHead(`<meta name="viewport" content="width=device-width, initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0, user-scalable=no">`)
 
+	// requirejs
+	data := make(map[string]string, 0)
+	data["defer"] = ""
+	data["async"] = "true"
+
+	data["data-main"] = util.PathToURL("/assets/js/", httpd.RunMode+"/page", pd.Dir, pd.Name)
+	data["src"] = "/assets/js/require.js"
+
+	pd.Head = []render.IRender{viewport, render.NewScript(requireOpt())}
 	if isElement {
-		pd.Head = []render.IRender{
-			viewport,
+		pd.CSS = []render.IRenderWith{
 			render.NewCSS("main.css"),
 			render.NewCSS(siteConf.Get("elementcss")),
-			render.NewScript(requireOpt()),
+		}
+		pd.JS = []render.IRenderWith{
+			render.NewJS(siteConf.DefaultString("vuejs", "vue.min.js")),
+			render.NewJS(siteConf.Get("elementjs")),
+			render.Script("", data),
 		}
 	} else {
-		pd.Head = []render.IRender{
-			viewport,
-			render.NewCSS("main.css"),
-			render.NewScript(requireOpt()),
+		pd.CSS = []render.IRenderWith{render.NewCSS("main.css")}
+		pd.JS = []render.IRenderWith{
+			render.NewJS(siteConf.DefaultString("vuejs", "vue.min.js")),
+			render.Script("", data),
 		}
 	}
+
+	pd.JSPosition = httpd.JSPositionBottom
 
 	pd.Top = []render.IRender{render.NewTemplate("_header.htm")}
 
@@ -46,28 +57,8 @@ func Init(pd *httpd.PageData, isElement bool) {
 		pd.CacheOption.HTTPHead = 1
 	}
 
-	// requirejs
-	data := make(map[string]string, 0)
-	data["defer"] = ""
-	data["async"] = "true"
-
-	data["data-main"] = render.AssetsURL + util.PathToURL("/js/", httpd.RunMode+"/page", pd.Dir, pd.Name)
-	data["src"] = "/assets/js/require.js"
-
-	if isElement {
-		pd.Bottom = []render.IRender{
-			render.NewTemplate("_bottom.htm"),
-			render.NewJS(siteConf.DefaultString("vuejs", "vue.min.js")),
-			render.NewJS(siteConf.Get("elementjs")),
-			render.Script("", data),
-		}
-
-	} else {
-		pd.Bottom = []render.IRender{
-			render.NewTemplate("_bottom.htm"),
-			render.NewJS(siteConf.DefaultString("vuejs", "vue.min.js")),
-			render.Script("", data),
-		}
+	pd.Bottom = []render.IRender{
+		render.NewTemplate("_bottom.htm"),
 	}
 }
 
