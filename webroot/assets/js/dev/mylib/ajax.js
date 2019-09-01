@@ -7,7 +7,7 @@ define(
     // options.timeout,options.url, options.async
     function ajaxFunc(options) {
       // XHR
-      var xhr = new XMLHttpRequest();
+      let xhr = new XMLHttpRequest();
       xhr.open('post', options.url, options.async);
       xhr.timeout = options.timeout * 1000;
 
@@ -15,11 +15,11 @@ define(
       //   xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded;charset=UTF-8");
       xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
 
-      for (var key in options.headers) {
+      for (let key in options.headers) {
         xhr.setRequestHeader(key, options.headers[key]);
       }
 
-      var promise = new Promise(function(resolve, reject){
+      let promise = new Promise(function(resolve, reject){
         xhr.onload = (e) => {
           if (xhr.status == 200) {
             resolve(xhr.response);
@@ -46,7 +46,7 @@ define(
       return promise;
     }
 
-    var comp  = {
+    let comp  = {
 			url : "/home/openapi/data",
       NewClient : function(path, timeout){
         return new Client(path, timeout);
@@ -67,16 +67,16 @@ define(
           return (new Date()).getTime() - this.diff;
         },
         utctime : function(){
-          var d = this.now();
+          let d = this.now();
           return d.getTime() - d.getTimezoneOffset();
         }
       },
 
       getUrlVar: function(sParam){
-        var sPageURL = window.location.search.substring(1);
-        var sURLVariables = sPageURL.split('&');
-        for (var i = 0; i < sURLVariables.length; i++) {
-          var sParameterName = sURLVariables[i].split('=');
+        let sPageURL = window.location.search.substring(1);
+        let sURLVariables = sPageURL.split('&');
+        for (let i = 0; i < sURLVariables.length; i++) {
+          let sParameterName = sURLVariables[i].split('=');
           if (sParameterName[0] == sParam)
           {
               return decodeURI(sParameterName[1]);
@@ -86,7 +86,7 @@ define(
       }
     };
 
-    var Client = function(path){
+    let Client = function(path){
       this.path = path || comp.url;
       this.isrun = false;
       this.timeout= 10;
@@ -99,7 +99,7 @@ define(
       if(typeof(result) != "object" || !result[this.verField]){
         return;
       }
-      var ver = result[this.verField];
+      let ver = result[this.verField];
       this[this.verField] = ver;
       window[this.verField] = ver;
     }
@@ -108,8 +108,8 @@ define(
     // return Promise()
     Client.prototype.getData = function(method, args, opt) {
       return new Promise((resolve, reject) => {
-        var key = method + (args ? JSON.stringify(args): '');
-        var doit = (resolve, reject) =>{
+        let key = method + (args ? JSON.stringify(args): '');
+        let doit = (resolve, reject) =>{
           this.send(method, args, opt).then(result =>{
             if(result[this.verField]){
               window.localStorage.setItem(key, JSON.stringify(result));
@@ -125,13 +125,13 @@ define(
           return;
         }
 
-        var src = window.localStorage.getItem(key);
+        let src = window.localStorage.getItem(key);
         if(!src){
           doit(resolve, reject);
           return;
         }
 
-        var dat = JSON.parse(src);
+        let dat = JSON.parse(src);
         if(!dat){
           doit(resolve, reject);
           return;
@@ -171,7 +171,7 @@ define(
         })
       }
 
-      var ts = comp.serverTime.utctime().toString(),
+      let ts = comp.serverTime.utctime().toString(),
         ptoken = window[this.pfield] || '',
       	// method + ts + src + agent + ts + ptoken + window.location.hostname
         str = method+ts+(args?JSON.stringify(args): '')+navigator.userAgent+ts+ptoken + window.location.hostname;
@@ -224,24 +224,24 @@ define(
 
     }
 
-    var Upload = function(path){
+    let Upload = function(path){
         this.path = path;
         this.pfield = 'accpt';
         this.verField = "_data_version";
     }
 
     Upload.prototype.upload = function(file, opt){
-      var xhr = new XMLHttpRequest();
-      var ts = comp.serverTime.utctime().toString(), ptoken = window[this.pfield] || '';
+      let xhr = new XMLHttpRequest();
+      let ts = comp.serverTime.utctime().toString(), ptoken = window[this.pfield] || '';
       xhr.open('POST', this.path, true);
 
-      var str = ts+file.name +  file.size + file.lastModified + file.type+navigator.userAgent+ts+ptoken + window.location.hostname;
+      let str = ts+file.name +  file.size + file.lastModified + file.type+navigator.userAgent+ts+ptoken + window.location.hostname;
       // console.log(str);
       // xhr.setRequestHeader("Content-Type", "multipart/form-data");
       xhr.setRequestHeader('Accto', accto(str));
       xhr.setRequestHeader('Accts', ts);
       xhr.setRequestHeader('AccPage', ptoken);
-      var promise = new Promise(function(resolve, reject){
+      let promise = new Promise(function(resolve, reject){
         xhr.onload = function(e) {
           if (xhr.status < 200 || xhr.status >= 300) {
             return reject(e);
@@ -264,7 +264,7 @@ define(
         };
       }
 
-      var formData = new FormData();
+      let formData = new FormData();
 			formData.append('filename', (opt && opt.filename) ? opt.filename : "");
 			formData.append('file', file);
 			formData.append('name', file.name);
@@ -276,7 +276,7 @@ define(
       return promise;
     };
 
-    var WS = function(path){
+    let WS = function(path){
         this.path = path;
     }
 
@@ -299,14 +299,14 @@ define(
         this.conn.close();
         this.conn = null;
       }
-      var ths = this;
-      var sign = accto(navigator.userAgent + window.location.host),
+      let ths = this;
+      let sign = accto(navigator.userAgent + window.location.host),
           ws = new WebSocket('ws://'+window.location.host+this.path+"?url="+encodeURI(document.location.pathname)+"&sign="+sign);
 
       ws.onopen = this.onopen;
       ws.onclose = this.onclose;
       ws.onmessage = (e) => {
-        var obj = JSON.parse(e.data);
+        let obj = JSON.parse(e.data);
         if (obj['iserror']){
           ths.error(obj.error, e);
           return;

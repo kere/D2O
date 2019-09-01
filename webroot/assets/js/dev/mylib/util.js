@@ -5,7 +5,7 @@ define('util', [], function(){
 		}else if(b>e){
 			return -1
 		}
-		var l = e-b+1, i = b+Math.floor(l/2), v = arr[i];
+		let l = e-b+1, i = b+Math.floor(l/2), v = arr[i];
 
 		if(v == val){
 			return i;
@@ -30,7 +30,7 @@ define('util', [], function(){
 		}else if(b>e){
 			return -1
 		}
-		var l = e-b+1, i = b+Math.floor(l/2), v;
+		let l = e-b+1, i = b+Math.floor(l/2), v;
 		v = arr[i][field]
 
 		if(v == val){
@@ -53,8 +53,8 @@ define('util', [], function(){
 		DATE_DAY : 86400000,
 		DATE_HOUR : 3600000,
 	  env : () => {
-	    var o = {}
-	    var agent = navigator.userAgent.toLowerCase();
+	    let o = {}
+	    let agent = navigator.userAgent.toLowerCase();
 	    if(/android/.test(agent)){
 	      o.os = 'android';
 	    }else if(/iphone|ipod|ipad|ios/.test(agent)) {
@@ -69,7 +69,7 @@ define('util', [], function(){
 	  },
 
 		language : function() {
-			var lang = this.getCookie('lang');
+			let lang = this.getCookie('lang');
 			if(!lang){
 				lang = navigator.language || navigator.userLanguage;
 			}
@@ -80,9 +80,9 @@ define('util', [], function(){
 			if(!v) return '';
 			if(typeof(v)== 'string') v= parseFloat(v);
 
-			var isPad = false;
+			let isPad = false;
 			if(deci < 0){
-				var s = v.toString(), arr = v.toString().split('.')
+				let s = v.toString(), arr = v.toString().split('.')
 				if(arr.length == 1) return s;
 				deci = -deci;
 				isPad = true;
@@ -91,16 +91,16 @@ define('util', [], function(){
 	    if(deci==0){
 	      return v.toFixed(deci);
 	    }
-	    var deciV = Math.pow(10, deci);
-	    var s = (Math.round(v * deciV)/deciV).toFixed(deci);
+	    let deciV = Math.pow(10, deci);
+	    let s = (Math.round(v * deciV)/deciV).toFixed(deci);
 			if(!isPad) return s;
 
-			var arr = new Array(s.length);
-			for (var i = 0; i < s.length; i++) {
+			let arr = new Array(s.length);
+			for (let i = 0; i < s.length; i++) {
 				arr[i] = s[i];
 			}
 
-			for (var i = s.length-1; i > -1; i--) {
+			for (let i = s.length-1; i > -1; i--) {
 				if(arr[i]!= '0') break;
 				arr.pop();
 			}
@@ -111,8 +111,8 @@ define('util', [], function(){
 		// n 长度，年月日小时分钟
 		timeAgoStr : function(b, e, n) {
 			if(!n) n = 2;
-	    var arr = this.timeAgo(b, e), str='';
-	    var l = arr.length, isskip = true, i, k=0;
+	    let arr = this.timeAgo(b, e), str='';
+	    let l = arr.length, isskip = true, i, k=0;
 	    for (i = l-1; i > -1; i--) {
 	      if(isskip && arr[i].value==0) continue;
 	      isskip = false;
@@ -124,15 +124,15 @@ define('util', [], function(){
 	  },
 
 		timeAgo : (b, e) => {
-	    var diff;
+	    let diff;
 	    if(typeof(b)=='number' && typeof(e) == 'undefined'){
 	      diff = b;
 	    }else{
 	      diff = Math.abs(e.getTime() - b.getTime());
 	    }
-	    var v, n, arr=[];
+	    let v, n, arr=[];
 
-	    for(var i=0;i<6;i++) {
+	    for(let i=0;i<6;i++) {
 	      switch (i) {
 	        case 0: // second
 	          v = diff % 60000;
@@ -176,7 +176,7 @@ define('util', [], function(){
 			str = str.replace(/[A-Za-z日]/g, ' ').substr(0,19);
 	    str = str.replace(/[年月]/g, '-');
 
-	    var d = new Date(Date.parse(str));
+	    let d = new Date(Date.parse(str));
 	    if(!d || isNaN(d.getFullYear())){
 	      str = str.replace(/[-]/g, '/');
 	      return new Date(Date.parse(str));
@@ -236,7 +236,7 @@ define('util', [], function(){
 			if(!arr)
 				return null;
 
-			var i,len = arr.length
+			let i,len = arr.length
 			for(i=0;i<len;i++)
 				if(arr[i] && arr[i][field] == value){
 					return arr[i];
@@ -246,7 +246,7 @@ define('util', [], function(){
 
 		indexOfSortedI : (val, arr) => {
 			if(!arr) return -1;
-			var isdesc = false;
+			let isdesc = false;
 			if(arr.length> 1)
 				isdesc = arr[0] > arr[1];
 			return indexOfSortedI(val, arr, 0, arr.length-1, isdesc);
@@ -254,7 +254,7 @@ define('util', [], function(){
 
 		findSortedI : (field, val, arr) => {
 			if(!arr) return -1;
-			var isdesc = false;
+			let isdesc = false;
 			if(arr.length> 1)
 				isdesc = arr[0][field] > arr[1][field];
 			return getSortedI(field, val, arr, 0, arr.length-1, isdesc);
@@ -262,10 +262,10 @@ define('util', [], function(){
 
 		findSorted : (field, val, arr) => {
 			if(!arr) return null;
-			var isdesc = false;
+			let isdesc = false;
 			if(arr.length> 1)
 				isdesc = arr[0][field] > arr[1][field];
-			var i = getSortedI(field, val, arr, 0, arr.length-1, isdesc);
+			let i = getSortedI(field, val, arr, 0, arr.length-1, isdesc);
 			if(i < 0) return null;
 			return arr[i];
 		},
@@ -274,7 +274,7 @@ define('util', [], function(){
 			if(!data)
 				return -1;
 
-			var i,len = data.length
+			let i,len = data.length
 			for(i=0;i<len;i++)
 				if(data[i] && data[i][field] == value){
 					return i;
@@ -283,7 +283,7 @@ define('util', [], function(){
 		},
 
 		inArray : (val, arr) => {
-			for(var i in arr){
+			for(let i in arr){
 				if(arr[i]==val)
 					return true;
 			}
@@ -291,9 +291,9 @@ define('util', [], function(){
 		},
 
 	  setCookie :  (name,value,days) => {
-			var expires = ""
+			let expires = ""
       if (days) {
-        var date = new Date();
+        let date = new Date();
         date.setTime(date.getTime()+(days*86400000));
         expires = "; expires="+date.toGMTString();
       }
@@ -301,13 +301,13 @@ define('util', [], function(){
 	  },
 
 		getCookie :  (name) => {
-	    var nameEQ = name + "=";
-	    var ca = document.cookie.split(';');
-	    for(var i=0;i < ca.length;i++) {
-	        var c = ca[i];
+	    let nameEQ = name + "=";
+	    let ca = document.cookie.split(';');
+	    for(let i=0;i < ca.length;i++) {
+	        let c = ca[i];
 	        while (c.charAt(0)==' ') c = c.substring(1,c.length);
 	        if (c.indexOf(nameEQ) == 0){
-	          var s = c.substring(nameEQ.length,c.length);
+	          let s = c.substring(nameEQ.length,c.length);
 	          if(s[0] == '"'){
 	            return s.substring(1, s.length-1);
 	          }
@@ -322,11 +322,11 @@ define('util', [], function(){
 	  },
 
 	  copy : (o) => {
-	    var dat = {};
+	    let dat = {};
 			if(typeof(o) == 'object' && o.hasOwnProperty('length')){
 				dat = new Array(o.length);
 			}
-	    for (var k in o) {
+	    for (let k in o) {
 	      if (!o.hasOwnProperty(k) || k.substr(0,2)=="__") continue;
 				if(o[k]== null){
 					dat[k] = null
@@ -343,9 +343,9 @@ define('util', [], function(){
 
 		$ : {
 			get : function(sel, cls) {
-				var el;
+				let el;
 				if(typeof(sel) === 'string'){
-					var tmp = sel.split(' ');
+					let tmp = sel.split(' ');
 					if(tmp[0][0] === '#'){
 						el = document.getElementById(tmp[0].substr(1));
 					}
@@ -360,7 +360,7 @@ define('util', [], function(){
 					return el;
 				}
 
-		    var arr = cls.split('.'), tag = arr[0], t;
+		    let arr = cls.split('.'), tag = arr[0], t;
 				if(tag === ''){
 					t = el.children;
 				}else{
@@ -374,15 +374,15 @@ define('util', [], function(){
 			},
 
 			childrenFilter : function(list, cls) {
-				var eles = [], item;
-				for (var i = 0; i < list.length; i++) {
+				let eles = [], item;
+				for (let i = 0; i < list.length; i++) {
 					item = list[i];
 					if(typeof(item.className)!=='string') continue;
 					if(this.hasClass(item, cls)){
 						eles.push(item);
 					}
 					if(item.children.length > 0){
-						var items = this.childrenFilter(item.children, cls)
+						let items = this.childrenFilter(item.children, cls)
 						if(items) eles = eles.concat();
 					}
 				}
@@ -393,7 +393,7 @@ define('util', [], function(){
 			each : function(el, f) {
 				el = this.get(el);
 				if(el.length > 0){
-					for (var i = 0; i < el.length; i++) {
+					for (let i = 0; i < el.length; i++) {
 						f(el[i]);
 					}
 					return;
@@ -416,8 +416,8 @@ define('util', [], function(){
 				if(!el.className){
 					return false;
 				}
-				var arr = el.className.split(' ');
-				for (var i = 0; i < arr.length; i++) {
+				let arr = el.className.split(' ');
+				for (let i = 0; i < arr.length; i++) {
 					if(arr[i]==clas) return true;
 				}
 				return false;
@@ -428,8 +428,8 @@ define('util', [], function(){
 				if(!el.className){
 					return;
 				}
-				var arr = el.className.split(' ');
-				for (var i = 0; i < arr.length; i++) {
+				let arr = el.className.split(' ');
+				for (let i = 0; i < arr.length; i++) {
 					if(arr[i]==clas) {
 						arr.splice(i, 1);
 					};
@@ -480,7 +480,7 @@ define('util', [], function(){
 			this.loading(1, n);
 		},
 		loading : function(itype, n){
-			var el = util.$.get('#toast');
+			let el = util.$.get('#toast');
 			if(!el){
 				el = document.createElement("DIV");
 				el.id = 'toast';
@@ -528,7 +528,7 @@ define('util', [], function(){
 		},
 
 		hideToast : ()=>{
-			var el = util.$.get('#toast');
+			let el = util.$.get('#toast');
 			util.$.each(util.$.get(el, '.toast-success'), e => {
 				util.$.hide(e)
 			})
@@ -539,7 +539,7 @@ define('util', [], function(){
 		},
 
 		showBusy : function(el, n){
-			var t = util.$.get(el, 'div.el-loading-mask');
+			let t = util.$.get(el, 'div.el-loading-mask');
 			if(!t){
 				t = document.createElement("DIV");
 				t.className = 'el-loading-mask';
@@ -557,13 +557,13 @@ define('util', [], function(){
 		},
 
 		hideBusy : function(el){
-			var t = util.$.get(el, 'div.el-loading-mask');
+			let t = util.$.get(el, 'div.el-loading-mask');
 			if(!t) return;
 			util.$.hide(t[0]);
 		},
 
 	  viewImage : function(url) {
-			var el = util.$.get('#viewImage');
+			let el = util.$.get('#viewImage');
 	    if(!el){
 				el = document.createElement("DIV");
 				el.id = 'viewImage';
@@ -576,13 +576,13 @@ define('util', [], function(){
 	      })
 	    }
 
-			var imgs = util.$.get(el, 'img');
+			let imgs = util.$.get(el, 'img');
 			imgs[0].src = url;
 			util.$.show(el);
 	  },
 
 	  taggle : function(e){
-	    var el = e.currentTarget;
+	    let el = e.currentTarget;
 	    if(e.currentTarget){
 				if(util.$.hasClass(el, 'parent-pp')){
 					el = el.parentElement.parentElement;
@@ -592,7 +592,7 @@ define('util', [], function(){
 	    }else{
 	      el = e;
 	    }
-			var box = el.nextElementSibling;
+			let box = el.nextElementSibling;
 			if(util.$.hasClass(el, 'open')){
 				util.$.hide(box);
 				util.$.removeClass(el, 'open');

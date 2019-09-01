@@ -1,9 +1,20 @@
 package upload
 
 import (
+	"fmt"
 	"time"
 
+	"github.com/kere/gno/db"
+	"github.com/kere/gno/libs/util"
 	"github.com/valyala/fasthttp"
+)
+
+const (
+	// Table string
+	Table = "images"
+
+	// StoreDir 储存目录
+	StoreDir = "webroot/upload/images/"
 )
 
 // Image class
@@ -21,12 +32,30 @@ func (m *Image) Auth(ctx *fasthttp.RequestCtx) error {
 }
 
 // Success f
-func (m *Image) Success(name, folder string) error {
+func (m *Image) Success(ctx *fasthttp.RequestCtx, token, ext, folder string, now time.Time) error {
+	name := token + ext
+	iid := util.IID32(name)
+	row := db.MapRow{
+		"iid":        iid,
+		"name":       name,
+		"created_at": now,
+	}
+	_, err := db.CreateIfNotFound(Table, row, "iid=?", iid)
+	if err != nil {
+		return err
+	}
+
+	ctx.WriteString(fmt.Sprint(iid))
+	ctx.WriteString(",")
+	folderB := util.Str2Bytes(folder)
+	ctx.Write(folderB[7:])
+	ctx.WriteString("/")
+	ctx.WriteString(name)
+
 	return nil
 }
 
 // StoreDir f
-func (m *Image) StoreDir() string {
-	s := time.Now().Format("200601")
-	return "webroot/upload/images/" + s
+func (m *Image) StoreDir(now time.Time) string {
+	return StoreDir + now.Format("200601")
 }

@@ -1,18 +1,16 @@
 require.config(requireOpt);
 require.config({
   paths: {
-    notepad : MYENV + "/mylib/vue/vue-notepad",
-    person : MYENV + "/mylib/vue/vue-person"
+    notepad : MYENV + "/mylib/vue/notepad"
 	}
 })
 require(
-	['ajax', 'util', 'notepad', 'person'],
-	function (ajax, util, notepad, person){
+	['ajax', 'util', 'notepad'],
+	function (ajax, util, notepad){
     var main = new Vue({
       el : '#main-div',
 			components :{
-				"notepad": notepad,
-				"person": person
+				"notepad": notepad
 			},
       data: {
       },
