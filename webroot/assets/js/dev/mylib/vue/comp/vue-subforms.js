@@ -1,22 +1,23 @@
-define('subform', ['util'], function(util){
+define('subforms', ['util'], function(util){
   return {
     template:
     `<div class="gno-sub-form">
-      <div v-for="(dat, index) in formdata" shadow="" :key="index" class="gno-form-card">
+      <div v-for="(dat, index) in formdata" :key="index" class="gno-form-card">
         <div class="gno-card-header clearfix">
           <el-date-picker class="gno-date-picker" v-model="dat.date_on" type="date"
+            formart="yyyy-MM-dd" value-format="yyyy-MM-dd"
             placeholder="日期" size="mini"></el-date-picker>
           <el-input v-model="dat.title" size="mini" class="gno-card-title"></el-input>
           <el-button class="gno-btn-close" type="text" @click="_onCloseForm(index)">
             <i class="el-icon-close"></i>
           </el-button>
         </div>
-        <el-input v-for="(item, i) in dat.items" :key="index"
+        <el-input v-for="(item, i) in dat.items" :key="i"
             placeholder="输入数据" class="input-with-select" size="mini"
             v-model="item.v" :type="item.type"
             @keyup.native="_onInputValueChanged($event, index, i)">
-          <el-select v-model="item.n" slot="prepend" placeholder="请选择" :filterable="true"
-              @change="_onSelectChanged($event, index)">
+          <el-select v-model="item.k" slot="prepend" placeholder="请选择" :filterable="true"
+              @change="_onSelectChanged($event, index, i)">
             <el-option v-for="field in fields" :label="field.name" :value="field.name"></el-option>
           </el-select>
         </el-input>
@@ -27,16 +28,30 @@ define('subform', ['util'], function(util){
       </el-button>
     </div>`,
     props : {
-      formdata: Array
+      formdata: Array,
+      fields : Array
     },
-
-    data: function(){
-      return {
-        fields : [{name:'英文名称', type:'string'}, {name: '死亡人数', type:'int'}]
-      }
-    },
-
+    // data: function(){
+    //   return {
+    //     dat: {}
+    //   }
+    // },
     methods: {
+      getData(){
+        var arr = [];
+        for (var i = 0; i < this.formdata.length; i++) {
+          let dat = this.formdata[i];
+          let obj = {date_on: dat.date_on, title: dat.title, items:[]};
+          for (var k = 0; k < dat.items.length; k++) {
+            let item = dat.items[k];
+            if(!item.v || !item.k) continue;
+            obj.items.push(item);
+          }
+          arr.push(obj);
+        }
+        return arr;
+      },
+
       _onCloseForm(index){
         this.formdata.splice(index, 1);
       },
@@ -45,11 +60,12 @@ define('subform', ['util'], function(util){
         this.formdata.push({items:[{}]});
       },
 
-      _onSelectChanged(index){
+      _onSelectChanged(e, index, i){
 
       },
+
       _onInputValueChanged(e, index, i) {
-        let v = e.target.value;
+        let v = e.target ? e.target.value : e;
         let items = this.formdata[index].items;
         // 添加节点
         if(v){

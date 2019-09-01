@@ -1,4 +1,6 @@
 <div id="main-div">
-  <notepad @saved="_onSaved" upload="/upload/image" ></notepad>
+  <notepad @saved="_onSaved" upload="/upload/image" :baseinfo="baseinfo"
+      @onsave="_onSaved"
+    ></notepad>
   <!-- <person @saved="_onSaved" upload="/upload/image" ></person> -->
 </div>

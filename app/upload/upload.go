@@ -14,7 +14,7 @@ const (
 	Table = "images"
 
 	// StoreDir 储存目录
-	StoreDir = "webroot/upload/images/"
+	StoreDir = "webroot/u/m/"
 )
 
 // Image class
@@ -36,9 +36,9 @@ func (m *Image) Success(ctx *fasthttp.RequestCtx, token, ext, folder string, now
 	name := token + ext
 	iid := util.IID32(name)
 	row := db.MapRow{
-		"iid":        iid,
-		"name":       name,
-		"created_at": now,
+		"iid":     iid,
+		"name":    name,
+		"date_on": now.Format("200601"),
 	}
 	_, err := db.CreateIfNotFound(Table, row, "iid=?", iid)
 	if err != nil {

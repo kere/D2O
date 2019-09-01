@@ -1,3 +1,9 @@
+drop index iformfields_usr;
+
+drop table formfields;
+
+drop table images;
+
 drop index i_mdatas_mid;
 
 drop table m_datas;
@@ -7,6 +13,8 @@ drop index i_mele_dateon;
 drop index i_mele_reles;
 
 drop index i_mele_tags;
+
+drop index i_mele_area;
 
 drop table m_elems;
 
@@ -22,11 +30,47 @@ drop index i_sele_reles;
 
 drop index i_sele_tags;
 
+drop index i_sele_area;
+
 drop table s_elems;
+
+drop index itags_usr;
+
+drop table tags;
 
 drop index u_uid;
 
 drop table users;
+
+/*==============================================================*/
+/* Table: formfields                                            */
+/*==============================================================*/
+create table formfields (
+   id                   SERIAL               not null,
+   user_id              INT4                 not null,
+   name                 VARCHAR(20)          not null,
+   itype                INT4                 not null default 0,
+   o_json               JSONb                null,
+   constraint PK_FORMFIELDS primary key (id)
+);
+
+/*==============================================================*/
+/* Index: iformfields_usr                                       */
+/*==============================================================*/
+create  index iformfields_usr on formfields (
+user_id
+);
+
+/*==============================================================*/
+/* Table: images                                                */
+/*==============================================================*/
+create table images (
+   iid                  INT8                 not null,
+   name                 VARCHAR(50)          not null,
+   date_on              INT4                 not null,
+   status               INT4                 not null default 0,
+   constraint PK_IMAGES primary key (iid)
+);
 
 /*==============================================================*/
 /* Table: m_datas                                               */
@@ -52,15 +96,24 @@ lang
 create table m_elems (
    iid                  INT8                 not null,
    date_on              DATE                 not null,
+   area                 INT4[]               null,
    tags                 INT4[]               null,
    reles                INT4[]               null,
    o_json               JSONB                null,
+   d_json               JSONB                null,
    itype                INT4                 null default 0,
    constraint PK_M_ELEMS primary key (iid)
 );
 
 comment on column m_elems.reles is
 '相关联IDs';
+
+/*==============================================================*/
+/* Index: i_mele_area                                           */
+/*==============================================================*/
+create  index i_mele_area on m_elems using GIN (
+area
+);
 
 /*==============================================================*/
 /* Index: i_mele_tags                                           */
@@ -133,6 +186,8 @@ create table s_elems (
    date_on              DATE                 not null,
    user_id              INT4                 not null,
    o_json               JSONB                not null,
+   d_json               JSONB                null,
+   area                 INT4[]               null,
    tags                 INT4[]               null,
    reles                INT4[]               null,
    review_json          JSONb                null default '0',
@@ -151,6 +206,13 @@ comment on column s_elems.m_iid is
 
 comment on column s_elems.reles is
 '相关联IDs';
+
+/*==============================================================*/
+/* Index: i_sele_area                                           */
+/*==============================================================*/
+create  index i_sele_area on s_elems using GIN (
+area
+);
 
 /*==============================================================*/
 /* Index: i_sele_tags                                           */
@@ -172,6 +234,25 @@ rele
 create  index i_sele_miid on s_elems (
 user_id,
 m_iid
+);
+
+/*==============================================================*/
+/* Table: tags                                                  */
+/*==============================================================*/
+create table tags (
+   id                   SERIAL               not null,
+   user_id              INT4                 not null,
+   name                 VARCHAR(20)          not null,
+   o_json               JSONb                null,
+   cata_id              INT4                 not null default 0,
+   constraint PK_TAGS primary key (id)
+);
+
+/*==============================================================*/
+/* Index: itags_usr                                             */
+/*==============================================================*/
+create  index itags_usr on tags (
+user_id
 );
 
 /*==============================================================*/

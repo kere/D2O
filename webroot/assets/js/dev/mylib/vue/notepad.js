@@ -1,62 +1,59 @@
 require.config({
   paths: {
+    areas : MYENV + "/mylib/vue/comp/vue-areas",
     tags : MYENV + "/mylib/vue/comp/vue-tags",
-    subform : MYENV + "/mylib/vue/comp/vue-subform"
+    subforms : MYENV + "/mylib/vue/comp/vue-subforms"
 	}
 })
-define('notepad', ['util', 'ajax', 'Compressor', 'tags', 'subform'], function(util, ajax, Compressor, tags, subform){
+define('notepad', ['util', 'ajax', 'Compressor', 'tags', 'subforms', 'areas'], function(util, ajax, Compressor, tags, subforms, areas){
   return {
     template:
     `<div class="gno-notepad p-a">
         <div class="gno-dtypes m-b">
-          <el-radio-group v-model="form.itype">
+          <el-radio-group v-model="itype">
             <el-radio-button label="1">事件</el-radio-button>
             <el-radio-button label="2">人物</el-radio-button>
             <el-radio-button label="3">物件</el-radio-button>
           </el-radio-group>
         </div>
+
         <div class="gno-top-form clearfix">
           <el-upload class="avatar-uploader pull-left" action="upload" :class="{'gno-avatar-success': form.avatar}"
             :show-file-list="false"
-            :on-success="_onAOK"
             :http-request="_uploadA"
             :before-upload="beforUpload">
-            <img v-if="form.avatar" :src="form.avatar" class="gno-avatar">
+            <img v-if="form.avatar" :src="form.avatar[1]" class="gno-avatar">
             <i v-else class="el-icon-plus avatar-uploader-icon"></i>
           </el-upload>
 
           <el-form class="pull-left" ref="form" :model="form" label-width="60px" size="mini">
             <el-form-item label="名称">
-              <el-input v-model="form.name_ch" placeholder="输入题目"></el-input>
+              <el-input v-model="form.title" placeholder="输入题目"></el-input>
             </el-form-item>
             <el-form-item label="日期">
-              <el-date-picker v-model="form.birthday" type="date" placeholder="输入日期"></el-date-picker>
+              <el-date-picker v-model="date_on" type="date" placeholder="输入日期"
+                formart="yyyy-MM-dd" value-format="yyyy-MM-dd"></el-date-picker>
             </el-form-item>
             <el-form-item label="地点">
-              <el-select v-model="form.area_id" filterable placeholder="请选择">
-                <el-option v-for="item in areas" :key="item.value"
-                  :label="item.label" :value="item.value">
-                </el-option>
-              </el-select>
+              <areas v-model="area" :areas="baseinfo.areas"></areas>
             </el-form-item>
           </el-form>
 
         </div>
 
         <div class="gno-textarea">
-          <el-input v-model="form.memo" ref="text" type="textarea" :autosize="{ minRows: 6}" class="border w100 font-size-lg" placeholder="markdown"></el-input>
+          <el-input v-model="form.text" ref="text" type="textarea" :autosize="{ minRows: 6}" class="border w100 font-size-lg" placeholder="markdown"></el-input>
         </div>
 
         <div class="gno-subforms">
           <el-divider>数据</el-divider>
-          <subform :formdata="form.subform"></subform>
+          <subforms ref="subforms" :formdata="form.subforms" :fields="baseinfo.fields"></subforms>
         </div>
 
         <el-divider>图片</el-divider>
         <el-upload ref="upload" class="gno-upload"
           list-type="picture-card"
           :action="upload"
-          :on-success="_onImgOK"
           :http-request="_uploadImg"
           :on-remove="_onImageRemove">
           <i class="el-icon-plus"></i>
@@ -64,7 +61,7 @@ define('notepad', ['util', 'ajax', 'Compressor', 'tags', 'subform'], function(ut
 
         <div class="gno-tags">
           <el-divider>标签</el-divider>
-          <tags :tags="form.tags"></tags>
+          <tags ref="tags" :tags="tags" :alltags="baseinfo.tags"></tags>
         </div>
 
 
@@ -77,16 +74,22 @@ define('notepad', ['util', 'ajax', 'Compressor', 'tags', 'subform'], function(ut
 
     </div>`,
     props : {
-      upload : String
+      upload : String,
+      baseinfo : Object
     },
     components:{
-      subform: subform,
+      subforms: subforms,
+      areas: areas,
       tags: tags
     },
     data() {
       return {
-        areas: [{label: "a", value: 1}],
-        form: {birthday: '', name_ch: '', itype: 1, avatar: '', tags:[], subform:[]}
+        iid : 0,
+        itype: 1,
+        area: [],
+        tags: [],
+        date_on: '',
+        form: {title: '', text: '', avatar: [], subforms:[], images:[]}
       };
     },
     methods: {
@@ -94,16 +97,14 @@ define('notepad', ['util', 'ajax', 'Compressor', 'tags', 'subform'], function(ut
         console.log(file, fileList);
       },
 
-      _onImgOK(url, file, fileList){
-        this.upOK(str, file, 1)
-      },
-      _onAOK(str, file){
-        this.upOK(str, file)
-      },
-      upOK(str, file, itype){
-        let arr = str.split(",")
-        file.response = arr[1];
-      },
+      // _onImgOK(s, file, fileList){
+      //   let arr = s.split(",")
+      //   file.response = arr[1];
+      // },
+      // _onAOK(s, file, fileList){
+      //   let arr = s.split(",")
+      //   file.response = arr[1];
+      // },
 
       beforUpload(file) {
         if (!(file.type === 'image/jpeg' || file.type === 'image/png')) {
@@ -119,21 +120,26 @@ define('notepad', ['util', 'ajax', 'Compressor', 'tags', 'subform'], function(ut
       },
 
       _uploadA(e){
-        this.upload(e, 0);
+        this.doUpload(e, 0);
       },
       _uploadImg(e){
-        this.upload(e, 1);
+        this.doUpload(e, 1);
       },
-      upload(e, itype){
-        var url = this.upload;
+      doUpload(e, itype){
+        let cls =this;
         new Compressor(e.file, {
           quality: 0.5,
-          maxWidth: 1024*2,
-          maxHeight: 1024*2,
+          maxWidth: 1920,
+          maxHeight: 1920,
           success(blob) {
-            ajax.NewUpload(url).upload(blob, {"onProgress": e.onProgress}).then(url => {
-              e.onSuccess(url, blob);
-
+            ajax.NewUpload(cls.upload).upload(blob, {"onProgress": e.onProgress}).then(str => {
+              let arr = str.split(',');
+              if(itype){
+                cls.form.images.push(arr);
+              }else{
+                cls.form.avatar = arr;
+              }
+              e.onSuccess(arr[1], blob);
             })
           },
           error(err) {
@@ -143,8 +149,17 @@ define('notepad', ['util', 'ajax', 'Compressor', 'tags', 'subform'], function(ut
       },
 
       _onClickSave(e){
+        let dat = util.copy(this.form);
+        let tags = this.$refs["tags"].getData();
+        dat.subforms = this.$refs["subforms"].getData();
         // this.$emit('saved', {});
-        console.log(this.form);
+        this.$emit("onsave", {
+          iid: this.iid,
+          o_json: dat,
+          tags: tags,
+          itype: this.itype,
+          area: this.area,
+          date_on: this.date_on});
       }
     }
   };

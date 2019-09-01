@@ -13,30 +13,25 @@ require(
 				"notepad": notepad
 			},
       data: {
+        baseinfo: {tags:[], fields:[], areas: []}
       },
       filter: {
 
       },
       methods : {
-        _onSaved : function(dat){
-          var obj = {
-
-          }
-
-      		ajax.NewClient("/api/app").send("SaveSElem", obj).then(function(result){
-      	    console.log(result)
+        _onSaved : function(obj){
+      		ajax.NewClient("/api/app").send("SaveSElem", obj).then((dat) => {
+      	    console.log(dat)
       	  })
         }
       },
 
       mounted : function(){
-
+    		ajax.NewClient("/api/info").getData("TagsFormFieldsAreas").then((dat) => {
+          this.baseinfo = {tags: ajax.torows(dat.tags), fields: ajax.torows(dat.fields), areas: dat.areas};
+    	  })
       }
     })
 
-
-		// ajax.NewClient("/api/app").send("PageData", {name:'tom', age: 22}).then(function(result){
-	  //   console.log(result)
-	  // })
 	}
 );

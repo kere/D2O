@@ -1,8 +1,7 @@
 package api
 
 import (
-	"encoding/json"
-
+	"github.com/kere/gno/db"
 	"github.com/kere/gno/libs/util"
 	"github.com/valyala/fasthttp"
 	"onqee.visualstudio.com/D2O/app"
@@ -10,8 +9,7 @@ import (
 )
 
 // App class
-type App struct {
-}
+type App struct{}
 
 // NewApp func
 func NewApp() *App {
@@ -20,43 +18,34 @@ func NewApp() *App {
 
 // Auth page auth
 // if require is true then do auth
-func (a App) Auth(ctx *fasthttp.RequestCtx) error {
+func (a *App) Auth(ctx *fasthttp.RequestCtx) error {
 	return nil
 }
 
 // PageData func
-func (a App) PageData(ctx *fasthttp.RequestCtx, args util.MapData) (interface{}, error) {
+func (a *App) PageData(ctx *fasthttp.RequestCtx, args util.MapData) (interface{}, error) {
 	// fmt.Println(args)
 
 	return util.MapData{"isok": true}, nil
 }
 
 // SaveSElem 保存SElem
-func (a App) SaveSElem(ctx *fasthttp.RequestCtx, args util.MapData) (interface{}, error) {
-	itype := args.Int("itype")
-	var ojson interface{}
-	if itype == selem.ITypePerson {
-		p := selem.Person{}
-		src := util.Str2Bytes(args.String(app.FieldOJSON))
-		if err := json.Unmarshal(src, &p); err != nil {
-			return nil, err
-		}
-		ojson = p
-	} else {
-		p := selem.OJSON{}
-		src := util.Str2Bytes(args.String(app.FieldOJSON))
-		if err := json.Unmarshal(src, &p); err != nil {
-			return nil, err
-		}
-		ojson = p
+func (a *App) SaveSElem(ctx *fasthttp.RequestCtx, args util.MapData) (interface{}, error) {
+	vo := selem.VO{}
+	err := util.ConvertA2B(args, &vo)
+	if err != nil {
+		return 0, err
 	}
 
-	dateON := args.Time(app.FieldDateON)
-	miid := args.Int64Default("m_iid", 0)
-	tags := args.IntsDefault(app.FieldTags, []int{})
-	reles := args.IntsDefault(app.FieldReles, []int{})
+	iid := args.Int64("iid")
+	if iid == 0 {
+		vo.IID = app.IID(selem.Table)
+		err = db.VOCreate(vo)
+	} else {
+		err = db.VOUpdate(vo, "iid=?", vo.IID)
+	}
 
-	return selem.Create(1, dateON, miid, ojson, tags, reles, itype)
+	return 1, err
 }
 
 // unsafe := blackfriday.Run(input)

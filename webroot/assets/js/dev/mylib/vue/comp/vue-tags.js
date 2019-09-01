@@ -21,21 +21,12 @@ define('tags', ['util'], function(util){
       </div>
     </div>`,
     props : {
-      tags: Array
+      tags: Array,
+      alltags: Array
     },
     data: function(){
       return {
-        isChanged : false,
-        alltags: [{
-          value: 1,
-          name: '黄金糕'
-        }, {
-          value: 2,
-          name: '双皮奶'
-        }, {
-          value: 3,
-          name: '蚵仔煎'
-        }]
+        isChanged : false
       }
     },
     methods: {
@@ -50,6 +41,15 @@ define('tags', ['util'], function(util){
         obj.selected = !obj.selected;
         this.alltags.splice(i, 1, obj)
         this.isChanged = true;
+      },
+
+      getData(){
+        let arr = [];
+        for (var i = 0; i < this.alltags.length; i++) {
+          if(!this.alltags[i].selected) continue;
+          arr.push(this.alltags[i].id);
+        }
+        return arr;
       },
 
       showPane(e) {

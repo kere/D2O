@@ -55,6 +55,30 @@ define(
         return new Upload(path);
       },
 
+      torows : (dat) => {
+        let n = dat.fields.length;
+        if(!dat || !dat.columns || dat.columns.length==0 || n===0){
+          return [];
+        }
+
+        let cols = dat.columns;
+        let l = cols[0].length;
+        if(l === 0) return [];
+
+        let rows = new Array(l);
+        let i,k, obj, fields = dat.fields;
+
+        for (i = 0; i < l; i++) {
+          obj = {}
+          for (k = 0; k < n; k++) {
+            obj[fields[k]] = cols[k][i];
+          }
+          rows[i] = obj;
+        }
+
+        return rows;
+      },
+
       serverTime : {
         diff : 0,
         set : function(unix){
@@ -109,6 +133,7 @@ define(
     Client.prototype.getData = function(method, args, opt) {
       return new Promise((resolve, reject) => {
         let key = method + (args ? JSON.stringify(args): '');
+
         let doit = (resolve, reject) =>{
           this.send(method, args, opt).then(result =>{
             if(result[this.verField]){
@@ -136,6 +161,7 @@ define(
           doit(resolve, reject);
           return;
         }
+
         opt = opt || {ver: window[this.verField]};
         if(dat[this.verField] != opt.ver){
           doit(resolve, reject);

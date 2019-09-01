@@ -28,9 +28,12 @@ func main() {
 	site.RegistGet("/cell", home.NewCell())
 
 	site.RegistOpenAPI("/api/app", api.NewApp())
+	site.RegistOpenAPI("/api/info", api.NewBaseInfo())
+
 	site.RegistUpload("/upload/image", upload.NewImage())
 
 	confServer(site.Server, site.C.GetConf("site"))
+
 	site.Start()
 }
 

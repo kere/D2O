@@ -4,7 +4,6 @@ import (
 	"time"
 
 	"github.com/kere/gno/db"
-	"onqee.visualstudio.com/D2O/app"
 )
 
 const (
@@ -16,14 +15,15 @@ const (
 
 // VO 从表
 type VO struct {
-	IID    int64     `json:"iid" skip:"update"`
-	MIID   int64     `json:"m_iid"`   // 同步关联的 master IID
-	DateON time.Time `json:"date_on"` // 事件发生时间
-	UserID int       `json:"user_id" skip:"update"`
-	Tags   []int     `json:"tags"`
-	Reles  []int     `json:"reles"`
+	IID    int64  `json:"iid" skip:"update"`
+	MIID   int64  `json:"m_iid"`   // 同步关联的 master IID
+	DateON string `json:"date_on"` // 事件发生时间
+	UserID int    `json:"user_id" skip:"update"`
+	Tags   []int  `json:"tags"`
+	Area   []int  `json:"area"`
+	Reles  []int  `json:"reles"`
 
-	OJSON      interface{} `json:"o_json"`
+	OJSON      OJSON       `json:"o_json"`
 	ReviewJSON interface{} `json:"review_json" skip:"insert"`
 
 	Status    int       `json:"status" skip:"insert"`
@@ -36,55 +36,55 @@ func (vo VO) Table() string {
 	return Table
 }
 
-// Dat 信息
-type Dat struct {
-	Title string `json:"title"`
-	Text  string `json:"text"`
-	Lang  int    `json:"lang"`
-}
-
 // OJSON class
 type OJSON struct {
-	Items []Dat  `json:"items"`
-	Image string `json:"image"`
+	Title    string     `json:"title"`
+	Text     string     `json:"text"`
+	SubForms []SubForm  `json:"subforms"`
+	Images   [][]string `json:"images"`
+	Avatar   []string   `json:"avatar"`
 }
 
-// Person class
-type Person struct {
-	Image    string    `json:"image"`
-	NameCH   string    `json:"name_ch"`
-	NameEN   string    `json:"name_en"`
-	Nick     string    `json:"nick"` // 外号
-	Birthday time.Time `json:"birthday"`
+// SubForm form
+type SubForm struct {
+	Title  string     `json:"title"`
+	DateON string     `json:"date_on"`
+	Items  []FormItem `json:"items"`
 }
 
-// Create 创建从表信息
-func Create(usrid int, dateON time.Time, miid int64, ojson interface{}, tags, reles []int, itype int) (int64, error) {
-	iid := app.IID(Table)
-	vo := VO{
-		IID:    iid,
-		UserID: usrid,
-		MIID:   miid,
-		DateON: dateON,
-		OJSON:  ojson,
-		Tags:   tags,
-		Reles:  reles,
-		IType:  itype,
-	}
-	return iid, db.VOCreate(vo)
+// FormItem form
+type FormItem struct {
+	Label string `json:"k"`
+	Value string `json:"v"`
 }
 
-// Update data
-func Update(iid int64, dateON time.Time, miid int64, ojson interface{}, tags, reles []int) error {
-	vo := VO{
-		MIID:   miid,
-		DateON: dateON,
-		OJSON:  ojson,
-		Tags:   tags,
-		Reles:  reles,
-	}
-	return db.VOUpdate(vo, "iid=?", iid)
-}
+// // Create 创建从表信息
+// func Create(usrid int, dateON time.Time, miid int64, ojson interface{}, tags, reles []int, itype int) (int64, error) {
+// 	iid := app.IID(Table)
+// 	vo := VO{
+// 		IID:    iid,
+// 		UserID: usrid,
+// 		MIID:   miid,
+// 		DateON: dateON,
+// 		OJSON:  ojson,
+// 		Tags:   tags,
+// 		Reles:  reles,
+// 		IType:  itype,
+// 	}
+// 	return iid, db.VOCreate(vo)
+// }
+
+// // Update data
+// func Update(iid int64, dateON time.Time, miid int64, ojson interface{}, tags, reles []int) error {
+// 	vo := VO{
+// 		MIID:   miid,
+// 		DateON: dateON,
+// 		OJSON:  ojson,
+// 		Tags:   tags,
+// 		Reles:  reles,
+// 	}
+// 	return db.VOUpdate(vo, "iid=?", iid)
+// }
 
 // Delete ele
 func Delete(iid int64) error {
