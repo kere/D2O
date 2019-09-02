@@ -31,11 +31,14 @@ define('subforms', ['util'], function(util){
       formdata: Array,
       fields : Array
     },
-    // data: function(){
-    //   return {
-    //     dat: {}
-    //   }
-    // },
+    watch:{
+      formdata(dat){
+        if(!dat || dat.length==0) return;
+        for (var i = 0; i < dat.length; i++) {
+          dat[i].date_on = util.date2str(dat[i].date_on, 'date');
+        }
+      }
+    },
     methods: {
       getData(){
         var arr = [];

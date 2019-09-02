@@ -13,6 +13,7 @@ require(
 				"notepad": notepad
 			},
       data: {
+        formdata: null,
         baseinfo: {tags:[], fields:[], areas: []}
       },
       filter: {
@@ -20,16 +21,21 @@ require(
       },
       methods : {
         _onSaved : function(obj){
-      		ajax.NewClient("/api/app").send("SaveSElem", obj).then((dat) => {
-      	    console.log(dat)
-      	  })
+      	  // console.log(obj);
         }
       },
 
       mounted : function(){
+        let iid = util.getRouterParam(0);
+        let ths = this;
     		ajax.NewClient("/api/info").getData("TagsFormFieldsAreas").then((dat) => {
           this.baseinfo = {tags: ajax.torows(dat.tags), fields: ajax.torows(dat.fields), areas: dat.areas};
-    	  })
+          if(iid !== 'new'){
+            ajax.NewClient("/api/app").getData("LoadSElem", {iid: iid}, {busy: ths.$el}).then((formdata) => {
+              ths.formdata = formdata;
+            })
+          }
+    	  });
       }
     })
 

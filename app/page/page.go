@@ -29,8 +29,8 @@ func Init(pd *httpd.PageData, isElement bool) {
 	pd.Head = []render.IRender{viewport, render.NewScript(requireOpt())}
 	if isElement {
 		pd.CSS = []render.IRenderWith{
-			render.NewCSS("main.css"),
 			render.NewCSS(siteConf.Get("elementcss")),
+			render.NewCSS("main.css"),
 		}
 		pd.JS = []render.IRenderWith{
 			render.NewJS(siteConf.DefaultString("vuejs", "vue.min.js")),

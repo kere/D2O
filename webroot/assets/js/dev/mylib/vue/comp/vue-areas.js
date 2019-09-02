@@ -2,7 +2,7 @@ define('areas', [], function(){
   return {
     template:
     `<template>
-      <el-select v-model="value" filterable placeholder="请选择" multiple @change="_onChange($event)">
+      <el-select v-model="area" filterable placeholder="请选择" multiple @change="_onChange($event)">
         <el-option v-for="a in areas" :key="a.id"
           :label="a.name + ' ' + a.en" :value="a.id">
           {{ a.name }}
@@ -16,11 +16,6 @@ define('areas', [], function(){
     model: {
       props: 'area',
       event: 'cc'
-    },
-    data: function(){
-      return {
-        value: ''
-      }
     },
     methods: {
       _onChange(v) {

@@ -11,48 +11,49 @@ define('notepad', ['util', 'ajax', 'Compressor', 'tags', 'subforms', 'areas'], f
     `<div class="gno-notepad p-a">
         <div class="gno-dtypes m-b">
           <el-radio-group v-model="itype">
-            <el-radio-button label="1">事件</el-radio-button>
-            <el-radio-button label="2">人物</el-radio-button>
-            <el-radio-button label="3">物件</el-radio-button>
+            <el-radio-button :label="1">事件</el-radio-button>
+            <el-radio-button :label="2">人物</el-radio-button>
+            <el-radio-button :label="3">物件</el-radio-button>
           </el-radio-group>
         </div>
 
         <div class="gno-top-form clearfix">
-          <el-upload class="avatar-uploader pull-left" action="upload" :class="{'gno-avatar-success': form.avatar}"
+          <el-upload class="avatar-uploader pull-left" action="upload" :class="{'gno-avatar-success': isAvatar}"
             :show-file-list="false"
             :http-request="_uploadA"
             :before-upload="beforUpload">
-            <img v-if="form.avatar" :src="form.avatar[1]" class="gno-avatar">
+            <img v-if="isAvatar" :src="ojson.avatar.url" class="gno-avatar">
             <i v-else class="el-icon-plus avatar-uploader-icon"></i>
           </el-upload>
 
-          <el-form class="pull-left" ref="form" :model="form" label-width="60px" size="mini">
+          <el-form class="pull-left" ref="form" :model="ojson" label-width="60px" size="mini">
             <el-form-item label="名称">
-              <el-input v-model="form.title" placeholder="输入题目"></el-input>
+              <el-input v-model="ojson.title" placeholder="输入题目"></el-input>
             </el-form-item>
             <el-form-item label="日期">
               <el-date-picker v-model="date_on" type="date" placeholder="输入日期"
                 formart="yyyy-MM-dd" value-format="yyyy-MM-dd"></el-date-picker>
             </el-form-item>
             <el-form-item label="地点">
-              <areas v-model="area" :areas="baseinfo.areas"></areas>
+              <areas :area="area" v-model="area" :areas="baseinfo.areas"></areas>
             </el-form-item>
           </el-form>
 
         </div>
 
         <div class="gno-textarea">
-          <el-input v-model="form.text" ref="text" type="textarea" :autosize="{ minRows: 6}" class="border w100 font-size-lg" placeholder="markdown"></el-input>
+          <el-input v-model="ojson.text" ref="text" type="textarea" :autosize="{ minRows: 6}" class="border w100 font-size-lg" placeholder="markdown"></el-input>
         </div>
 
         <div class="gno-subforms">
           <el-divider>数据</el-divider>
-          <subforms ref="subforms" :formdata="form.subforms" :fields="baseinfo.fields"></subforms>
+          <subforms ref="subforms" :formdata="ojson.subforms" :fields="baseinfo.fields"></subforms>
         </div>
 
         <el-divider>图片</el-divider>
         <el-upload ref="upload" class="gno-upload"
           list-type="picture-card"
+          :file-list="imageList"
           :action="upload"
           :http-request="_uploadImg"
           :on-remove="_onImageRemove">
@@ -61,50 +62,71 @@ define('notepad', ['util', 'ajax', 'Compressor', 'tags', 'subforms', 'areas'], f
 
         <div class="gno-tags">
           <el-divider>标签</el-divider>
-          <tags ref="tags" :tags="tags" :alltags="baseinfo.tags"></tags>
+          <tags ref="tags" :tags="tags" :tagdatas="baseinfo.tags"></tags>
         </div>
 
 
         <div class="gno-box text-right">
           <hr class="line m-b-md"></hr>
+          <el-alert v-show="isSuccess" title="成功保存数据" type="success" center show-icon :closable="false"></el-alert>
+          <el-alert v-show="isError" title="数据保存失败" type="error" :description="errMessage" show-icon></el-alert>
+          <hr v-show="isSuccess || isError" class="line m-b-md"></hr>
+
           <button @click="_onClickSave" type="button" class="gno-btn-min-w el-button el-button--primary el-button--mini">
             <i class="el-icon-check"></i>
           </button>
         </div>
 
     </div>`,
-    props : {
-      upload : String,
-      baseinfo : Object
-    },
     components:{
       subforms: subforms,
       areas: areas,
       tags: tags
     },
+    props : {
+      upload : String,
+      formdata : Object,
+      baseinfo : Object
+    },
     data() {
       return {
+        isSuccess : false,
+        isError : false,
+        errMessage: '',
         iid : 0,
         itype: 1,
         area: [],
         tags: [],
+        imageList: [],
         date_on: '',
-        form: {title: '', text: '', avatar: [], subforms:[], images:[]}
+        ojson: {title: '', text: '', avatar: null, subforms:[], images:[]}
       };
+    },
+    watch:{
+      formdata(dat){
+        if(!dat) return;
+        this.iid = dat.iid;
+        this.itype = parseInt(dat.itype);
+        this.area = dat.area;
+        this.tags = dat.tags;
+        this.date_on = util.date2str(dat.date_on, 'date');
+        this.ojson = dat.o_json;
+
+        this.imageList = this.ojson.images;
+      }
+    },
+    computed:{
+      isNew( ){
+        return !this.formdata;
+      },
+      isAvatar(){
+        return this.ojson.avatar;
+      }
     },
     methods: {
       _onImageRemove(file, fileList) {
         console.log(file, fileList);
       },
-
-      // _onImgOK(s, file, fileList){
-      //   let arr = s.split(",")
-      //   file.response = arr[1];
-      // },
-      // _onAOK(s, file, fileList){
-      //   let arr = s.split(",")
-      //   file.response = arr[1];
-      // },
 
       beforUpload(file) {
         if (!(file.type === 'image/jpeg' || file.type === 'image/png')) {
@@ -135,9 +157,9 @@ define('notepad', ['util', 'ajax', 'Compressor', 'tags', 'subforms', 'areas'], f
             ajax.NewUpload(cls.upload).upload(blob, {"onProgress": e.onProgress}).then(str => {
               let arr = str.split(',');
               if(itype){
-                cls.form.images.push(arr);
+                cls.ojson.images.push({name:arr[0], url:arr[1]});
               }else{
-                cls.form.avatar = arr;
+                cls.ojson.avatar = {name:arr[0], url:arr[1]};
               }
               e.onSuccess(arr[1], blob);
             })
@@ -149,17 +171,32 @@ define('notepad', ['util', 'ajax', 'Compressor', 'tags', 'subforms', 'areas'], f
       },
 
       _onClickSave(e){
-        let dat = util.copy(this.form);
+        let dat = util.copy(this.ojson);
         let tags = this.$refs["tags"].getData();
         dat.subforms = this.$refs["subforms"].getData();
         // this.$emit('saved', {});
-        this.$emit("onsave", {
-          iid: this.iid,
-          o_json: dat,
-          tags: tags,
-          itype: this.itype,
-          area: this.area,
-          date_on: this.date_on});
+        let obj = {
+            iid: this.iid,
+            o_json: dat,
+            tags: tags,
+            itype: this.itype,
+            area: this.area,
+            date_on: this.date_on
+          };
+
+    		ajax.NewClient("/api/app").send("SaveSElem", obj, {loading:true}).then((dat) => {
+          this.$emit("onSaved", obj);
+          this.isSuccess = true;
+          this.isError = false;
+          let cls = this;
+          setTimeout(() => {
+            cls.isSuccess = false;
+          }, 1500);
+
+    	  }).catch((err) =>{
+          this.isError = true;
+          this.errMessage = err;
+        })
       }
     }
   };

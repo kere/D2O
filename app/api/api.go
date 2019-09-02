@@ -1,6 +1,8 @@
 package api
 
 import (
+	"errors"
+
 	"github.com/kere/gno/db"
 	"github.com/kere/gno/libs/util"
 	"github.com/valyala/fasthttp"
@@ -27,6 +29,22 @@ func (a *App) PageData(ctx *fasthttp.RequestCtx, args util.MapData) (interface{}
 	// fmt.Println(args)
 
 	return util.MapData{"isok": true}, nil
+}
+
+// LoadSElem get SElem
+func (a *App) LoadSElem(ctx *fasthttp.RequestCtx, args util.MapData) (interface{}, error) {
+	iid := args.Int64(app.FieldIID)
+	row, err := db.NewQuery(selem.Table).Where("iid=?", iid).QueryOne()
+	if err != nil {
+		return row, err
+	}
+	if row.IsEmpty() {
+		return row, errors.New("没有找到相应的数据")
+	}
+
+	vo := selem.VO{}
+	db.Row2VO(row, &vo)
+	return vo, nil
 }
 
 // SaveSElem 保存SElem

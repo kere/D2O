@@ -76,6 +76,15 @@ define('util', [], function(){
 			return lang.replace('_', '-').toLowerCase();
 		},
 
+		getRouterParam : (index) => {
+	    let arr = window.location.pathname.split('/'),
+	      l = arr.length,
+	      i = l-1-index;
+	    if (i<0) return null;
+
+	    return arr[i];
+		},
+
 	  num2str : (v, deci) => {
 			if(!v) return '';
 			if(typeof(v)== 'string') v= parseFloat(v);
@@ -282,6 +291,19 @@ define('util', [], function(){
 			return -1;
 		},
 
+		arrMix: (arr, all, callback) => {
+			let finded = [];
+			for (let i = 0; i < all.length; i++) {
+
+				for (let k = 0; k < arr.length; k++) {
+					if(finded.indexOf(k) !== -1) continue;
+					if(callback(k, i)){
+						finded.push(k)
+					}
+				}
+			}
+		},
+
 		inArray : (val, arr) => {
 			for(let i in arr){
 				if(arr[i]==val)
@@ -374,7 +396,7 @@ define('util', [], function(){
 			},
 
 			childrenFilter : function(list, cls) {
-				let eles = [], item;
+				var eles = [], item;
 				for (let i = 0; i < list.length; i++) {
 					item = list[i];
 					if(typeof(item.className)!=='string') continue;
@@ -383,7 +405,7 @@ define('util', [], function(){
 					}
 					if(item.children.length > 0){
 						let items = this.childrenFilter(item.children, cls)
-						if(items) eles = eles.concat();
+						if(items) eles = eles.concat(items);
 					}
 				}
 
@@ -496,7 +518,7 @@ define('util', [], function(){
 			}
 
 			util.$.show(el);
-			if(itype==1){
+			if(itype){
 				util.$.each(util.$.get(el, '.toast-loading'), e => {
 					util.$.hide(e)
 				})

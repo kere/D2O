@@ -25,7 +25,10 @@ func main() {
 	site := httpd.Site
 	// home
 	site.RegistGet("/", home.NewDefault())
-	site.RegistGet("/cell", home.NewCell())
+	cell := home.NewCell()
+	site.RegistGet("/cell/new", cell)
+	site.RegistGet("/cell/edit/:iid", cell)
+	site.RegistGet("/cell/list", home.NewCells())
 
 	site.RegistOpenAPI("/api/app", api.NewApp())
 	site.RegistOpenAPI("/api/info", api.NewBaseInfo())

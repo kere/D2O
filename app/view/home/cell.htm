@@ -1,5 +1,7 @@
 <div id="main-div">
-  <notepad @saved="_onSaved" upload="/upload/image" :baseinfo="baseinfo"
+  <notepad upload="/upload/image"
+      :formdata="formdata"
+      :baseinfo="baseinfo"
       @onsave="_onSaved"
     ></notepad>
   <!-- <person @saved="_onSaved" upload="/upload/image" ></person> -->
