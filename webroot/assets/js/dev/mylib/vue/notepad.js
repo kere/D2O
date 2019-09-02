@@ -2,10 +2,13 @@ require.config({
   paths: {
     areas : MYENV + "/mylib/vue/comp/vue-areas",
     tags : MYENV + "/mylib/vue/comp/vue-tags",
+    contents : MYENV + "/mylib/vue/comp/vue-contents",
     subforms : MYENV + "/mylib/vue/comp/vue-subforms"
 	}
 })
-define('notepad', ['util', 'ajax', 'Compressor', 'tags', 'subforms', 'areas'], function(util, ajax, Compressor, tags, subforms, areas){
+define('notepad',
+['util', 'ajax', 'Compressor', 'tags', 'subforms', 'areas', 'contents'],
+function(util, ajax, Compressor, tags, subforms, areas, contents){
   return {
     template:
     `<div class="gno-notepad p-a">
@@ -18,6 +21,7 @@ define('notepad', ['util', 'ajax', 'Compressor', 'tags', 'subforms', 'areas'], f
         </div>
 
         <div class="gno-top-form clearfix">
+
           <el-upload class="avatar-uploader pull-left" action="upload" :class="{'gno-avatar-success': isAvatar}"
             :show-file-list="false"
             :http-request="_uploadA"
@@ -26,10 +30,7 @@ define('notepad', ['util', 'ajax', 'Compressor', 'tags', 'subforms', 'areas'], f
             <i v-else class="el-icon-plus avatar-uploader-icon"></i>
           </el-upload>
 
-          <el-form class="pull-left" ref="form" :model="ojson" label-width="60px" size="mini">
-            <el-form-item label="名称">
-              <el-input v-model="ojson.title" placeholder="输入题目"></el-input>
-            </el-form-item>
+          <el-form class="pull-left" ref="form" label-width="60px" size="mini">
             <el-form-item label="日期">
               <el-date-picker v-model="date_on" type="date" placeholder="输入日期"
                 formart="yyyy-MM-dd" value-format="yyyy-MM-dd"></el-date-picker>
@@ -41,9 +42,7 @@ define('notepad', ['util', 'ajax', 'Compressor', 'tags', 'subforms', 'areas'], f
 
         </div>
 
-        <div class="gno-textarea">
-          <el-input v-model="ojson.text" ref="text" type="textarea" :autosize="{ minRows: 6}" class="border w100 font-size-lg" placeholder="markdown"></el-input>
-        </div>
+        <contents ref="contents" :formdata="ojson.contents"></contents>
 
         <div class="gno-subforms">
           <el-divider>数据</el-divider>
@@ -56,6 +55,7 @@ define('notepad', ['util', 'ajax', 'Compressor', 'tags', 'subforms', 'areas'], f
           :file-list="imageList"
           :action="upload"
           :http-request="_uploadImg"
+          :on-success="_onImgSuccess"
           :on-remove="_onImageRemove">
           <i class="el-icon-plus"></i>
         </el-upload>
@@ -79,6 +79,7 @@ define('notepad', ['util', 'ajax', 'Compressor', 'tags', 'subforms', 'areas'], f
 
     </div>`,
     components:{
+      contents: contents,
       subforms: subforms,
       areas: areas,
       tags: tags
@@ -99,7 +100,7 @@ define('notepad', ['util', 'ajax', 'Compressor', 'tags', 'subforms', 'areas'], f
         tags: [],
         imageList: [],
         date_on: '',
-        ojson: {title: '', text: '', avatar: null, subforms:[], images:[]}
+        ojson: {contents: [{title: '', text: '', lang: 'zh'}], avatar: null, subforms:[], images:[]}
       };
     },
     watch:{
@@ -126,6 +127,9 @@ define('notepad', ['util', 'ajax', 'Compressor', 'tags', 'subforms', 'areas'], f
     methods: {
       _onImageRemove(file, fileList) {
         console.log(file, fileList);
+        let i = util.findIndex("name", file.name, this.imageList);
+        if(i < 0) return;
+        this.imageList.splice(i, 1);
       },
 
       beforUpload(file) {
@@ -139,6 +143,12 @@ define('notepad', ['util', 'ajax', 'Compressor', 'tags', 'subforms', 'areas'], f
           return false;
         }
         return true;
+      },
+
+      _onImgSuccess(arr, file){
+        // console.log(url, file);
+        file.name = arr[0];
+        file.response = arr[1];
       },
 
       _uploadA(e){
@@ -161,7 +171,7 @@ define('notepad', ['util', 'ajax', 'Compressor', 'tags', 'subforms', 'areas'], f
               }else{
                 cls.ojson.avatar = {name:arr[0], url:arr[1]};
               }
-              e.onSuccess(arr[1], blob);
+              e.onSuccess(arr, blob);
             })
           },
           error(err) {
@@ -171,18 +181,20 @@ define('notepad', ['util', 'ajax', 'Compressor', 'tags', 'subforms', 'areas'], f
       },
 
       _onClickSave(e){
-        let dat = util.copy(this.ojson);
+        let ojs = util.copy(this.ojson);
         let tags = this.$refs["tags"].getData();
-        dat.subforms = this.$refs["subforms"].getData();
+        ojs.subforms = this.$refs["subforms"].getData();
+        ojs.contents = this.$refs["contents"].getData();
         // this.$emit('saved', {});
         let obj = {
             iid: this.iid,
-            o_json: dat,
+            o_json: ojs,
             tags: tags,
             itype: this.itype,
             area: this.area,
             date_on: this.date_on
           };
+        console.log(obj);
 
     		ajax.NewClient("/api/app").send("SaveSElem", obj, {loading:true}).then((dat) => {
           this.$emit("onSaved", obj);
@@ -191,7 +203,7 @@ define('notepad', ['util', 'ajax', 'Compressor', 'tags', 'subforms', 'areas'], f
           let cls = this;
           setTimeout(() => {
             cls.isSuccess = false;
-          }, 1500);
+          }, 1000);
 
     	  }).catch((err) =>{
           this.isError = true;

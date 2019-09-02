@@ -55,7 +55,28 @@ define(
         return new Upload(path);
       },
 
-      torows : (dat) => {
+      DataSet: function(dat){
+        this.Fields = dat.fields;
+        this.Columns = dat.columns;
+        this.Len = function(){
+          if(this.Columns.length == 0 ) return 0;
+          return this.Columns[0].length;
+        }
+
+        this.FieldI = function(name){
+          return this.Fields.indexOf(name);
+        }
+
+        this.RowAt = function(index){
+          let l = this.Len(), row = {};
+          for (var k = 0; k < this.Fields.length; k++) {
+            row[this.Fields[k]] = this.Columns[k][index]
+          }
+          return row;
+        }
+      },
+
+      torows : (dat, callback) => {
         let n = dat.fields.length;
         if(!dat || !dat.columns || dat.columns.length==0 || n===0){
           return [];
@@ -66,12 +87,17 @@ define(
         if(l === 0) return [];
 
         let rows = new Array(l);
-        let i,k, obj, fields = dat.fields;
+        let i,k, key, obj, fields = dat.fields;
 
         for (i = 0; i < l; i++) {
           obj = {}
           for (k = 0; k < n; k++) {
-            obj[fields[k]] = cols[k][i];
+            key = fields[k];
+            if(callback){
+              obj[key] = callback(k, i);
+            }else{
+              obj[key] = cols[k][i];
+            }
           }
           rows[i] = obj;
         }

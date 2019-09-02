@@ -2,6 +2,7 @@ package upload
 
 import (
 	"fmt"
+	"math"
 	"time"
 
 	"github.com/kere/gno/db"
@@ -57,5 +58,6 @@ func (m *Image) Success(ctx *fasthttp.RequestCtx, token, ext, folder string, now
 
 // StoreDir f
 func (m *Image) StoreDir(now time.Time) string {
-	return StoreDir + now.Format("200601")
+	n := math.Ceil(float64(now.Month()) / 3)
+	return StoreDir + fmt.Sprint(n)
 }

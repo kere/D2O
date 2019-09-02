@@ -26,7 +26,7 @@ type VO struct {
 	OJSON OJSON `json:"o_json"`
 	// ReviewJSON interface{} `json:"review_json" skip:"insert"`
 	// Status    int       `json:"status" skip:"insert"`
-	IType     int       `json:"itype" skip:"update"`
+	IType     int       `json:"itype"`
 	UpdatedAt time.Time `json:"updated_at" skip:"insert"`
 }
 
@@ -37,11 +37,17 @@ func (vo VO) Table() string {
 
 // OJSON class
 type OJSON struct {
-	Title    string    `json:"title"`
-	Text     string    `json:"text"`
+	Contents []Content `json:"contents"`
 	SubForms []SubForm `json:"subforms"`
 	Images   []ImageVO `json:"images"`
 	Avatar   ImageVO   `json:"avatar"`
+}
+
+// Content class
+type Content struct {
+	Title string `json:"title"`
+	Text  string `json:"text"`
+	Lang  string `json:"lang"`
 }
 
 // ImageVO class

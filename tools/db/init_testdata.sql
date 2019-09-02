@@ -2,6 +2,7 @@ truncate users RESTART IDENTITY;
 truncate tags RESTART IDENTITY;
 truncate formfields RESTART IDENTITY;
 truncate s_elems RESTART IDENTITY;
+truncate images RESTART IDENTITY;
 
 insert into users (iid, nick, token, status) values (999, 'd2o', 'abctoken', 1);
 

@@ -23,16 +23,19 @@ func main() {
 	httpd.Init(cf)
 
 	site := httpd.Site
-	// home
+	// page
 	site.RegistGet("/", home.NewDefault())
 	cell := home.NewCell()
 	site.RegistGet("/cell/new", cell)
 	site.RegistGet("/cell/edit/:iid", cell)
 	site.RegistGet("/cell/list", home.NewCells())
+	site.RegistGet("/cell/view/:iid", home.NewCellView())
 
+	// api
 	site.RegistOpenAPI("/api/app", api.NewApp())
 	site.RegistOpenAPI("/api/info", api.NewBaseInfo())
 
+	// upload
 	site.RegistUpload("/upload/image", upload.NewImage())
 
 	confServer(site.Server, site.C.GetConf("site"))

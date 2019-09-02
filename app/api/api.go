@@ -2,6 +2,7 @@ package api
 
 import (
 	"errors"
+	"time"
 
 	"github.com/kere/gno/db"
 	"github.com/kere/gno/libs/util"
@@ -26,9 +27,28 @@ func (a *App) Auth(ctx *fasthttp.RequestCtx) error {
 
 // PageData func
 func (a *App) PageData(ctx *fasthttp.RequestCtx, args util.MapData) (interface{}, error) {
-	// fmt.Println(args)
-
 	return util.MapData{"isok": true}, nil
+}
+
+// SElemByIID get SElem
+func (a *App) SElemByIID(ctx *fasthttp.RequestCtx, args util.MapData) (interface{}, error) {
+	iid := args.Int64(app.FieldIID)
+	row, err := db.NewQuery(selem.Table).Where("iid=?", iid).QueryOne()
+	if err != nil {
+		return nil, err
+	}
+
+	vo := selem.VO{}
+	db.Row2VO(row, &vo)
+	return vo, nil
+}
+
+// SElems get SElem list
+func (a *App) SElems(ctx *fasthttp.RequestCtx, args util.MapData) (interface{}, error) {
+	q := db.NewQuery(selem.Table)
+	dat, err := q.Query()
+	db.DataSetStrf(dat)
+	return dat, err
 }
 
 // LoadSElem get SElem
@@ -60,6 +80,7 @@ func (a *App) SaveSElem(ctx *fasthttp.RequestCtx, args util.MapData) (interface{
 		vo.IID = app.IID(selem.Table)
 		err = db.VOCreate(vo)
 	} else {
+		vo.UpdatedAt = time.Now()
 		err = db.VOUpdate(vo, "iid=?", vo.IID)
 	}
 

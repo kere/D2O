@@ -39,10 +39,15 @@ body,html{
       margin-bottom:@spacer /2;
     }
   }
-
-  .gno-textarea textarea{
-    border: none;
-    padding: 5px 10px;
+  .gno-textarea{
+    .gno-title input.el-input__inner{
+      border-radius: 0;
+      border-bottom: none;
+    }
+    textarea{
+      border: none;
+      padding: 5px 10px;
+    }
   }
 
   .el-date-editor.gno-date-picker > input{

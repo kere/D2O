@@ -1,0 +1,5 @@
+<div id="main-div">
+  <div v-for="row in rows" :key="row.iid">
+    <a :href="'/cell/view/'+ row.iid">{{row.o_json.contents[0].title}}</a>
+  </div>
+</div>

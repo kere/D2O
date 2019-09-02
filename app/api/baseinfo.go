@@ -23,8 +23,8 @@ func (a *BaseInfo) Auth(ctx *fasthttp.RequestCtx) error {
 	return nil
 }
 
-// TagsFormFieldsAreas func
-func (a *BaseInfo) TagsFormFieldsAreas(ctx *fasthttp.RequestCtx, args util.MapData) (interface{}, error) {
+// Base func
+func (a *BaseInfo) Base(ctx *fasthttp.RequestCtx, args util.MapData) (interface{}, error) {
 	tags := tag.All(0)
 	fields := formfield.All(0)
 
