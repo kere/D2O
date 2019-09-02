@@ -18,7 +18,7 @@ func NewCells() *Cells {
 	d.D.Name = "Cells"
 	d.D.Dir = homeDir
 
-	page.Init(&d.D, false)
+	page.Init(&d.D, page.Option{HasVue: true})
 
 	return d
 }

@@ -2,6 +2,7 @@ package page
 
 import (
 	"fmt"
+	"io/ioutil"
 
 	"github.com/kere/gno/httpd"
 	"github.com/kere/gno/httpd/render"
@@ -12,8 +13,16 @@ var (
 	rqs string
 )
 
+// Option page
+type Option struct {
+	HasElement bool
+	HasVue     bool
+	HasHeader  bool
+	HasFooter  bool
+}
+
 // Init page
-func Init(pd *httpd.PageData, isElement bool) {
+func Init(pd *httpd.PageData, opt Option) {
 	siteConf := httpd.Site.C.GetConf("site")
 
 	viewport := render.NewHead(`<meta name="viewport" content="width=device-width, initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0, user-scalable=no">`)
@@ -22,43 +31,44 @@ func Init(pd *httpd.PageData, isElement bool) {
 	data := make(map[string]string, 0)
 	data["defer"] = ""
 	data["async"] = "true"
-
 	data["data-main"] = util.PathToURL("/assets/js/", httpd.RunMode+"/page", pd.Dir, pd.Name)
-	data["src"] = "/assets/js/require.js"
+	// data["src"] = "/assets/js/require.js"
 
 	pd.Head = []render.IRender{viewport, render.NewScript(requireOpt())}
-	if isElement {
-		pd.CSS = []render.IRenderWith{
-			render.NewCSS(siteConf.Get("elementcss")),
-			render.NewCSS("main.css"),
-		}
-		pd.JS = []render.IRenderWith{
-			render.NewJS(siteConf.DefaultString("vuejs", "vue.min.js")),
-			render.NewJS(siteConf.Get("elementjs")),
-			render.Script("", data),
-		}
-	} else {
-		pd.CSS = []render.IRenderWith{render.NewCSS("main.css")}
-		pd.JS = []render.IRenderWith{
-			render.NewJS(siteConf.DefaultString("vuejs", "vue.min.js")),
-			render.Script("", data),
-		}
+	pd.CSS = make([]render.IRenderWith, 0, 3)
+	pd.JS = make([]render.IRenderWith, 0, 6)
+
+	if opt.HasVue {
+		pd.JS = append(pd.JS, render.NewJS(siteConf.DefaultString("vuejs", "vue.min.js")))
 	}
+
+	if opt.HasElement {
+		pd.CSS = append(pd.CSS, render.NewCSS(siteConf.Get("elementcss")))
+		pd.JS = append(pd.JS, render.NewJS(siteConf.Get("elementjs")))
+	}
+
+	pd.CSS = append(pd.CSS, render.NewCSS("main.css"))
+	pd.JS = append(pd.JS, render.ScriptB(requireJS(), data))
 
 	pd.JSPosition = httpd.JSPositionBottom
 
-	pd.Top = []render.IRender{render.NewTemplate("_header.htm")}
+	if opt.HasHeader {
+		pd.Top = []render.IRender{render.NewTemplate("_header.htm")}
+	}
 
 	// pd.CacheOption.PageMode = httpd.CacheModePagePath
 	if httpd.RunMode == httpd.ModeDev {
 		pd.CacheOption.Store = httpd.CacheStoreNone
 	} else {
-		pd.CacheOption.Store = httpd.CacheStoreMem
+		pd.CacheOption.PageMode = httpd.CacheModePage
+		pd.CacheOption.Store = httpd.CacheStoreFile
 		pd.CacheOption.HTTPHead = 1
 	}
 
-	pd.Bottom = []render.IRender{
-		render.NewTemplate("_bottom.htm"),
+	if opt.HasFooter {
+		pd.Bottom = []render.IRender{
+			render.NewTemplate("_bottom.htm"),
+		}
 	}
 }
 
@@ -79,10 +89,25 @@ const (
   waitSeconds :15,
   baseUrl : "/assets/js/",
   paths: {
-    "echarts" : "echarts.min"
+    echarts : "echarts.min"
   }
 }`
 )
+
+var requirejs []byte
+
+func requireJS() []byte {
+	if len(requirejs) > 0 {
+		return requirejs
+	}
+
+	var err error
+	requirejs, err = ioutil.ReadFile("./webroot/assets/js/require.js")
+	if err != nil {
+		panic(err)
+	}
+	return requirejs
+}
 
 func requireOpt() string {
 	if rqs == "" {

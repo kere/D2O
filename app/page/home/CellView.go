@@ -18,7 +18,7 @@ func NewCellView() *CellView {
 	d.D.Name = "CellView"
 	d.D.Dir = homeDir
 
-	page.Init(&d.D, false)
+	page.Init(&d.D, page.Option{HasHeader: true, HasFooter: true})
 
 	return d
 }

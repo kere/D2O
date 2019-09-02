@@ -22,7 +22,7 @@ func NewDefault() *Default {
 	d.D.Name = "default"
 	d.D.Dir = homeDir
 
-	page.Init(&d.D, false)
+	page.Init(&d.D, page.Option{HasVue: true, HasHeader: true, HasFooter: true})
 
 	return d
 }
