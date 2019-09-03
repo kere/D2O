@@ -34,7 +34,7 @@ define('tags', ['util'], function(util){
         if(!v) return;
         // tags = [1,2,3];
         util.arrMix(v, this.tagdatas, (k, i) => {
-          if(v[k] === this.tagdatas[i].id){
+          if(v[k] === this.tagdatas[i].iid){
             this.tagdatas[i].selected = true;
             this.tagdatas.splice(i, 1, this.tagdatas[i]);
             return true;
@@ -61,7 +61,7 @@ define('tags', ['util'], function(util){
         let arr = [];
         for (var i = 0; i < this.tagdatas.length; i++) {
           if(!this.tagdatas[i].selected) continue;
-          arr.push(this.tagdatas[i].id);
+          arr.push(this.tagdatas[i].iid);
         }
         return arr;
       },

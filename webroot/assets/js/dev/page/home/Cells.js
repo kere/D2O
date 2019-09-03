@@ -2,16 +2,25 @@ require.config(requireOpt);
 require(
 	['ajax', 'util'],
 	function (ajax, util){
+		// clearInterval(pageLoadTid);
+
     var main = new Vue({
       el : '#main-div',
       data: {
         rows: []
       },
+			filters:{
+				strdate(v){
+					if(!v) return '';
+					return v.substr(0,10);
+				}
+			},
       methods : {
       },
 
       mounted : function(){
-    		ajax.NewClient("/api/app").getData("SElems").then((dat) => {
+				util.$.show(this.$el);
+    		ajax.NewClient("/api/app").getData("SElems", null, {loading: true}).then((dat) => {
           let ojsonI = dat.fields.indexOf("o_json");
           this.rows = ajax.torows(dat, (k, i) =>{
             if(k === ojsonI){
@@ -23,6 +32,7 @@ require(
           // console.log(dat);
   		    ajax.NewClient("/api/info").getData("Base");
     	  });
+				window.closePageLoad();
       }
     })
 

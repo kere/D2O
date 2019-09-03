@@ -19,6 +19,7 @@ type Option struct {
 	HasVue     bool
 	HasHeader  bool
 	HasFooter  bool
+	NoPageLoad bool
 }
 
 // Init page
@@ -37,11 +38,17 @@ func Init(pd *httpd.PageData, opt Option) {
 	pd.Head = []render.IRender{viewport, render.NewScript(requireOpt())}
 	pd.CSS = make([]render.IRenderWith, 0, 3)
 	pd.JS = make([]render.IRenderWith, 0, 6)
+	pd.Bottom = make([]render.IRender, 0, 3)
 
+	if !opt.NoPageLoad {
+		pd.Top = []render.IRender{render.NewString(httpd.PageLoadOpen)}
+	}
+	// vue
 	if opt.HasVue {
 		pd.JS = append(pd.JS, render.NewJS(siteConf.DefaultString("vuejs", "vue.min.js")))
 	}
 
+	// element-ui
 	if opt.HasElement {
 		pd.CSS = append(pd.CSS, render.NewCSS(siteConf.Get("elementcss")))
 		pd.JS = append(pd.JS, render.NewJS(siteConf.Get("elementjs")))
@@ -53,7 +60,14 @@ func Init(pd *httpd.PageData, opt Option) {
 	pd.JSPosition = httpd.JSPositionBottom
 
 	if opt.HasHeader {
-		pd.Top = []render.IRender{render.NewTemplate("_header.htm")}
+		pd.Top = append(pd.Top, render.NewTemplate("_header.htm"))
+	}
+
+	if !opt.NoPageLoad {
+		pd.Bottom = append(pd.Bottom, render.NewString(httpd.PageLoadClose))
+	}
+	if opt.HasFooter {
+		pd.Bottom = append(pd.Bottom, render.NewTemplate("_bottom.htm"))
 	}
 
 	// pd.CacheOption.PageMode = httpd.CacheModePagePath
@@ -63,12 +77,6 @@ func Init(pd *httpd.PageData, opt Option) {
 		pd.CacheOption.PageMode = httpd.CacheModePage
 		pd.CacheOption.Store = httpd.CacheStoreFile
 		pd.CacheOption.HTTPHead = 1
-	}
-
-	if opt.HasFooter {
-		pd.Bottom = []render.IRender{
-			render.NewTemplate("_bottom.htm"),
-		}
 	}
 }
 
@@ -85,13 +93,7 @@ const (
     ajax : "%s/mylib/ajax"
   }
 }`
-	requireOptStrPro = `{
-  waitSeconds :15,
-  baseUrl : "/assets/js/",
-  paths: {
-    echarts : "echarts.min"
-  }
-}`
+	requireOptStrPro = `{waitSeconds:15,baseUrl:"/assets/js/",paths:{echarts:"echarts.min"}}`
 )
 
 var requirejs []byte

@@ -9,20 +9,70 @@
 @post-font-size: 18px;
 @post-line-height: 28px;
 
-body,html{
+.gno-cell-list{
+  .list-item{
+    padding: 10px 20px;
+  }
+  .updated-at{
+
+  }
+  .title{
+
+  }
 }
+
 .gno-cell-view{
   padding: 20px;
-  max-width: 800px;
   margin: 0 auto;
 	line-height: @post-line-height;
+  .header{
 
-  .title{
-    font-size:  @post-font-size * 1.4;
-    margin-bottom: 20px;
+  }
+
+  .content{
+    img{
+      width: 100%;
+      display: block;
+    }
+  }
+
+  .tags{
+    margin-top: 20px;
+    span.el-tag+span.el-tag{
+      margin-left: 10px;
+    }
+  }
+
+  .header{
+    h1{
+      font-size:  @post-font-size * 1.4;
+      margin-bottom: 20px;
+    }
+  }
+
+  .subforms{
+    thead{
+      th{
+        text-align: center;
+      }
+    }
+    tbody{
+      th{
+        text-align: right;
+      }
+      td{
+        padding-right: 20px;
+      }
+    }
+    td, th{
+      padding: 5px 10px;
+    }
   }
   .content{
     font-size: @post-font-size;
+    img{
+      margin: 5px auto;
+    }
 
     h1{
       font-size: @post-font-size * 1.4;
@@ -40,12 +90,12 @@ body,html{
       font-size: @post-font-size * 0.9;
     }
     h1,h2,h3,h4,h5,h6{
-      text-indent: 1em;
+
     }
     p{
-      text-indent: 1em;
       margin: 5px 0;
     }
+
   }
 }
 
@@ -123,8 +173,8 @@ body,html{
       border-radius: 0;
     }
 
-    .el-select .el-input{
-      width: 180px;
+    .el-autocomplete input{
+      border-right: none;
     }
 
   }
@@ -150,8 +200,22 @@ body,html{
 
     .el-upload-list--picture-card .el-upload-list__item-actions .el-upload-list__item-delete{
       position: absolute;
-      right: 3px;
-      top: -3px;
+      right: 5px;
+      top: 0;
+    }
+
+    .el-upload-list__item-preview{
+      color: #FFF;
+      font-style: normal;
+      font-weight: 400;
+      padding: 0 10px;
+      position: absolute;
+      left: 0;
+      bottom: 3px;
+      margin-left: 0!important;
+      i{
+        font-size: 24px;
+      }
     }
   }
 
@@ -163,7 +227,6 @@ body,html{
     }
 
     .el-divider{
-      margin-top: 10px;
       margin-bottom: 18px;
     }
 

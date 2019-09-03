@@ -14,10 +14,7 @@ type CellView struct {
 // NewCellView func
 func NewCellView() *CellView {
 	d := &CellView{}
-	d.D.Title = []byte("CellView Page")
-	d.D.Name = "CellView"
-	d.D.Dir = homeDir
-
+	d.D.Init("信息", "CellView", homeDir)
 	page.Init(&d.D, page.Option{HasHeader: true, HasFooter: true})
 
 	return d

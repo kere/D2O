@@ -44,21 +44,21 @@ function(util, ajax, Compressor, tags, subforms, areas, contents){
 
         <contents ref="contents" :formdata="ojson.contents"></contents>
 
-        <div class="gno-subforms">
-          <el-divider>数据</el-divider>
-          <subforms ref="subforms" :formdata="ojson.subforms" :fields="baseinfo.fields"></subforms>
-        </div>
-
-        <el-divider>图片</el-divider>
-        <el-upload ref="upload" class="gno-upload"
+        <el-upload ref="upload" class="gno-upload m-t"
           list-type="picture-card"
           :file-list="imageList"
           :action="upload"
+          :on-preview="_onImagePreview"
           :http-request="_uploadImg"
           :on-success="_onImgSuccess"
           :on-remove="_onImageRemove">
           <i class="el-icon-plus"></i>
         </el-upload>
+
+        <div class="gno-subforms">
+          <el-divider>数据</el-divider>
+          <subforms ref="subforms" :formdata="ojson.subforms" :fields="baseinfo.fields"></subforms>
+        </div>
 
         <div class="gno-tags">
           <el-divider>标签</el-divider>
@@ -114,6 +114,9 @@ function(util, ajax, Compressor, tags, subforms, areas, contents){
         this.ojson = dat.o_json;
 
         this.imageList = this.ojson.images;
+        setTimeout(() => {
+          this.rebuildImagesLinkBtn();
+        }, 200);
       }
     },
     computed:{
@@ -125,11 +128,40 @@ function(util, ajax, Compressor, tags, subforms, areas, contents){
       }
     },
     methods: {
+      _onImagePreview(file){
+        let a = this.$refs.contents.$el.querySelector('textarea');
+        // a.selectionStart
+        // a.selectionEnd
+        // ![avatar](http://baidu.com/pic/doge.png)
+        a.value = a.value.substring(0, a.selectionStart) + '\n!['+file.name+']('+file.url+")\n"+ a.value.substr(a.selectionStart);
+      },
+
+      _onImageLink(e){
+        console.log(e);
+      },
+
       _onImageRemove(file, fileList) {
         console.log(file, fileList);
         let i = util.findIndex("name", file.name, this.imageList);
         if(i < 0) return;
         this.imageList.splice(i, 1);
+
+      },
+
+      _onImgSuccess(arr, file){
+        // console.log(url, file);
+        file.name = arr[0];
+        file.response = arr[1];
+        setTimeout(() => {
+          this.rebuildImagesLinkBtn();
+        }, 200);
+      },
+
+      // 把preview icon变成link
+      rebuildImagesLinkBtn(){
+        util.$.each(this.$refs.upload.$el.querySelectorAll('i.el-icon-zoom-in'), (t)=>{
+          t.className = 'el-icon-link';
+        });
       },
 
       beforUpload(file) {
@@ -143,12 +175,6 @@ function(util, ajax, Compressor, tags, subforms, areas, contents){
           return false;
         }
         return true;
-      },
-
-      _onImgSuccess(arr, file){
-        // console.log(url, file);
-        file.name = arr[0];
-        file.response = arr[1];
       },
 
       _uploadA(e){
@@ -214,3 +240,10 @@ function(util, ajax, Compressor, tags, subforms, areas, contents){
   };
 
 })
+
+function onImageLinkClick(e){
+  // console.log(e);
+  let t = e.target.parentElement.querySelector(':hover') ;
+  console.log(t);
+
+}

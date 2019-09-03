@@ -364,104 +364,77 @@ define('util', [], function(){
 	  },
 
 		$ : {
-			get : function(sel, cls) {
-				let el;
-				if(typeof(sel) === 'string'){
-					let tmp = sel.split(' ');
-					if(tmp[0][0] === '#'){
-						el = document.getElementById(tmp[0].substr(1));
-					}
-					if(tmp.length == 2){
-						cls = tmp[1];
-					}
-				} else {
-					el = sel;
+			get : function(sel) {
+				if(typeof(sel)==='string'){
+					return document.querySelector(sel);
 				}
-
-				if(!cls){
-					return el;
-				}
-
-		    let arr = cls.split('.'), tag = arr[0], t;
-				if(tag === ''){
-					t = el.children;
-				}else{
-		    	t = el.getElementsByTagName(tag);
-				}
-
-				if(arr.length == 1){
-					return t;
-				}
-				return this.childrenFilter(t, arr[1]);
+				return sel;
 			},
-
-			childrenFilter : function(list, cls) {
-				var eles = [], item;
-				for (let i = 0; i < list.length; i++) {
-					item = list[i];
-					if(typeof(item.className)!=='string') continue;
-					if(this.hasClass(item, cls)){
-						eles.push(item);
-					}
-					if(item.children.length > 0){
-						let items = this.childrenFilter(item.children, cls)
-						if(items) eles = eles.concat(items);
-					}
+			getAll : function(sel) {
+				if(typeof(sel)==='string'){
+					return document.querySelectorAll(sel);
 				}
+				if(!sel.length)
+					return [sel];
 
-				return eles.length > 0 ? eles: null;
+				return sel;
 			},
 
 			each : function(el, f) {
-				el = this.get(el);
+				el = this.getAll(el);
 				if(el.length > 0){
 					for (let i = 0; i < el.length; i++) {
-						f(el[i]);
+						f(el[i], i);
 					}
 					return;
 				}
-				return f(el);
+				return f(el, -1);
 			},
 
-			addClass : function(el, clas) {
-				el = this.get(el);
-				if(this.hasClass(el, clas)) return;
-				if(el.className.length==0){
-					el.className = clas;
-				}else{
-					el.className += ' ' +clas;
-				}
+			addClass : function(sel, clas) {
+				this.each(sel, (el) =>{
+					if(this.hasClass(el, clas)) return;
+					if(el.className.length==0){
+						el.className = clas;
+					}else{
+						el.className += ' ' +clas;
+					}
+				});
 			},
 
-			hasClass : function(el, clas) {
-				el = this.get(el);
-				if(!el.className){
-					return false;
-				}
-				let arr = el.className.split(' ');
-				for (let i = 0; i < arr.length; i++) {
-					if(arr[i]==clas) return true;
-				}
-				return false;
+			hasClass : function(sel, clas) {
+				let isfound = false;
+				this.each(sel, (el) =>{
+					if(!el.className){
+						return false;
+					}
+					let arr = el.className.split(' ');
+					for (let i = 0; i < arr.length; i++) {
+						if(arr[i]==clas) {
+							isfound = true;
+							return;
+						};
+					}
+				})
+				return isfound;
 			},
 
-			removeClass : function(el, clas)  {
-				el = this.get(el);
-				if(!el.className){
-					return;
-				}
-				let arr = el.className.split(' ');
-				for (let i = 0; i < arr.length; i++) {
-					if(arr[i]==clas) {
-						arr.splice(i, 1);
-					};
-				}
-				el.className = arr.join(' ');
+			removeClass : function(sel, clas)  {
+				this.each(sel, (el) =>{
+					if(!el.className){
+						return;
+					}
+					let arr = el.className.split(' ');
+					for (let i = 0; i < arr.length; i++) {
+						if(arr[i]==clas) {
+							arr.splice(i, 1);
+						};
+					}
+					el.className = arr.join(' ');
+				});
 			},
 
 			show : function(el){
-				el = this.get(el);
-
 				if(this.hasClass(el, 'hide')){
 					this.removeClass(el, 'hide');
 
@@ -479,8 +452,6 @@ define('util', [], function(){
 			},
 
 			hide : function(el){
-				el = this.get(el);
-
 				if(this.hasClass(el, 'fade')){
 					this.removeClass(el, 'in');
 					var ths = this;
@@ -519,17 +490,17 @@ define('util', [], function(){
 
 			util.$.show(el);
 			if(itype){
-				util.$.each(util.$.get(el, '.toast-loading'), e => {
+				util.$.each(el.querySelector('.toast-loading'), e => {
 					util.$.hide(e)
 				})
-				util.$.each(util.$.get(el, '.toast-success'), e => {
+				util.$.each(el.querySelector('.toast-success'), e => {
 					util.$.show(e)
 				})
 			}else{
-				util.$.each(util.$.get(el, '.toast-success'), e => {
+				util.$.each(el.querySelector('.toast-success'), e => {
 					util.$.hide(e)
 				})
-				util.$.each(util.$.get(el, '.toast-loading'), e => {
+				util.$.each(el.querySelector('.toast-loading'), e => {
 					util.$.show(e)
 				})
 			}
@@ -537,11 +508,11 @@ define('util', [], function(){
 			n = n || 1;
 			setTimeout(function(){
 				if(itype==1){
-					util.$.each(util.$.get(el, '.toast-success'), e => {
+					util.$.each(el.querySelector('.toast-success'), e => {
 						util.$.hide(e)
 					})
 				}else{
-					util.$.each(util.$.get(el, '.toast-loading'), e => {
+					util.$.each(el.querySelector('.toast-loading'), e => {
 						util.$.hide(e)
 					})
 				}
@@ -551,17 +522,17 @@ define('util', [], function(){
 
 		hideToast : ()=>{
 			let el = util.$.get('#toast');
-			util.$.each(util.$.get(el, '.toast-success'), e => {
+			util.$.each(el.querySelector('.toast-success'), e => {
 				util.$.hide(e)
 			})
-			util.$.each(util.$.get(el, '.toast-loading'), e => {
+			util.$.each(el.querySelector('.toast-loading'), e => {
 				util.$.hide(e)
 			})
 			util.$.hide(el);
 		},
 
 		showBusy : function(el, n){
-			let t = util.$.get(el, 'div.el-loading-mask');
+			let t = el.querySelector('div.el-loading-mask');
 			if(!t){
 				t = document.createElement("DIV");
 				t.className = 'el-loading-mask';
@@ -579,9 +550,9 @@ define('util', [], function(){
 		},
 
 		hideBusy : function(el){
-			let t = util.$.get(el, 'div.el-loading-mask');
+			let t = el.querySelector('div.el-loading-mask');
 			if(!t) return;
-			util.$.hide(t[0]);
+			util.$.hide(t);
 		},
 
 	  viewImage : function(url) {
@@ -598,8 +569,8 @@ define('util', [], function(){
 	      })
 	    }
 
-			let imgs = util.$.get(el, 'img');
-			imgs[0].src = url;
+			let imgs = el.querySelector('img');
+			imgs.src = url;
 			util.$.show(el);
 	  },
 

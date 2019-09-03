@@ -14,10 +14,7 @@ type Cell struct {
 // NewCell func
 func NewCell() *Cell {
 	d := &Cell{}
-	d.D.Title = []byte("Cell Page")
-	d.D.Name = "Cell"
-	d.D.Dir = homeDir
-
+	d.D.Init("编辑信息", "Cell", homeDir)
 	page.Init(&d.D, page.Option{HasVue: true, HasElement: true})
 
 	return d

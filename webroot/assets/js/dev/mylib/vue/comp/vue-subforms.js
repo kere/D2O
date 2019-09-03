@@ -12,18 +12,22 @@ define('subforms', ['util'], function(util){
             <i class="el-icon-close"></i>
           </el-button>
         </div>
-        <el-input v-for="(item, i) in dat.items" :key="i"
-            placeholder="输入数据" class="input-with-select" size="mini"
-            v-model="item.v" :type="item.type"
-            @keyup.native="_onInputValueChanged($event, index, i)">
-          <el-select v-model="item.k" slot="prepend" placeholder="请选择" :filterable="true"
-              @change="_onSelectChanged($event, index, i)">
-            <el-option v-for="field in fields" :label="field.name" :value="field.name"></el-option>
-          </el-select>
-        </el-input>
+
+        <div v-for="(item, i) in dat.items" :key="i">
+          <el-autocomplete size="mini" v-model="item.k" class="el-col el-col-10"
+              @select="_onTypeSelect" value-key="name"
+              :fetch-suggestions="querySearch" placeholder="数据名称"></el-autocomplete>
+
+          <div class="el-col el-col-14">
+            <el-input class="input-with-select" size="mini" v-model="item.v"
+              @keyup.native="_onInputValueChanged($event, index, i)">
+            </el-input>
+          </div>
+        </div>
+
       </div>
 
-      <el-button class="button-new-tag parent-p" size="small" @click="_clickAddForm($event)">
+      <el-button class="button-new-tag m-t-sm parent-p" size="small" @click="_clickAddForm($event)">
         <i class="el-icon-plus"></i>
       </el-button>
     </div>`,
@@ -63,8 +67,17 @@ define('subforms', ['util'], function(util){
         this.formdata.push({items:[{}]});
       },
 
-      _onSelectChanged(e, index, i){
-
+      _onTypeSelect(item){
+        console.log(item);
+      },
+      createFilter(queryString) {
+        return (dat) => {
+          return (dat.name.toLowerCase().indexOf(queryString.toLowerCase()) === 0);
+        };
+      },
+      querySearch(queryString, cb){
+        var results = queryString ? this.fields.filter(this.createFilter(queryString)) : this.fields;
+        cb(results);
       },
 
       _onInputValueChanged(e, index, i) {

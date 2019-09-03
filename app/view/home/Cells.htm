@@ -1,5 +1,6 @@
-<div id="main-div">
-  <div v-for="row in rows" :key="row.iid">
-    <a :href="'/cell/view/'+ row.iid">{{row.o_json.contents[0].title}}</a>
+<div id="main-div" class="gno-cell-list hide fade" >
+  <div v-for="row in rows" :key="row.iid" class="list-item">
+    <a class="title" :href="'/cell/view/'+ row.iid">{{row.o_json.contents[0].title}}</a>
+    <small class="updated-at">{{row.date_on | strdate}}</small>
   </div>
 </div>
