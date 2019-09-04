@@ -130,10 +130,9 @@ function(util, ajax, Compressor, tags, subforms, areas, contents){
     methods: {
       _onImagePreview(file){
         let a = this.$refs.contents.$el.querySelector('textarea');
-        // a.selectionStart
-        // a.selectionEnd
         // ![avatar](http://baidu.com/pic/doge.png)
         a.value = a.value.substring(0, a.selectionStart) + '\n!['+file.name+']('+file.url+")\n"+ a.value.substr(a.selectionStart);
+        this.ojson.contents[this.$refs.contents.currentPaneI].text = a.value;
       },
 
       _onImageLink(e){
@@ -220,7 +219,6 @@ function(util, ajax, Compressor, tags, subforms, areas, contents){
             area: this.area,
             date_on: this.date_on
           };
-        console.log(obj);
 
     		ajax.NewClient("/api/app").send("SaveSElem", obj, {loading:true}).then((dat) => {
           this.$emit("onSaved", obj);
@@ -243,7 +241,6 @@ function(util, ajax, Compressor, tags, subforms, areas, contents){
 
 function onImageLinkClick(e){
   // console.log(e);
-  let t = e.target.parentElement.querySelector(':hover') ;
+  let t = e;
   console.log(t);
-
 }

@@ -42,5 +42,5 @@ const (
 
 // IID int64
 func IID(table string) int64 {
-	return util.IID32(table, httpd.Site.Secret, httpd.Site.Nonce, fmt.Sprint(time.Now().UnixNano()))
+	return util.IID32(table, httpd.Site.SiteData.Secret, httpd.Site.SiteData.Nonce, fmt.Sprint(time.Now().UnixNano()))
 }

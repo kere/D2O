@@ -11,6 +11,11 @@ define('contents', [], function(){
     props : {
       formdata: Array
     },
+    data(){
+      return {
+        currentPaneI : 0
+      }
+    },
     watch:{
       // formdata(v){
       //   console.log(v);

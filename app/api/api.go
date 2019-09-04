@@ -33,14 +33,7 @@ func (a *App) PageData(ctx *fasthttp.RequestCtx, args util.MapData) (interface{}
 // SElemByIID get SElem
 func (a *App) SElemByIID(ctx *fasthttp.RequestCtx, args util.MapData) (interface{}, error) {
 	iid := args.Int64(app.FieldIID)
-	row, err := db.NewQuery(selem.Table).Where("iid=?", iid).QueryOne()
-	if err != nil {
-		return nil, err
-	}
-
-	vo := selem.VO{}
-	db.Row2VO(row, &vo)
-	return vo, nil
+	return selem.PageData(iid)
 }
 
 // SElems get SElem list

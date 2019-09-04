@@ -9,9 +9,10 @@ require(
 			return output;
 		}
 
-    let iid = util.getRouterParam(0);
+    // let iid = util.getRouterParam(0);
+		let dat = pagedata;
 
-		ajax.NewClient("/api/app").getData("SElemByIID", {iid: iid}).then((dat) => {
+		// ajax.NewClient("/api/app").getData("SElemByIID", {iid: iid}).then((dat) => {
 			let contents = dat.o_json.contents;
 			let content = contents[0];
 			let $item;
@@ -73,7 +74,7 @@ require(
 
 			});
 
-	  });
+	  // });
 
 		window.closePageLoad();
 	}

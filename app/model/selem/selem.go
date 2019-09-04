@@ -73,3 +73,15 @@ type FormItem struct {
 func Delete(iid int64) error {
 	return db.Delete(Table, "iid=?", iid)
 }
+
+// PageData by iid
+func PageData(iid int64) (VO, error) {
+	vo := VO{}
+	row, err := db.NewQuery(Table).Where("iid=?", iid).QueryOne()
+	if err != nil {
+		return vo, err
+	}
+
+	db.Row2VO(row, &vo)
+	return vo, nil
+}
