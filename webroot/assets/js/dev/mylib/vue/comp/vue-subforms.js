@@ -72,7 +72,7 @@ define('subforms', ['util'], function(util){
       },
       createFilter(queryString) {
         return (dat) => {
-          return (dat.name.toLowerCase().indexOf(queryString.toLowerCase()) === 0);
+          return (dat.toLowerCase().indexOf(queryString.toLowerCase()) === 0);
         };
       },
       querySearch(queryString, cb){

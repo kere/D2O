@@ -3,78 +3,60 @@ define('tags', ['util'], function(util){
     template:
     `<div class="gno-tagdatas">
       <div ref="tagbox">
-        <el-tag v-for="(tag, index) in tagdatas" v-if="tag.selected"
-            closable :key="tag"
-            @close="_onTagClose(index)">
-        {{tag.name}}</el-tag>
+        <el-tag v-for="(tag, index) in tags" closable :key="index"
+              @close="_onTagClose(index)">{{tag}}</el-tag>
         <el-button class="button-new-tag" size="small"
-          @click="showPane($event)"><i class="el-icon-plus"></i></el-button>
+          @click="showPane($event)"><i v-if="tagstr" class="el-icon-edit"></i><i v-else class="el-icon-plus"></i></el-button>
       </div>
       <div ref="tagpane" class="gno-tagdatas-select hide">
-        <el-tag v-for="(tag, index) in tagdatas" :key="tag.name" :type="tag.selected ? '' : 'info'"
-              @click="_onTagClick(index)">
-          {{tag.name}}
-        </el-tag>
-        <el-tag v-show="isChanged" type="warning" @click="_onTagConfirm($event)">
-          <i class="el-icon-check"></i>
-        </el-tag>
+        <el-input ref="taginput" placeholder="请输入标签，用逗号分隔" v-model="tagstr" size="mini"
+            v-on:keyup.native.enter="confirm">
+          <el-button @click="confirm()" slot="append" icon="el-icon-check"></el-button>
+        </el-input>
       </div>
     </div>`,
     props : {
-      tags: Array,
-      tagdatas: Array
+      tags: Array
+    },
+    model: {
+      props: 'tags',
+      event: 'cc'
     },
     data(){
       return {
-        isChanged : false
-      }
-    },
-    watch:{
-      tags(v){
-        if(!v) return;
-        // tags = [1,2,3];
-        util.arrMix(v, this.tagdatas, (k, i) => {
-          if(v[k] === this.tagdatas[i].iid){
-            this.tagdatas[i].selected = true;
-            this.tagdatas.splice(i, 1, this.tagdatas[i]);
-            return true;
-          }
-          return false;
-        })
+        oval: '',// 打开input时的value，用于判断十分有改动
+        tagstr: ''
       }
     },
     methods: {
-      _onTagClose(i) {
-        let obj = this.tagdatas[i];
-        obj.selected = false;
-        this.tagdatas.splice(i, 1, obj);
-      },
-
-      _onTagClick(i){
-        let obj = this.tagdatas[i];
-        obj.selected = !obj.selected;
-        this.tagdatas.splice(i, 1, obj)
-        this.isChanged = true;
-      },
-
       getData(){
-        let arr = [];
-        for (var i = 0; i < this.tagdatas.length; i++) {
-          if(!this.tagdatas[i].selected) continue;
-          arr.push(this.tagdatas[i].iid);
-        }
-        return arr;
+        if(this.oval == this.tagstr) return this.tags;
+
+        let v = this.tagstr;
+        if(!v || v.length==0) return;
+        let s = v.replace(/，/g, ',');
+        this.tags = s.split(',')
+        this.$emit('cc', this.tags);
+
+        return this.tags;
+      },
+
+      _onTagClose(i) {
+        this.tags.splice(i, 1);
       },
 
       showPane(e) {
         util.$.show(this.$refs['tagpane']);
         util.$.hide(this.$refs['tagbox']);
+        this.oval = this.tagstr;
+        this.$refs.taginput.focus();
       },
 
-      _onTagConfirm(e){
+      confirm(e){
         util.$.hide(this.$refs['tagpane']);
         util.$.show(this.$refs['tagbox']);
-        this.isChanged = false;
+        // 有改动
+        return this.getData();
       }
 
     }

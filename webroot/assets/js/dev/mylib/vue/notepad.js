@@ -62,7 +62,7 @@ function(util, ajax, Compressor, tags, subforms, areas, contents){
 
         <div class="gno-tags">
           <el-divider>标签</el-divider>
-          <tags ref="tags" :tags="tags" :tagdatas="baseinfo.tags"></tags>
+          <tags ref="tags" :tags="tags" v-model="tags"></tags>
         </div>
 
 
@@ -131,7 +131,8 @@ function(util, ajax, Compressor, tags, subforms, areas, contents){
       _onImagePreview(file){
         let a = this.$refs.contents.$el.querySelector('textarea');
         // ![avatar](http://baidu.com/pic/doge.png)
-        a.value = a.value.substring(0, a.selectionStart) + '\n!['+file.name+']('+file.url+")\n"+ a.value.substr(a.selectionStart);
+        let url = file.url.substr(0,5) == 'blob:'? file.response : file.url;
+        a.value = a.value.substring(0, a.selectionStart) + '\n!['+file.name+']('+url+")\n"+ a.value.substr(a.selectionStart);
         this.ojson.contents[this.$refs.contents.currentPaneI].text = a.value;
       },
 
@@ -207,7 +208,7 @@ function(util, ajax, Compressor, tags, subforms, areas, contents){
 
       _onClickSave(e){
         let ojs = util.copy(this.ojson);
-        let tags = this.$refs["tags"].getData();
+        let tags = this.$refs.tags.confirm();
         ojs.subforms = this.$refs["subforms"].getData();
         ojs.contents = this.$refs["contents"].getData();
         // this.$emit('saved', {});
@@ -219,6 +220,7 @@ function(util, ajax, Compressor, tags, subforms, areas, contents){
             area: this.area,
             date_on: this.date_on
           };
+        if(obj.date_on=="") obj.date_on= '100-01-01';
 
     		ajax.NewClient("/api/app").send("SaveSElem", obj, {loading:true}).then((dat) => {
           this.$emit("onSaved", obj);
@@ -238,9 +240,3 @@ function(util, ajax, Compressor, tags, subforms, areas, contents){
   };
 
 })
-
-function onImageLinkClick(e){
-  // console.log(e);
-  let t = e;
-  console.log(t);
-}

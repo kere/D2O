@@ -68,6 +68,7 @@ func (d *CellView) Page(ctx *fasthttp.RequestCtx) error {
 		return nil
 	}
 
+	// set data
 	src, err := json.Marshal(vo)
 	if err != nil {
 		return err

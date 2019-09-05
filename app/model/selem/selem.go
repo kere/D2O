@@ -15,12 +15,12 @@ const (
 
 // VO 从表
 type VO struct {
-	IID    int64  `json:"iid" skip:"update"`
-	MIID   int64  `json:"m_iid"`   // 同步关联的 master IID
-	DateON string `json:"date_on"` // 事件发生时间
-	UserID int    `json:"user_id" skip:"update"`
-	Tags   []int  `json:"tags"`
-	Area   []int  `json:"area"`
+	IID    int64    `json:"iid" skip:"update"`
+	MIID   int64    `json:"m_iid"`   // 同步关联的 master IID
+	DateON string   `json:"date_on"` // 事件发生时间
+	UserID int      `json:"user_id" skip:"update"`
+	Tags   []string `json:"tags"`
+	Area   []int    `json:"area"`
 	// Reles  []int  `json:"reles"`
 
 	OJSON OJSON `json:"o_json"`

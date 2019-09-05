@@ -46,12 +46,12 @@ drop table users;
 /* Table: formfields                                            */
 /*==============================================================*/
 create table formfields (
-   id                   SERIAL               not null,
+   iid                  INT8                 not null,
    user_id              INT4                 not null,
    name                 VARCHAR(20)          not null,
    itype                INT4                 not null default 0,
    o_json               JSONb                null,
-   constraint PK_FORMFIELDS primary key (id)
+   constraint PK_FORMFIELDS primary key (iid)
 );
 
 /*==============================================================*/
@@ -97,7 +97,7 @@ create table m_elems (
    iid                  INT8                 not null,
    date_on              DATE                 not null,
    area                 INT4[]               null,
-   tags                 INT4[]               null,
+   tags                 TEXT[]               null,
    reles                INT4[]               null,
    o_json               JSONB                null,
    d_json               JSONB                null,
@@ -183,12 +183,12 @@ comment on column objects.reles is
 create table s_elems (
    iid                  INT8                 not null,
    m_iid                INT8                 not null default 0,
-   date_on              DATE                 not null,
+   date_on              DATE                 null,
    user_id              INT4                 not null,
    o_json               JSONB                not null,
    d_json               JSONB                null,
    area                 INT4[]               null,
-   tags                 INT4[]               null,
+   tags                 TEXT[]               null,
    reles                INT4[]               null,
    review_json          JSONb                null default '0',
    status               INT2                 not null default 0,
@@ -240,12 +240,12 @@ m_iid
 /* Table: tags                                                  */
 /*==============================================================*/
 create table tags (
-   id                   SERIAL               not null,
+   iid                  INT8                 not null,
    user_id              INT4                 not null,
    name                 VARCHAR(20)          not null,
    o_json               JSONb                null,
    cata_id              INT4                 not null default 0,
-   constraint PK_TAGS primary key (id)
+   constraint PK_TAGS primary key (iid)
 );
 
 /*==============================================================*/

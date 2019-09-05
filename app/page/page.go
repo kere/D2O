@@ -26,12 +26,14 @@ func Init(pd *httpd.PageData, opt Option) {
 
 	viewport := httpd.NewStrRender(`<meta name="viewport" content="width=device-width, initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0, user-scalable=no">`)
 
-	pd.Head = []httpd.IRender{viewport, httpd.NewJSSrc(requireOpt(), nil)}
+	pd.Head = make([]httpd.IRender, 0, 4)
 	pd.CSS = make([]httpd.IRenderWith, 0, 3)
 	pd.JS = make([]httpd.IRenderWith, 0, 6)
 	if len(pd.Bottom) == 0 {
 		pd.Bottom = make([]httpd.IRender, 0, 4)
 	}
+
+	pd.Head = append(pd.Head, viewport, httpd.NewJSSrc(requireOpt(), nil))
 
 	if !opt.NoPageLoad {
 		pd.Top = []httpd.IRender{httpd.NewStrRender(httpd.PageLoadOpen)}

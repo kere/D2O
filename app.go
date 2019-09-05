@@ -25,9 +25,8 @@ func main() {
 	site := httpd.Site
 	// page
 	site.RegistGet("/", home.NewDefault())
-	cell := home.NewCell()
-	site.RegistGet("/cell/new", cell)
-	site.RegistGet("/cell/edit/:iid", cell)
+	site.RegistGet("/cell/new", home.NewCell(false))
+	site.RegistGet("/cell/edit/:iid", home.NewCell(true))
 	site.RegistGet("/cell/list", home.NewCells())
 	site.RegistGet("/cell/view/:iid", home.NewCellView())
 

@@ -12,9 +12,13 @@ type Cell struct {
 }
 
 // NewCell func
-func NewCell() *Cell {
+func NewCell(isEdit bool) *Cell {
 	d := &Cell{}
-	d.D.Init("编辑信息", "Cell", homeDir)
+	if isEdit {
+		d.D.Init("编辑信息", "Cell", homeDir)
+	} else {
+		d.D.Init("新建信息", "Cell", homeDir)
+	}
 	page.Init(&d.D, page.Option{HasVue: true, HasElement: true})
 
 	return d
