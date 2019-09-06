@@ -26,5 +26,5 @@ func (a *BaseInfo) Base(ctx *fasthttp.RequestCtx, args util.MapData) (interface{
 	// tags := tag.All(0)
 	// fields := formfield.All(0)
 
-	return util.MapData{"fields": baseinfo.FormFields, "areas": baseinfo.Areas, "_data_version": baseinfo.Version}, nil
+	return util.MapData{"formfields": baseinfo.FormFields, "areas": baseinfo.Areas, "_data_version": baseinfo.Version}, nil
 }

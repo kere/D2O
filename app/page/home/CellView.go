@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	"github.com/kere/gno/httpd"
+	"github.com/kere/gno/libs/util"
 	"github.com/valyala/fasthttp"
 	"onqee.visualstudio.com/D2O/app"
 	"onqee.visualstudio.com/D2O/app/model/selem"
@@ -30,7 +31,11 @@ var (
 // Render func
 func (t *viewDataRender) Render(w io.Writer) error {
 	w.Write(bViewHTMLScript)
-	w.Write(t.Src)
+	if len(t.Src) == 0 {
+		w.Write(util.Str2Bytes("null"))
+	} else {
+		w.Write(t.Src)
+	}
 	w.Write(bViewHTML01)
 	w.Write(bViewHTMLScriptEnd)
 	return nil
@@ -57,24 +62,19 @@ func (d *CellView) Page(ctx *fasthttp.RequestCtx) error {
 		return err
 	}
 
-	vo, err := selem.PageData(iid)
+	row, err := selem.PageData(iid)
 	if err != nil {
 		return err
 	}
-	r := d.D.Bottom[0].(*viewDataRender)
 
-	if vo.IID == 0 {
+	r := d.D.Bottom[0].(*viewDataRender)
+	if row.IsEmpty() {
 		r.Src = nil
 		return nil
 	}
 
 	// set data
-	src, err := json.Marshal(vo)
-	if err != nil {
-		return err
-	}
-	r.Src = src
-
+	r.Src, _ = json.Marshal(row)
 	return nil
 }
 

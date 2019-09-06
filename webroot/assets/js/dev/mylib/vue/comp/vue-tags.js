@@ -9,7 +9,7 @@ define('tags', ['util'], function(util){
           @click="showPane($event)"><i v-if="tagstr" class="el-icon-edit"></i><i v-else class="el-icon-plus"></i></el-button>
       </div>
       <div ref="tagpane" class="gno-tagdatas-select hide">
-        <el-input ref="taginput" placeholder="请输入标签，用逗号分隔" v-model="tagstr" size="mini"
+        <el-input ref="taginput" placeholder="请输入标签，用空格分隔" v-model="tagstr" size="mini"
             v-on:keyup.native.enter="confirm">
           <el-button @click="confirm()" slot="append" icon="el-icon-check"></el-button>
         </el-input>
@@ -32,10 +32,11 @@ define('tags', ['util'], function(util){
       getData(){
         if(this.oval == this.tagstr) return this.tags;
 
-        let v = this.tagstr;
+        let v = this.tagstr, a=' ';
         if(!v || v.length==0) return;
-        let s = v.replace(/，/g, ',');
-        this.tags = s.split(',')
+        let s = v.trim().replace(/[,，]/g, a);
+        s = s.replace(/\s{2,}/g, a);
+        this.tags = s.split(a)
         this.$emit('cc', this.tags);
 
         return this.tags;

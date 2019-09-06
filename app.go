@@ -44,7 +44,7 @@ func main() {
 
 func confServer(s *fasthttp.Server, a conf.Conf) {
 	s.MaxConnsPerIP = a.DefaultInt("max_conns_per_ip", 1000)
-	s.Concurrency = a.DefaultInt("concurrency", 2048*2)
+	// s.Concurrency = a.DefaultInt("concurrency", 2048*2)
 	// MaxRequestBodySize 最大body限制
 	s.MaxRequestBodySize = a.DefaultInt("max_request_body_size", 10*1024*1024)
 }

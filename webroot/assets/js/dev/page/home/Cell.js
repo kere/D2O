@@ -29,9 +29,9 @@ require(
         let iid = util.getRouterParam(0);
         let ths = this;
     		ajax.NewClient("/api/info").getData("Base").then((dat) => {
-          this.baseinfo = {tags: ajax.torows(dat.tags), fields: ajax.torows(dat.fields), areas: dat.areas};
+          this.baseinfo = {formfields: dat.formfields, areas: dat.areas};
           if(iid !== 'new'){
-            ajax.NewClient("/api/app").getData("LoadSElem", {iid: iid}, {busy: ths.$el}).then((formdata) => {
+            ajax.NewClient("/api/app").send("LoadSElem", {iid: iid}, {busy: ths.$el}).then((formdata) => {
               ths.formdata = formdata;
             })
           }

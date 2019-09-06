@@ -15,19 +15,19 @@ const (
 
 // VO 从表
 type VO struct {
-	IID    int64    `json:"iid" skip:"update"`
-	MIID   int64    `json:"m_iid"`   // 同步关联的 master IID
-	DateON string   `json:"date_on"` // 事件发生时间
-	UserID int      `json:"user_id" skip:"update"`
-	Tags   []string `json:"tags"`
-	Area   []int    `json:"area"`
+	IID    int64     `json:"iid" skip:"update"`
+	MIID   int64     `json:"m_iid"`                                       // 同步关联的 master IID
+	DateON time.Time `json:"date_on" skipempty:"all" format:"2006-01-02"` // 事件发生时间
+	UserID int       `json:"user_id" skip:"update"`
+	Tags   []string  `json:"tags" skipempty:"all"`
+	Area   []int     `json:"area" skipempty:"all"`
 	// Reles  []int  `json:"reles"`
 
 	OJSON OJSON `json:"o_json"`
 	// ReviewJSON interface{} `json:"review_json" skip:"insert"`
 	// Status    int       `json:"status" skip:"insert"`
 	IType     int       `json:"itype"`
-	UpdatedAt time.Time `json:"updated_at" skip:"insert"`
+	UpdatedAt time.Time `json:"updated_at" type:"autotime"`
 }
 
 // Table string
@@ -75,13 +75,13 @@ func Delete(iid int64) error {
 }
 
 // PageData by iid
-func PageData(iid int64) (VO, error) {
-	vo := VO{}
+func PageData(iid int64) (db.MapRow, error) {
 	row, err := db.NewQuery(Table).Where("iid=?", iid).QueryOne()
 	if err != nil {
-		return vo, err
+		return nil, err
 	}
 
-	db.Row2VO(row, &vo)
-	return vo, nil
+	vo := VO{}
+	db.StrictDBMapRow(row, vo)
+	return row, nil
 }

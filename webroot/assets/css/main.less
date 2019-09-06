@@ -41,6 +41,9 @@
     span.el-tag+span.el-tag{
       margin-left: 10px;
     }
+    a{
+      text-decoration: none;
+    }
   }
 
   .header{
@@ -51,23 +54,9 @@
   }
 
   .subforms{
-    thead{
-      th{
-        text-align: center;
-      }
-    }
-    tbody{
-      th{
-        text-align: right;
-      }
-      td{
-        padding-right: 20px;
-      }
-    }
-    td, th{
-      padding: 5px 10px;
-    }
+
   }
+
   .content{
     font-size: @post-font-size;
     img{
@@ -97,8 +86,21 @@
     }
 
   } // content
-  .gno-ref-links{
+  ul{
     list-style-position: inside;
+  }
+  .data-list{
+    list-style: none;
+    .sub-title{
+      border-bottom: 1px dashed @border-color;
+    }
+  }
+  .gno-ref-links{
+    li{
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
   }
 }
 
@@ -154,6 +156,9 @@
     .gno-form-card{
       margin-bottom: @spacer/2;
     }
+    .gno-form-card + .gno-form-card{
+      margin-top: 20px;
+    }
 
     .gno-card-header{
       background-color: #F5F7FA;
@@ -202,7 +207,7 @@
     }
 
     div.el-upload{
-      margin-bottom: 14px;
+
     }
 
     .el-upload-list--picture-card .el-upload-list__item-actions .el-upload-list__item-delete{

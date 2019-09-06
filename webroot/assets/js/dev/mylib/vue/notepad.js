@@ -57,7 +57,7 @@ function(util, ajax, Compressor, tags, subforms, areas, contents){
 
         <div class="gno-subforms">
           <el-divider>数据</el-divider>
-          <subforms ref="subforms" :formdata="ojson.subforms" :fields="baseinfo.fields"></subforms>
+          <subforms ref="subforms" :formdata="ojson.subforms" :formfields="baseinfo.formfields"></subforms>
         </div>
 
         <div class="gno-tags">
@@ -100,7 +100,7 @@ function(util, ajax, Compressor, tags, subforms, areas, contents){
         tags: [],
         imageList: [],
         date_on: '',
-        ojson: {contents: [{title: '', text: '', lang: 'zh'}], avatar: null, subforms:[], images:[]}
+        ojson: {avatar:null,contents: [{title: '', text: '', lang: 'zh'}], subforms:[], images:[]}
       };
     },
     watch:{
@@ -111,7 +111,7 @@ function(util, ajax, Compressor, tags, subforms, areas, contents){
         this.area = dat.area;
         this.tags = dat.tags;
         this.date_on = util.date2str(dat.date_on, 'date');
-        this.ojson = dat.o_json;
+        this.ojson = JSON.parse(dat.o_json);
 
         this.imageList = this.ojson.images;
         setTimeout(() => {
@@ -124,7 +124,7 @@ function(util, ajax, Compressor, tags, subforms, areas, contents){
         return !this.formdata;
       },
       isAvatar(){
-        return this.ojson.avatar;
+        return this.ojson.avatar && this.ojson.avatar.url;
       }
     },
     methods: {
@@ -211,6 +211,10 @@ function(util, ajax, Compressor, tags, subforms, areas, contents){
         let tags = this.$refs.tags.confirm();
         ojs.subforms = this.$refs["subforms"].getData();
         ojs.contents = this.$refs["contents"].getData();
+        if(!ojs.avatar){
+          ojs.avatar = {name:'',url:''};
+        }
+
         // this.$emit('saved', {});
         let obj = {
             iid: this.iid,
@@ -220,7 +224,11 @@ function(util, ajax, Compressor, tags, subforms, areas, contents){
             area: this.area,
             date_on: this.date_on
           };
-        if(obj.date_on=="") obj.date_on= '100-01-01';
+
+        if(obj.date_on) {
+          obj.date_on = util.str2date(obj.date_on)
+        }
+
 
     		ajax.NewClient("/api/app").send("SaveSElem", obj, {loading:true}).then((dat) => {
           this.$emit("onSaved", obj);

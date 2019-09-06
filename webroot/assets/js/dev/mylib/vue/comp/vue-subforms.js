@@ -3,7 +3,7 @@ define('subforms', ['util'], function(util){
     template:
     `<div class="gno-sub-form">
       <div v-for="(dat, index) in formdata" :key="index" class="gno-form-card">
-        <div class="gno-card-header clearfix">
+        <div class="gno-card-header">
           <el-date-picker class="gno-date-picker" v-model="dat.date_on" type="date"
             formart="yyyy-MM-dd" value-format="yyyy-MM-dd"
             placeholder="日期" size="mini"></el-date-picker>
@@ -13,7 +13,7 @@ define('subforms', ['util'], function(util){
           </el-button>
         </div>
 
-        <div v-for="(item, i) in dat.items" :key="i">
+        <div v-for="(item, i) in dat.items" :key="i" class="clearfix">
           <el-autocomplete size="mini" v-model="item.k" class="el-col el-col-10"
               @select="_onTypeSelect" value-key="name"
               :fetch-suggestions="querySearch" placeholder="数据名称"></el-autocomplete>
@@ -27,13 +27,13 @@ define('subforms', ['util'], function(util){
 
       </div>
 
-      <el-button class="button-new-tag m-t-sm parent-p" size="small" @click="_clickAddForm($event)">
+      <el-button class="button-new-tag parent-p" size="small" @click="_clickAddForm($event)">
         <i class="el-icon-plus"></i>
       </el-button>
     </div>`,
     props : {
       formdata: Array,
-      fields : Array
+      formfields : Array
     },
     watch:{
       formdata(dat){
@@ -72,11 +72,11 @@ define('subforms', ['util'], function(util){
       },
       createFilter(queryString) {
         return (dat) => {
-          return (dat.toLowerCase().indexOf(queryString.toLowerCase()) === 0);
+          return (dat.name.toLowerCase().indexOf(queryString.toLowerCase()) === 0);
         };
       },
       querySearch(queryString, cb){
-        var results = queryString ? this.fields.filter(this.createFilter(queryString)) : this.fields;
+        var results = queryString ? this.formfields.filter(this.createFilter(queryString)) : this.formfields;
         cb(results);
       },
 

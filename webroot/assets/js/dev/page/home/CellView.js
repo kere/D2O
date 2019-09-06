@@ -2,6 +2,14 @@ require.config(requireOpt);
 require(
 	['util', 'marked', 'purify'],
 	function (util, marked, DOMPurify){
+		window.closePageLoad();
+		if(!pagedata){
+			document.title = "没有找到相应的数据";
+			// document.getElementById('headerTitle').innerText = document.title;
+			document.getElementById('headerTitle').innerText = "记录不存在，可能已经被删除了。";
+			return;
+		}
+
 		var tempDiv = document.createElement("span");
 		function HTMLEncode(html) {
 			(tempDiv.textContent != null) ? (tempDiv.textContent = html) : (tempDiv.innerText = html);
@@ -11,12 +19,13 @@ require(
 
     // let iid = util.getRouterParam(0);
 		let dat = pagedata;
-
+		dat.o_json = JSON.parse(dat.o_json);
 
 		let contents = dat.o_json.contents;
 		let content = contents[0];
 		document.getElementById('headerTitle').innerText = DOMPurify.sanitize(content.title);
 		document.getElementById('content').innerHTML = DOMPurify.sanitize(marked(content.text, {headerIds: false}));
+		document.title = content.title;
 
 
 		// subforms -------
@@ -38,7 +47,7 @@ require(
 
 		for (let i = 0; i < subforms.length; i++) {
 			form = subforms[i];
-			formsHTML = '<table class="border col-xs-12 col-sm-6"><thead>'
+			formsHTML = '<ul class="data-list m-b">'
 
 			th1 = false;th2 = false;
 			if(form.date_on && form.date_on.length>0){
@@ -47,53 +56,49 @@ require(
 			if(form.title && form.title.length>0){
 				th2 = HTMLEncode(form.title);
 			}
-			if(th1 && th2){
-				formsHTML += '<th class="date_on col1">'+th1+'</th>';
-				formsHTML += '<th class="sub-title col1">'+th2+'</th>';
-			}else{
-				formsHTML += '<tr><th class="col1">数据名称</th><th>数值</th></tr>';
+			if(th1 || th2){
+				formsHTML += '<li class="sub-title">';
+				if(th1)
+					formsHTML += '<strong class="date_on m-r">' + th1 + '</strong>';
+				if(th2)
+					formsHTML += '<strong class="title">' + th2 + '</strong>';
+				formsHTML += '</li>'
 			}
-			formsHTML += '</tr></thead>'
 
 			// items
 			let isOK = false;
 			items = form.items;
 			for (let k = 0; k < items.length; k++) {
 				if(!items[k]) continue
-				formsHTML += '<tr><th class="col1">' +  HTMLEncode(items[k].k) + '</th><td>' + HTMLEncode(items[k].v) + '</td></tr>';
+				formsHTML += '<li><strong class="m-r-sm">' +  HTMLEncode(items[k].k) + ':</strong><span>' + HTMLEncode(items[k].v) + '</span></li>';
 				isOK = true;
 			}
-			formsHTML += '</table>';
+			formsHTML += '</ul>';
 
 			if(isOK){
 				html += formsHTML;
 			}
 		}
 
-		html += '<h3>参考连接：</h3><ul class="gno-ref-links">';
-		for (var i = 0; i < alllinks.length; i++) {
-			html += DOMPurify.sanitize('<li><a href="'+alllinks[i].v+'">' + alllinks[i].v + '</a></li>');
+		if(alllinks.length>0){
+			html += '<h3>参考连接：</h3><ul class="gno-ref-links">';
+			for (var i = 0; i < alllinks.length; i++) {
+				html += DOMPurify.sanitize('<li><a href="'+alllinks[i].v+'">' + alllinks[i].v + '</a></li>');
+			}
+			html += '</ul>';
 		}
-		html += '</ul>';
 		document.getElementById('subforms').innerHTML = html;
 
 
-		// images -------
-		// let images = dat.o_json.images;
-		// html = '';
-		// for (let i = 0; i < images.length; i++) {
-		// 	html += '<img src="'+images[i].url+'"/>'
-		// }
-		// document.getElementById('images').innerHTML = html;
-
 		// tags -------
-		html = '';
-		var tags = dat.tags;
-		for (var i = 0; i < tags.length; i++) {
-			html += '<span class="el-tag el-tag--light"><a href="">' + HTMLEncode(tags[i]) + '</a></span>';
+		if(dat.tags){
+			html = '';
+			var tags = dat.tags;
+			for (var i = 0; i < tags.length; i++) {
+				html += '<span class="el-tag el-tag--light"><a href="">' + HTMLEncode(tags[i]) + '</a></span>';
+			}
+			document.getElementById('tags').innerHTML = html;
 		}
-		document.getElementById('tags').innerHTML = html;
 
-		window.closePageLoad();
 	}
 );
