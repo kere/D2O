@@ -21,6 +21,7 @@ func main() {
 	flag.Parse()
 	flag.StringVar(&cf, "conf", "app/app.conf", "conf file name")
 	httpd.Init(cf)
+	httpd.DisablePageCache = true
 
 	site := httpd.Site
 	// page

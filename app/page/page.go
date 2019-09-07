@@ -13,11 +13,12 @@ var (
 
 // Option page
 type Option struct {
-	HasElement bool
-	HasVue     bool
-	HasHeader  bool
-	HasFooter  bool
-	NoPageLoad bool
+	HasElement  bool
+	HasVue      bool
+	HasHeader   bool
+	HasFooter   bool
+	NoPageLoad  bool
+	NoRequireJS bool
 }
 
 // Init page
@@ -50,7 +51,10 @@ func Init(pd *httpd.PageData, opt Option) {
 	}
 
 	pd.CSS = append(pd.CSS, httpd.NewCSS("main.css"))
-	pd.JS = append(pd.JS, httpd.RequireJS(pd, requireJS()))
+
+	if !opt.NoRequireJS {
+		pd.JS = append(pd.JS, httpd.RequireJS(pd, requireJS()))
+	}
 
 	pd.JSPosition = httpd.JSPositionBottom
 
@@ -62,7 +66,7 @@ func Init(pd *httpd.PageData, opt Option) {
 		pd.Bottom = append(pd.Bottom, httpd.NewStrRender(httpd.PageLoadClose))
 	}
 	if opt.HasFooter {
-		pd.Bottom = append(pd.Bottom, httpd.NewTemplate("_bottom.htm"))
+		pd.Bottom = append(pd.Bottom, httpd.NewTemplate("_footer.htm"))
 	}
 
 	// pd.CacheOption.PageMode = httpd.CacheModePagePath
@@ -118,3 +122,21 @@ func requireOpt() string {
 
 	return rqs
 }
+
+// EchojsRender 延迟加载
+var EchojsRender = httpd.NewStrRender(`<script type="text/javascript">
+  !function(t,e){"function"==typeof define&&define.amd?define(function(){return e(t)}):"object"==typeof exports?module.exports=e:t.echo=e(t)}(this,function(t){"use strict";var e,n,o,r,c,a={},u=function(){},d=function(t){return null===t.offsetParent},l=function(t,e){if(d(t))return!1;var n=t.getBoundingClientRect();return n.right>=e.l&&n.bottom>=e.t&&n.left<=e.r&&n.top<=e.b},i=function(){(r||!n)&&(clearTimeout(n),n=setTimeout(function(){a.render(),n=null},o))};return a.init=function(n){n=n||{};var d=n.offset||0,l=n.offsetVertical||d,f=n.offsetHorizontal||d,s=function(t,e){return parseInt(t||e,10)};e={t:s(n.offsetTop,l),b:s(n.offsetBottom,l),l:s(n.offsetLeft,f),r:s(n.offsetRight,f)},o=s(n.throttle,250),r=n.debounce!==!1,c=!!n.unload,u=n.callback||u,a.render(),document.addEventListener?(t.addEventListener("scroll",i,!1),t.addEventListener("load",i,!1)):(t.attachEvent("onscroll",i),t.attachEvent("onload",i))},a.render=function(n){for(var o,r,d=(n||document).querySelectorAll("[data-echo], [data-echo-background]"),i=d.length,f={l:0-e.l,t:0-e.t,b:(t.innerHeight||document.documentElement.clientHeight)+e.b,r:(t.innerWidth||document.documentElement.clientWidth)+e.r},s=0;i>s;s++)r=d[s],l(r,f)?(c&&r.setAttribute("data-echo-placeholder",r.src),null!==r.getAttribute("data-echo-background")?r.style.backgroundImage="url("+r.getAttribute("data-echo-background")+")":r.src!==(o=r.getAttribute("data-echo"))&&(r.src=o),c||(r.removeAttribute("data-echo"),r.removeAttribute("data-echo-background")),u(r,"load")):c&&(o=r.getAttribute("data-echo-placeholder"))&&(null!==r.getAttribute("data-echo-background")?r.style.backgroundImage="url("+o+")":r.src=o,r.removeAttribute("data-echo-placeholder"),u(r,"unload"));i||a.detach()},a.detach=function(){document.removeEventListener?t.removeEventListener("scroll",i):t.detachEvent("onscroll",i),clearTimeout(n)},a});
+
+	  echo.init({ offset: 100, throttle: 250, unload: false,
+	    callback: function (element, op) {
+	      // console.log(element, 'has been', op + 'ed')
+	    }
+	  });
+
+</script>
+`)
+
+// FooterViewEndRender render
+var FooterViewEndRender = httpd.NewStrRender(` <footer id="page-footer">
+  ------- <small>end</small> -------
+</footer>`)

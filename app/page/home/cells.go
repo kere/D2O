@@ -2,7 +2,6 @@ package home
 
 import (
 	"github.com/kere/gno/httpd"
-	"github.com/valyala/fasthttp"
 	"onqee.visualstudio.com/D2O/app/page"
 )
 
@@ -20,10 +19,10 @@ func NewCells() *Cells {
 	return d
 }
 
-// Page page
-func (d *Cells) Page(ctx *fasthttp.RequestCtx) error {
-	return nil
-}
+// // Page page
+// func (d *Cells) Page(ctx *fasthttp.RequestCtx) error {
+// 	return nil
+// }
 
 // // Auth page
 // func (d *Cells) Auth(ctx *fasthttp.RequestCtx) error {

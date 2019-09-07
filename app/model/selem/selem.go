@@ -65,7 +65,7 @@ type SubForm struct {
 
 // FormItem form
 type FormItem struct {
-	Label string `json:"k"`
+	Key   string `json:"k"`
 	Value string `json:"v"`
 }
 

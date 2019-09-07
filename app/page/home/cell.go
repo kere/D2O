@@ -2,7 +2,6 @@ package home
 
 import (
 	"github.com/kere/gno/httpd"
-	"github.com/valyala/fasthttp"
 	"onqee.visualstudio.com/D2O/app/page"
 )
 
@@ -24,11 +23,11 @@ func NewCell(isEdit bool) *Cell {
 	return d
 }
 
-// Page page
-func (d *Cell) Page(ctx *fasthttp.RequestCtx) error {
-	// time.Sleep(3 * time.Second)
-	return nil
-}
+// // Page page
+// func (d *Cell) Page(ctx *fasthttp.RequestCtx) error {
+// 	// time.Sleep(3 * time.Second)
+// 	return nil
+// }
 
 // // Auth page
 // func (d *Cell) Auth(ctx *fasthttp.RequestCtx) error {
