@@ -109,6 +109,8 @@ var Areas = []Area{
 	Area{84, "爱尔兰", "Ireland"},
 	Area{85, "以色列", "Israel"},
 	Area{86, "意大利", "Italy"},
+
+	Area{500, "伊斯兰国", "ISIS"},
 	//J编辑
 
 	Area{87, "牙买加", "Jamaica"},

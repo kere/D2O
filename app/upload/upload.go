@@ -2,20 +2,24 @@ package upload
 
 import (
 	"fmt"
-	"math"
-	"time"
+	"mime/multipart"
 
 	"github.com/kere/gno/db"
+	"github.com/kere/gno/httpd"
 	"github.com/kere/gno/libs/util"
+	"github.com/valyala/bytebufferpool"
 	"github.com/valyala/fasthttp"
+	"onqee.visualstudio.com/Flows/app/model"
+)
+
+var (
+	// StoreDir 储存目录
+	StoreDir = "webroot/upload"
 )
 
 const (
 	// Table string
 	Table = "images"
-
-	// StoreDir 储存目录
-	StoreDir = "webroot/u/m/"
 )
 
 // Image class
@@ -32,32 +36,35 @@ func (m *Image) Auth(ctx *fasthttp.RequestCtx) error {
 	return nil
 }
 
-// Success f
-func (m *Image) Success(ctx *fasthttp.RequestCtx, token, ext, folder string, now time.Time) error {
-	name := token + ext
-	iid := util.IID32(name)
-	row := db.MapRow{
-		"iid":     iid,
-		"name":    name,
-		"date_on": now.Format("200601"),
+var filepool bytebufferpool.Pool
+
+// Do upload
+func (m *Image) Do(ctx *fasthttp.RequestCtx, fileHeader *multipart.FileHeader) error {
+	name := ctx.FormValue(model.FieldName)
+
+	fileName, err := httpd.DoUpload(util.Bytes2Str(name), StoreDir, fileHeader)
+	if err != nil {
+		return err
 	}
-	_, err := db.CreateIfNotFound(Table, row, "iid=?", iid)
+
+	folderB := util.Str2Bytes(StoreDir)
+	folderB = folderB[7:]
+	iid := util.IID32(fileName)
+	row := db.MapRow{
+		"iid":  iid,
+		"name": fileName,
+		"dir":  util.Bytes2Str(folderB),
+	}
+	_, err = db.CreateIfNotFound(Table, row, "iid=?", iid)
 	if err != nil {
 		return err
 	}
 
 	ctx.WriteString(fmt.Sprint(iid))
 	ctx.WriteString(",")
-	folderB := util.Str2Bytes(folder)
-	ctx.Write(folderB[7:])
+	ctx.Write(folderB)
 	ctx.WriteString("/")
-	ctx.WriteString(name)
+	ctx.WriteString(fileName)
 
 	return nil
-}
-
-// StoreDir f
-func (m *Image) StoreDir(now time.Time) string {
-	n := math.Ceil(float64(now.Month()) / 3)
-	return StoreDir + fmt.Sprint(n)
 }

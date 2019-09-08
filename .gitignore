@@ -24,7 +24,6 @@ _testmain.go
 *.prof
 *.log
 *.test
-build
 app.run
 debug.test
 debug
@@ -34,4 +33,5 @@ debug
 *.lib
 
 app.conf
+app.my.conf
 webroot/u

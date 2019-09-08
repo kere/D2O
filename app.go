@@ -24,6 +24,9 @@ func main() {
 	httpd.DisablePageCache = true
 
 	site := httpd.Site
+	c := site.C.GetConf("site")
+	upload.StoreDir = "webroot" + c.DefaultString("upload_img_dir", "/upload")
+
 	// page
 	site.RegistGet("/", home.NewDefault())
 	site.RegistGet("/cell/new", home.NewCell(false))
@@ -38,7 +41,7 @@ func main() {
 	// upload
 	site.RegistUpload("/upload/image", upload.NewImage())
 
-	confServer(site.Server, site.C.GetConf("site"))
+	confServer(site.Server, c)
 
 	site.Start()
 }

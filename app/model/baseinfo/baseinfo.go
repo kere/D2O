@@ -7,6 +7,8 @@ var (
 	//FormFields 数据字段名称
 	FormFields = []FormFieldItem{
 		FormFieldItem{"参考连接", 20},
+		FormFieldItem{"作者", 0},
+		FormFieldItem{"作者", 0},
 	}
 )
 

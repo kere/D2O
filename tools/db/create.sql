@@ -1,28 +1,18 @@
-drop index iformfields_usr;
-
-drop table formfields;
-
 drop table images;
 
-drop index i_mdatas_mid;
+drop index imele_miid;
 
-drop table m_datas;
+drop index imele_reles;
 
-drop index i_mele_dateon;
+drop index imele_tags;
 
-drop index i_mele_reles;
-
-drop index i_mele_tags;
-
-drop index i_mele_area;
+drop index imele_area;
 
 drop table m_elems;
 
 drop index i_notice;
 
 drop table notices;
-
-drop table objects;
 
 drop index i_sele_miid;
 
@@ -43,51 +33,15 @@ drop index u_uid;
 drop table users;
 
 /*==============================================================*/
-/* Table: formfields                                            */
-/*==============================================================*/
-create table formfields (
-   iid                  INT8                 not null,
-   user_id              INT4                 not null,
-   name                 VARCHAR(20)          not null,
-   itype                INT4                 not null default 0,
-   o_json               JSONb                null,
-   constraint PK_FORMFIELDS primary key (iid)
-);
-
-/*==============================================================*/
-/* Index: iformfields_usr                                       */
-/*==============================================================*/
-create  index iformfields_usr on formfields (
-user_id
-);
-
-/*==============================================================*/
 /* Table: images                                                */
 /*==============================================================*/
 create table images (
    iid                  INT8                 not null,
    name                 VARCHAR(50)          not null,
-   date_on              INT4                 not null,
    status               INT4                 not null default 0,
+   dir                  VARCHAR(20)          not null,
+   created_at           TIMESTAMP WITH TIME ZONE not null default CURRENT_TIMESTAMP,
    constraint PK_IMAGES primary key (iid)
-);
-
-/*==============================================================*/
-/* Table: m_datas                                               */
-/*==============================================================*/
-create table m_datas (
-   m_iid                INT8                 not null,
-   lang                 INT4                 not null,
-   title                VARCHAR(200)         not null,
-   text                 TEXT                 not null
-);
-
-/*==============================================================*/
-/* Index: i_mdatas_mid                                          */
-/*==============================================================*/
-create  index i_mdatas_mid on m_datas (
-m_iid,
-lang
 );
 
 /*==============================================================*/
@@ -95,45 +49,58 @@ lang
 /*==============================================================*/
 create table m_elems (
    iid                  INT8                 not null,
-   date_on              DATE                 not null,
+   m_iid                INT8                 not null default 0,
+   date_on              DATE                 null,
+   user_id              INT4                 not null,
+   o_json               JSONB                not null,
+   d_json               JSONB                null,
    area                 INT4[]               null,
    tags                 TEXT[]               null,
    reles                INT4[]               null,
-   o_json               JSONB                null,
-   d_json               JSONB                null,
-   itype                INT4                 null default 0,
+   review_json          JSONb                null default '0',
+   status               INT2                 not null default 0,
+   itype                INT2                 not null default 0,
+   updated_at           TIMESTAMP WITH TIME ZONE not null default CURRENT_TIMESTAMP,
    constraint PK_M_ELEMS primary key (iid)
 );
+
+comment on table m_elems is
+'内容主表
+';
+
+comment on column m_elems.m_iid is
+'主表ID，如果没有，默认为0';
 
 comment on column m_elems.reles is
 '相关联IDs';
 
 /*==============================================================*/
-/* Index: i_mele_area                                           */
+/* Index: imele_area                                            */
 /*==============================================================*/
-create  index i_mele_area on m_elems using GIN (
+create  index imele_area on m_elems using GIN (
 area
 );
 
 /*==============================================================*/
-/* Index: i_mele_tags                                           */
+/* Index: imele_tags                                            */
 /*==============================================================*/
-create  index i_mele_tags on m_elems using GIN (
+create  index imele_tags on m_elems using GIN (
 tags
 );
 
 /*==============================================================*/
-/* Index: i_mele_reles                                          */
+/* Index: imele_reles                                           */
 /*==============================================================*/
-create  index i_mele_reles on m_elems using GIN (
-reles
+create  index imele_reles on m_elems using GIN (
+rele
 );
 
 /*==============================================================*/
-/* Index: i_mele_dateon                                         */
+/* Index: imele_miid                                            */
 /*==============================================================*/
-create  index i_mele_dateon on m_elems (
-date_on
+create  index imele_miid on m_elems (
+user_id,
+m_iid
 );
 
 /*==============================================================*/
@@ -154,28 +121,6 @@ create  index i_notice on notices (
 user_id,
 created_at
 );
-
-/*==============================================================*/
-/* Table: objects                                               */
-/*==============================================================*/
-create table objects (
-   iid                  INT8                 not null,
-   text                 TEXT                 not null,
-   itype                INT4                 not null default 0,
-   reles                INT4[]               null,
-   o_json               JSONb                not null,
-   created_at           TIMESTAMP WITH TIME ZONE not null default CURRENT_TIMESTAMP,
-   constraint PK_OBJECTS primary key (iid)
-);
-
-comment on table objects is
-'itype:
-1 people
-2 country
-';
-
-comment on column objects.reles is
-'相关联IDs';
 
 /*==============================================================*/
 /* Table: s_elems                                               */

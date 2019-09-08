@@ -96,7 +96,7 @@ func (t *CellViewRender) RenderWithData(w io.Writer, data interface{}) error {
 	}
 	c1 := contents[0]
 
-	w.Write(util.Str2Bytes(`<article class="gno-cell-view container clearfix"><header id="header" class="header m-b-md"><h1 id="headerTitle">`))
+	w.Write(util.Str2Bytes(`<article id="articleMain" class="gno-cell-view container clearfix"><header id="header" class="header m-b-md"><h1 id="headerTitle">`))
 
 	// title
 	w.Write(util.Str2Bytes(template.HTMLEscapeString(c1.Title)))
@@ -115,6 +115,17 @@ func (t *CellViewRender) RenderWithData(w io.Writer, data interface{}) error {
 	renderArticleData(w, row, ojson.SubForms)
 
 	w.Write(util.Str2Bytes("</article>\n")) // subforms end
+
+	w.Write(util.Str2Bytes(`<script>
+		let __imgs = document.querySelectorAll('#articleMain img');
+		for (let i=0;i<__imgs.length;i++) {
+			if(!__imgs[i].alt) continue;
+			let span=document.createElement("span");
+			span.className = 'img-desc';
+			span.innerText = '-- ' + __imgs[i].alt + ' --';
+			__imgs[i].parentNode.insertBefore(span, __imgs[i].nextSibling);
+		}
+		</script>`)) // subforms end
 
 	return nil
 }
@@ -227,7 +238,9 @@ func renderArticleFooter(w io.Writer, row db.MapRow) {
 	dateon := row.String(model.FieldDateON)
 	author := "someone"
 	w.Write(util.Str2Bytes(`<footer class="article-footer"><p class="date_on">`))
-	w.Write(util.Str2Bytes(dateon)[:10])
+	if len(dateon) > 10 {
+		w.Write(util.Str2Bytes(dateon)[:10])
+	}
 	w.Write(util.Str2Bytes(`</p><p class="author">`))
 	w.Write(util.Str2Bytes(author))
 	w.Write(util.Str2Bytes(`</p></footer>`))

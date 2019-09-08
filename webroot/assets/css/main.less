@@ -10,6 +10,20 @@
 @post-font-size: 18px;
 @post-line-height: 28px;
 
+.content-langs{
+  text-align: right;
+  line-height: 16px;
+  span{
+    font-size: 12px;
+    padding: 2px 10px;
+    padding-bottom: 0;
+    &.current-pane{
+      border: 1px solid @border-color;
+      border-bottom: none;
+    }
+  }
+}
+
 .gno-cell-list{
   .list-item{
     padding: 10px 20px;
@@ -26,9 +40,15 @@
 .gno-notepad{
   .gno-dtypes{
     text-align: center;
-    .el-radio-button__inner{
-      padding-left: 30px;
-      padding-right: 30px;
+    .el-radio-group{
+      display: flex;
+      justify-content:center;
+      label{
+        width: 100%;
+      }
+    }
+    span.el-radio-button__inner{
+      width: 100%;
     }
   }
 

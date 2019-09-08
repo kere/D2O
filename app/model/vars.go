@@ -1,6 +1,8 @@
 package model
 
 const (
+	// FieldName string
+	FieldName = "name"
 	// FieldReles string
 	FieldReles = "reles"
 	// FieldTags string

@@ -13,10 +13,11 @@ function(util, ajax, Compressor, tags, subforms, areas, contents){
     template:
     `<div class="gno-notepad p-a">
         <div class="gno-dtypes m-b">
-          <el-radio-group v-model="itype">
-            <el-radio-button :label="1">事件</el-radio-button>
-            <el-radio-button :label="2">人物</el-radio-button>
-            <el-radio-button :label="3">物件</el-radio-button>
+          <el-radio-group v-model="itype" size="small">
+            <el-radio-button :label="0">观点</el-radio-button>
+            <el-radio-button :label="5">事件</el-radio-button>
+            <el-radio-button :label="6">事物</el-radio-button>
+            <el-radio-button :label="7">人物</el-radio-button>
           </el-radio-group>
         </div>
 
@@ -69,7 +70,7 @@ function(util, ajax, Compressor, tags, subforms, areas, contents){
         <div class="gno-box text-right">
           <hr class="line m-b-md"></hr>
           <el-alert v-show="isSuccess" title="成功保存数据" type="success" center show-icon :closable="false"></el-alert>
-          <el-alert v-show="isError" title="数据保存失败" type="error" :description="errMessage" show-icon></el-alert>
+          <el-alert v-show="isError" :title="errMessage" type="error" show-icon @close="clearError"></el-alert>
           <hr v-show="isSuccess || isError" class="line m-b-md"></hr>
 
           <button @click="_onClickSave" type="button" class="gno-btn-min-w el-button el-button--primary el-button--mini">
@@ -95,12 +96,17 @@ function(util, ajax, Compressor, tags, subforms, areas, contents){
         isError : false,
         errMessage: '',
         iid : 0,
-        itype: 1,
+        itype: 0,
         area: [],
         tags: [],
         imageList: [],
         date_on: '',
-        ojson: {avatar:null,contents: [{title: '', text: '', lang: 'zh'}], subforms:[], images:[]}
+        ojson: {
+          avatar:null,
+          contents: [{title: '', text: '', lang: 'zh'}, {title: '', text: '', lang: 'en'}],
+          subforms:[],
+          images:[]
+        }
       };
     },
     watch:{
@@ -132,12 +138,8 @@ function(util, ajax, Compressor, tags, subforms, areas, contents){
         let a = this.$refs.contents.$el.querySelector('textarea');
         // ![avatar](http://baidu.com/pic/doge.png)
         let url = file.url.substr(0,5) == 'blob:'? file.response : file.url;
-        a.value = a.value.substring(0, a.selectionStart) + '\n!['+file.name+']('+url+")\n"+ a.value.substr(a.selectionStart);
+        a.value = a.value.substring(0, a.selectionStart) + '\n![]('+url+")\n"+ a.value.substr(a.selectionStart);
         this.ojson.contents[this.$refs.contents.currentPaneI].text = a.value;
-      },
-
-      _onImageLink(e){
-        console.log(e);
       },
 
       _onImageRemove(file, fileList) {
@@ -145,7 +147,6 @@ function(util, ajax, Compressor, tags, subforms, areas, contents){
         let i = util.findIndex("name", file.name, this.imageList);
         if(i < 0) return;
         this.imageList.splice(i, 1);
-
       },
 
       _onImgSuccess(arr, file){
@@ -206,6 +207,14 @@ function(util, ajax, Compressor, tags, subforms, areas, contents){
         });
       },
 
+      clearError(){
+        this.isError = false;
+        this.errMessage = '';
+      },
+      setError(msg){
+        this.isError = true;
+        this.errMessage = msg;
+      },
       _onClickSave(e){
         let ojs = util.copy(this.ojson);
         let tags = this.$refs.tags.confirm();
@@ -213,6 +222,11 @@ function(util, ajax, Compressor, tags, subforms, areas, contents){
         ojs.contents = this.$refs["contents"].getData();
         if(!ojs.avatar){
           ojs.avatar = {name:'',url:''};
+        }
+
+        if(!ojs.contents[0].title){
+          this.setError('标题不能为空')
+          return;
         }
 
         // this.$emit('saved', {});
@@ -229,11 +243,10 @@ function(util, ajax, Compressor, tags, subforms, areas, contents){
           obj.date_on = util.str2date(obj.date_on)
         }
 
-
     		ajax.NewClient("/api/app").send("SaveSElem", obj, {loading:true}).then((dat) => {
           this.$emit("onSaved", obj);
           this.isSuccess = true;
-          this.isError = false;
+          this.clearError();
           let cls = this;
           setTimeout(() => {
             cls.isSuccess = false;
@@ -241,7 +254,7 @@ function(util, ajax, Compressor, tags, subforms, areas, contents){
 
     	  }).catch((err) =>{
           this.isError = true;
-          this.errMessage = err;
+          this.errMessage = err.toString();
         })
       }
     }
