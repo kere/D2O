@@ -14,11 +14,19 @@ import (
 	"github.com/valyala/bytebufferpool"
 	"github.com/valyala/fasthttp"
 	blackfriday "gopkg.in/russross/blackfriday.v2"
+
+	// "github.com/kere/blackfriday"
 	"onqee.visualstudio.com/D2O/app"
 	"onqee.visualstudio.com/D2O/app/model"
 	"onqee.visualstudio.com/D2O/app/model/selem"
 	"onqee.visualstudio.com/D2O/app/page"
 )
+
+var policy = bluemonday.UGCPolicy()
+
+func init() {
+	policy.AllowAttrs("data-echo").OnElements("img")
+}
 
 // CellView page class
 type CellView struct {
@@ -31,9 +39,8 @@ func NewCellView() *CellView {
 	d.D.Init("信息", "CellView", homeDir)
 
 	page.Init(&d.D, page.Option{HasHeader: true, HasFooter: false, NoRequireJS: true, NoPageLoad: true})
-	d.D.Top = append(d.D.Top, page.EchojsRender)
-	d.D.Bottom = append(d.D.Bottom, page.FooterViewEndRender)
-	d.D.Body = []httpd.IRenderWithData{&CellViewRender{}}
+	d.D.Bottom = append(d.D.Bottom, page.FooterViewEndRender, page.EchojsRender)
+	d.D.Body = append(d.D.Body, &CellViewRender{})
 
 	return d
 }
@@ -89,16 +96,15 @@ func (t *CellViewRender) RenderWithData(w io.Writer, data interface{}) error {
 	}
 	c1 := contents[0]
 
-	w.Write(util.Str2Bytes(`<article class="gno-cell-view container"><header id="header" class="header m-b-md"><h1 id="headerTitle">`))
+	w.Write(util.Str2Bytes(`<article class="gno-cell-view container clearfix"><header id="header" class="header m-b-md"><h1 id="headerTitle">`))
 
 	// title
-	h := bluemonday.UGCPolicy().SanitizeBytes(util.Str2Bytes(c1.Title))
-	w.Write(h)
+	w.Write(util.Str2Bytes(template.HTMLEscapeString(c1.Title)))
 	w.Write(util.Str2Bytes("</h1></header>\n")) // header end
 
 	// text
 	unsafe := blackfriday.Run(util.Str2Bytes(c1.Text))
-	h = bluemonday.UGCPolicy().SanitizeBytes(unsafe)
+	h := policy.SanitizeBytes(unsafe)
 	w.Write(util.Str2Bytes(`<div id="content" class="content m-b-md">`))
 	w.Write(h)
 	w.Write(util.Str2Bytes("</div>\n")) // header end
@@ -106,7 +112,7 @@ func (t *CellViewRender) RenderWithData(w io.Writer, data interface{}) error {
 	// subforms
 	//   <div id="subforms" class="subforms m-b-md">{* .Subforms *}</div>
 	w.Write(util.Str2Bytes(`<div id="subforms" class="subforms m-b-md">`))
-	renderCellViewPart(w, ojson.SubForms, row.Strings(model.FieldTags))
+	renderArticleData(w, row, ojson.SubForms)
 
 	w.Write(util.Str2Bytes("</article>\n")) // subforms end
 
@@ -125,7 +131,8 @@ func tagsRender(w io.Writer, tags []string) {
 	w.Write(util.Str2Bytes(`</div>`))
 }
 
-func renderCellViewPart(w io.Writer, subforms []selem.SubForm, tags []string) {
+func renderArticleData(w io.Writer, row db.MapRow, subforms []selem.SubForm) {
+	tags := row.Strings(model.FieldTags)
 	// subforms = dat.o_json.subforms, html='', form, items, th1, th2;
 	alllinks := make([]selem.FormItem, 0, 10)
 	l := len(subforms)
@@ -202,7 +209,7 @@ func renderCellViewPart(w io.Writer, subforms []selem.SubForm, tags []string) {
 
 	l = len(alllinks)
 	if l > 0 {
-		w.Write(util.Str2Bytes(`<h3>参考连接：</h3><ul class="gno-ref-links">`))
+		w.Write(util.Str2Bytes(`<h3>参考连接：</h3><ul class="gno-ref-links m-b-md">`))
 		for i := 0; i < l; i++ {
 			w.Write(util.Str2Bytes(`<li><a href="`))
 			w.Write(util.Str2Bytes(alllinks[i].Value))
@@ -212,6 +219,18 @@ func renderCellViewPart(w io.Writer, subforms []selem.SubForm, tags []string) {
 		}
 		w.Write(util.Str2Bytes("</ul>"))
 	}
+
+	renderArticleFooter(w, row)
+}
+
+func renderArticleFooter(w io.Writer, row db.MapRow) {
+	dateon := row.String(model.FieldDateON)
+	author := "someone"
+	w.Write(util.Str2Bytes(`<footer class="article-footer"><p class="date_on">`))
+	w.Write(util.Str2Bytes(dateon)[:10])
+	w.Write(util.Str2Bytes(`</p><p class="author">`))
+	w.Write(util.Str2Bytes(author))
+	w.Write(util.Str2Bytes(`</p></footer>`))
 }
 
 // // Auth page
