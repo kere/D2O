@@ -29,6 +29,8 @@ func main() {
 
 	// page
 	site.RegistGet("/", home.NewDefault())
+	site.RegistGet("/login", home.NewLogin())
+
 	site.RegistGet("/cell/new", home.NewCell(false))
 	site.RegistGet("/cell/edit/:iid", home.NewCell(true))
 	site.RegistGet("/cell/list", home.NewCells())

@@ -16,7 +16,7 @@ import (
 	blackfriday "gopkg.in/russross/blackfriday.v2"
 
 	// "github.com/kere/blackfriday"
-	"onqee.visualstudio.com/D2O/app"
+
 	"onqee.visualstudio.com/D2O/app/model"
 	"onqee.visualstudio.com/D2O/app/model/selem"
 	"onqee.visualstudio.com/D2O/app/page"
@@ -55,7 +55,7 @@ type CellViewData struct {
 
 // Page page
 func (d *CellView) Page(ctx *fasthttp.RequestCtx) (interface{}, error) {
-	v := ctx.UserValue(app.FieldIID).(string)
+	v := ctx.UserValue(model.FieldIID).(string)
 	iid, err := strconv.ParseInt(v, 10, 64)
 	if err != nil {
 		return nil, err

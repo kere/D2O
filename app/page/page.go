@@ -1,7 +1,6 @@
 package page
 
 import (
-	"fmt"
 	"io/ioutil"
 
 	"github.com/kere/gno/httpd"
@@ -87,11 +86,12 @@ const (
   baseUrl : "/assets/js/",
   paths: {
     echarts : "echarts.min",
-    util : "%s/mylib/util",
-    zepto : "%s/mylib/zepto",
-    accto : "%s/mylib/accto",
-    tool : "%s/mylib/tool",
-    ajax : "%s/mylib/ajax"
+    preparecookie : "dev/mylib/preparecookie",
+    util : "dev/mylib/util",
+    zepto : "dev/mylib/zepto",
+    accto : "dev/mylib/accto",
+    tool : "dev/mylib/tool",
+    ajax : "dev/mylib/ajax"
   }
 }`
 	requireOptStrPro = `{waitSeconds:15,baseUrl:"/assets/js/",paths:{echarts:"echarts.min"}}`
@@ -115,7 +115,7 @@ func requireJS() []byte {
 func requireOpt() string {
 	if rqs == "" {
 		if httpd.RunMode == httpd.ModeDev {
-			rqs = fmt.Sprintf(requireOptStrDev, httpd.ModeDev, httpd.ModeDev, httpd.ModeDev, httpd.ModeDev, httpd.ModeDev)
+			rqs = requireOptStrDev
 		} else {
 			rqs = requireOptStrPro
 		}

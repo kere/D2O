@@ -6,7 +6,7 @@ import (
 	"github.com/kere/gno/db"
 	"github.com/kere/gno/libs/util"
 	"github.com/valyala/fasthttp"
-	"onqee.visualstudio.com/D2O/app"
+	"onqee.visualstudio.com/D2O/app/model"
 	"onqee.visualstudio.com/D2O/app/model/selem"
 )
 
@@ -31,7 +31,7 @@ func (a *App) PageData(ctx *fasthttp.RequestCtx, args util.MapData) (interface{}
 
 // SElemByIID get SElem
 func (a *App) SElemByIID(ctx *fasthttp.RequestCtx, args util.MapData) (interface{}, error) {
-	iid := args.Int64(app.FieldIID)
+	iid := args.Int64(model.FieldIID)
 	return selem.PageData(iid)
 }
 
@@ -45,7 +45,7 @@ func (a *App) SElems(ctx *fasthttp.RequestCtx, args util.MapData) (interface{}, 
 
 // LoadSElem get SElem
 func (a *App) LoadSElem(ctx *fasthttp.RequestCtx, args util.MapData) (interface{}, error) {
-	iid := args.Int64(app.FieldIID)
+	iid := args.Int64(model.FieldIID)
 	row, err := db.NewQuery(selem.Table).Where("iid=?", iid).QueryOne()
 	if err != nil {
 		return row, err
@@ -68,7 +68,7 @@ func (a *App) SaveSElem(ctx *fasthttp.RequestCtx, args util.MapData) (interface{
 	iid := args.Int64("iid")
 	var err error
 	if iid == 0 {
-		vo.IID = app.IID(selem.Table)
+		vo.IID = model.IID(selem.Table)
 		err = db.VOCreate(vo)
 	} else {
 		err = db.VOUpdate(vo, "iid=?", vo.IID)

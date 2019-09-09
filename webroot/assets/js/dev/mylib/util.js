@@ -316,13 +316,16 @@ define('util', [], function(){
 			let expires = ""
       if (days) {
         let date = new Date();
-        date.setTime(date.getTime()+(days*86400000));
+        date.setTime(date.getTime()+days*86400000);
         expires = "; expires="+date.toGMTString();
       }
-      document.cookie = name+"="+value+expires+"; path=/";
+      document.cookie = encodeURIComponent(name)+"="+encodeURIComponent(value)+expires+"; path=/";
 	  },
-
-		getCookie :  (name) => {
+		hasCookie : (sKey)=>{
+			return (new RegExp("(?:^|;\\s*)" + encodeURIComponent(sKey).replace(/[-.+*]/g, "\\$&") + "\\s*\\=")).test(document.cookie);
+		},
+		getCookie : (name) => {
+			// return decodeURIComponent(document.cookie.replace(new RegExp("(?:(?:^|.*;)\\s*" + encodeURIComponent(sKey).replace(/[-.+*]/g, "\\$&") + "\\s*\\=\\s*([^;]*).*$)|^.*$"), "$1")) || null;
 	    let nameEQ = name + "=";
 	    let ca = document.cookie.split(';');
 	    for(let i=0;i < ca.length;i++) {
@@ -362,6 +365,21 @@ define('util', [], function(){
 	    }
 	    return dat;
 	  },
+
+		dasit : (str) => {
+			let b64 = window.btoa(str), l = b64.length, dat="";
+			for (let i = 0; i < l; i++)
+				dat += String.fromCharCode(b64.charCodeAt(i) ^ ((i%7 << 4 ) + (i%15)));
+			return window.btoa(dat);
+		},
+
+		tisvo : (s) => {
+			let str = window.atob(s);
+			let l = str.length,dat = "";
+			for (let i = 0; i < l; i++)
+				dat += String.fromCharCode(str.charCodeAt(i) ^ ((i%7 << 4 ) + (i%15)));
+			return window.atob(dat);
+		},
 
 		$ : {
 			get : function(sel) {
@@ -531,14 +549,13 @@ define('util', [], function(){
 		},
 
 		showBusy : function(el, n){
+			el = util.$.get(el);
 			let t = el.querySelector('div.el-loading-mask');
 			if(!t){
 				t = document.createElement("DIV");
 				t.className = 'el-loading-mask';
 				t.innerHTML = `<div class="el-loading-spinner"><svg viewBox="25 25 50 50" class="circular"><circle cx="50" cy="50" r="20" fill="none" class="path"></circle></svg></div>`
 				el.appendChild(t);
-			}else{
-				t = t[0];
 			}
 
 			util.$.show(t);
@@ -549,6 +566,7 @@ define('util', [], function(){
 		},
 
 		hideBusy : function(el){
+			el = util.$.get(el);
 			let t = el.querySelector('div.el-loading-mask');
 			if(!t) return;
 			util.$.hide(t);
@@ -568,8 +586,8 @@ define('util', [], function(){
 	      })
 	    }
 
-			let imgs = el.querySelector('img');
-			imgs.src = url;
+			let img = el.querySelector('img');
+			img.src = url;
 			util.$.show(el);
 	  },
 

@@ -223,7 +223,7 @@ define(
         })
       }
 
-      let ts = comp.serverTime.utctime().toString(),
+      let ts = opt.ts ? opt.ts : comp.serverTime.utctime().toString(),
         ptoken = window[this.pfield] || '',
       	// method + ts + src + agent + ts + ptoken + window.location.hostname
         str = method+ts+(args?JSON.stringify(args): '')+navigator.userAgent+ts+ptoken + window.location.hostname;
