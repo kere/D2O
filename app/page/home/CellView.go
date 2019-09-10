@@ -13,9 +13,9 @@ import (
 	"github.com/microcosm-cc/bluemonday"
 	"github.com/valyala/bytebufferpool"
 	"github.com/valyala/fasthttp"
-	blackfriday "gopkg.in/russross/blackfriday.v2"
+	// blackfriday "gopkg.in/russross/blackfriday.v2"
 
-	// "github.com/kere/blackfriday"
+	"github.com/kere/blackfriday"
 
 	"onqee.visualstudio.com/D2O/app/model"
 	"onqee.visualstudio.com/D2O/app/model/selem"
