@@ -7,7 +7,7 @@ require.config({
 	}
 })
 define('notepad',
-['util', 'ajax', 'Compressor', 'tags', 'subforms', 'areas', 'contents'],
+['util', 'ajax', 'compressor', 'tags', 'subforms', 'areas', 'contents'],
 function(util, ajax, Compressor, tags, subforms, areas, contents){
   return {
     template:

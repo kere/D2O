@@ -94,7 +94,7 @@ const (
     ajax : "dev/mylib/ajax"
   }
 }`
-	requireOptStrPro = `{waitSeconds:15,baseUrl:"/assets/js/",paths:{echarts:"echarts.min"}}`
+	requireOptStrPro = `{waitSeconds:15,baseUrl:"/assets/js/",paths:{echarts:"echarts.min", compressor:"pro/compressor"}}`
 )
 
 var requirejs []byte

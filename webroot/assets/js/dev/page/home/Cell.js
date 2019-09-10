@@ -5,7 +5,7 @@ require.config({
 	}
 })
 require(
-	['ajax', 'util', 'notepad'],
+	['ajax', 'util', 'notepad', 'preparecookie'],
 	function (ajax, util, notepad){
     var main = new Vue({
       el : '#main-div',

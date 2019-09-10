@@ -15,7 +15,7 @@
 		'subforms' : 'mylib/vue/comp/vue-subforms',
 		'tags' : 'mylib/vue/comp/vue-tags',
 
-    'Compressor' : 'empty:',
+    'compressor' : 'empty:',
     'echarts' : 'empty:',
     'vue' : 'empty:'
 	},

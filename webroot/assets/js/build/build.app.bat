@@ -1,5 +1,7 @@
 node r.js -o build.app.js
 
+java -jar closure-compiler-v20180204.jar --js=../dev/compressor.js --js_output_file=../pro/compressor.js
+
 java -jar closure-compiler-v20180204.jar --js=../pro/page/home/Default.js --js_output_file=../pro/page/home/Default.min.js
 del /q ..\pro\page\home\Default.js
 
