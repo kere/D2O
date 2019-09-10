@@ -2,7 +2,7 @@ require.config(requireOpt);
 require(
 	['util', 'marked', 'purify'],
 	function (util, marked, DOMPurify){
-		window.closePageLoad();
+		
 		if(!pagedata){
 			document.title = "没有找到相应的数据";
 			// document.getElementById('headerTitle').innerText = document.title;

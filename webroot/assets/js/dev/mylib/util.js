@@ -616,5 +616,8 @@ define('util', [], function(){
 
 	}
 
+	if(window.closePageLoad)
+  	window.closePageLoad();
+
 	return util;
 });

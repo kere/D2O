@@ -6,9 +6,9 @@ require(
 		let uiid = window.localStorage.getItem("_uiid");
 		let client = ajax.NewClient("/api/info");
 
-		client.send("IsLogin").then((dat) =>{
-			console.log(dat);
-		})
+		// client.send("IsLogin").then((dat) =>{
+		// 	console.log(dat);
+		// })
 
 		document.getElementById('btnLogin').addEventListener('click', ()=>{
 			let ts = ajax.serverTime.utctime().toString();
@@ -21,14 +21,15 @@ require(
 				sign:util.dasit(accto(aa+ts))
 			}
 			client.send("DoUserLogin", obj, {ts: ts, busy: "#loginDiv" }).then((dat) =>{
-				console.log(dat);
+				// console.log(dat);
 				if(dat.value){
 					window.localStorage.setItem("_nick", nick);
 				}
+				let url = ajax.getUrlVar('url');
+				if(url)
+					window.location = decodeURIComponent(url);
 			})
 
 		})
-
-    window.closePageLoad();
 	}
 );

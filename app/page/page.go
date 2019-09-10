@@ -88,6 +88,7 @@ const (
   baseUrl : "/assets/js/",
   paths: {
     echarts : "echarts.min",
+		compressor: "dev/compressor",
     preparecookie : "dev/mylib/preparecookie",
     util : "dev/mylib/util",
     zepto : "dev/mylib/zepto",

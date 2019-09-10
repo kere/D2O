@@ -17,7 +17,6 @@ require(
 
       mounted : function(){
 
-				window.closePageLoad();
       }
     })
 

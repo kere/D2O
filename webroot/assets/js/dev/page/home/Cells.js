@@ -30,7 +30,7 @@ require(
           // console.log(dat);
   		    ajax.NewClient("/api/info").getData("Base");
     	  });
-				window.closePageLoad();
+				
       }
     })
 
