@@ -26,7 +26,7 @@ func Init(pd *httpd.PageData, opt Option) {
 
 	viewport := httpd.NewStrRender(`<meta name="viewport" content="width=device-width, initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0, user-scalable=no">`)
 
-	pd.Head = make([]httpd.IRender, 0, 5)
+	pd.Head = make([]httpd.IRender, 3, 5)
 	pd.CSS = make([]httpd.IRenderWith, 0, 3)
 	pd.JS = make([]httpd.IRenderWith, 0, 5)
 	pd.Top = make([]httpd.IRender, 0, 2)
@@ -34,7 +34,9 @@ func Init(pd *httpd.PageData, opt Option) {
 	pd.Bottom = make([]httpd.IRender, 0, 4)
 	// }
 
-	pd.Head = append(pd.Head, viewport, httpd.NewJSSrc(requireOpt(), nil))
+	pd.Head[0] = viewport
+	pd.Head[1] = httpd.NewJSSrc(requireOpt(), nil)
+	pd.Head[2] = httpd.FaviconRender
 
 	if !opt.NoPageLoad {
 		pd.Top = append(pd.Top, httpd.NewStrRender(httpd.PageLoadOpen))
