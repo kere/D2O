@@ -9,7 +9,7 @@ import (
 	"github.com/kere/gno/libs/util"
 	"github.com/valyala/bytebufferpool"
 	"github.com/valyala/fasthttp"
-	"onqee.visualstudio.com/Flows/app/model"
+	"onqee.visualstudio.com/D2O/app/model"
 )
 
 var (
