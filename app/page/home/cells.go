@@ -14,7 +14,7 @@ type Cells struct {
 func NewCells() *Cells {
 	d := &Cells{}
 	d.D.Init("", "Cells", homeDir)
-	page.Init(&d.D, page.Option{HasVue: true, HasElement: true})
+	page.Init(&d.D, page.Option{HasVue: true})
 
 	return d
 }

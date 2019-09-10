@@ -35,12 +35,12 @@ func (a *BaseInfo) IsLogin(ctx *fasthttp.RequestCtx, args util.MapData) (interfa
 // DoUserLogin user
 func (a *BaseInfo) DoUserLogin(ctx *fasthttp.RequestCtx, args util.MapData) (interface{}, error) {
 	nick := args.String(model.FieldNick)
-	err := page.DoLogin(ctx, nick, args.Bytes("src"), args.Bytes("sign"))
+	token, err := page.DoLogin(ctx, nick, args.Bytes("src"), args.Bytes("sign"))
 	if err != nil {
-		return util.MapData{"value": 0, "message": err.Error()}, nil
+		return util.MapData{"value": "", "message": err.Error()}, nil
 	}
 
-	return util.MapData{"value": 1, "message": "success"}, nil
+	return util.MapData{"value": token, "message": "success"}, nil
 }
 
 // Base func

@@ -1,4 +1,4 @@
-define('preparecookie', ["util"], function(util){
+define('preparecookie', ["ajax","util","accto"], function(ajax, util, accto){
 	let cookies = [];
   let date = new Date();
   date.setTime(date.getTime()+30*86400000);
@@ -16,6 +16,7 @@ define('preparecookie', ["util"], function(util){
   	let token = window.localStorage.getItem("_token");
 		cookies.push("_nick="+nick+expires+"; path=/")
 	}
+	
   let token = window.localStorage.getItem("_token");
 	if(token && !util.hasCookie('_token')){
   	let token = window.localStorage.getItem("_token");

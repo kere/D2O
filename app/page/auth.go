@@ -61,36 +61,36 @@ func Auth(ctx *fasthttp.RequestCtx) error {
 }
 
 // DoLogin user
-func DoLogin(ctx *fasthttp.RequestCtx, nick string, srcb, signb []byte) error {
+func DoLogin(ctx *fasthttp.RequestCtx, nick string, srcb, signb []byte) (string, error) {
 	ts := ctx.Request.Header.Peek(httpd.APIFieldTS)
 	pageToken := ctx.Request.Header.Peek(httpd.APIFieldPageToken)
 	uiid := ctx.Request.Header.Cookie(CookieUIID)
 	if len(uiid) == 0 {
-		return ErrLogin
+		return "", ErrLogin
 	}
 
 	src := model.UnDasit(util.Bytes2Str(srcb))
 	sign := model.UnDasit(util.Bytes2Str(signb))
 
 	if len(src) == 0 {
-		return ErrLogin
+		return "", ErrLogin
 	}
 
 	// 判断签名是否正确
 	signNew := md5.Sum(append(src, ts...))
 	if fmt.Sprintf("%x", signNew) != util.Bytes2Str(sign) {
-		return ErrLogin
+		return "", ErrLogin
 	}
 
 	row := user.LoginUser(nick)
 	if row.IsEmpty() {
-		return ErrUserNotFound
+		return "", ErrUserNotFound
 	}
 
 	dbToken := row.Bytes(model.FieldToken)
 	tokenNew := authToken(ts, pageToken, uiid, dbToken)
 	if tokenNew != util.Bytes2Str(src) {
-		return ErrLogin
+		return "", ErrLogin
 	}
 
 	expire := time.Now().AddDate(0, 1, 0)
@@ -106,7 +106,7 @@ func DoLogin(ctx *fasthttp.RequestCtx, nick string, srcb, signb []byte) error {
 	cook.SetExpire(expire)
 	// cook.SetHTTPOnly(true)
 	cook.SetPath("/")
-	// cook.SetSameSite(fasthttp.CookieSameSiteLaxMode)
+	cook.SetSameSite(fasthttp.CookieSameSiteLaxMode)
 	ctx.Response.Header.SetCookie(&cook)
 
 	cook2 := fasthttp.Cookie{}
@@ -116,10 +116,10 @@ func DoLogin(ctx *fasthttp.RequestCtx, nick string, srcb, signb []byte) error {
 	cook.SetExpire(expire)
 	// cook2.SetHTTPOnly(true)
 	cook2.SetPath("/")
-	// cook2.SetSameSite(fasthttp.CookieSameSiteLaxMode)
+	cook2.SetSameSite(fasthttp.CookieSameSiteLaxMode)
 	ctx.Response.Header.SetCookie(&cook2)
 
-	return nil
+	return accToken, nil
 }
 
 func accessToken(ts, uiid, dbToken []byte) string {

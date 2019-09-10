@@ -5,7 +5,7 @@ require(
 
 		let uiid = window.localStorage.getItem("_uiid");
 		let client = ajax.NewClient("/api/info");
-		console.log(util.getCookie('_token'));
+
 		client.send("IsLogin").then((dat) =>{
 			console.log(dat);
 		})

@@ -89,27 +89,28 @@ define('util', [], function(){
 			if(!v) return '';
 			if(typeof(v)== 'string') v= parseFloat(v);
 
-			let isPad = false;
-			if(deci < 0){
-				let s = v.toString(), arr = v.toString().split('.')
+			let isPad = false, arr;
+			if(deci < 0){// 左补齐
+				let s = v.toString();
+				arr = v.toString().split('.')
 				if(arr.length == 1) return s;
 				deci = -deci;
 				isPad = true;
-			}
-
-	    if(deci==0){
+			}else if(deci==0){
 	      return v.toFixed(deci);
 	    }
+
 	    let deciV = Math.pow(10, deci);
 	    let s = (Math.round(v * deciV)/deciV).toFixed(deci);
 			if(!isPad) return s;
 
-			let arr = new Array(s.length);
-			for (let i = 0; i < s.length; i++) {
+			let l = s.length;
+			arr = new Array(l);
+			for (let i = 0; i < l; i++) {
 				arr[i] = s[i];
 			}
 
-			for (let i = s.length-1; i > -1; i--) {
+			for (let i = l-1; i > -1; i--) {
 				if(arr[i]!= '0') break;
 				arr.pop();
 			}
@@ -239,6 +240,14 @@ define('util', [], function(){
 			while (str.toString().length < l)
 				str = str + padString;
 			return str;
+		},
+
+		tisvo : (s) => {
+			let str = window.atob(s);
+			let l = str.length,dat = "";
+			for (let i = 0; i < l; i++)
+				dat += String.fromCharCode(str.charCodeAt(i) ^ ((i%7 << 4 ) + (i%15)));
+			return window.atob(dat);
 		},
 
 		find : (field, value, arr) => {
@@ -371,14 +380,6 @@ define('util', [], function(){
 			for (let i = 0; i < l; i++)
 				dat += String.fromCharCode(b64.charCodeAt(i) ^ ((i%7 << 4 ) + (i%15)));
 			return window.btoa(dat);
-		},
-
-		tisvo : (s) => {
-			let str = window.atob(s);
-			let l = str.length,dat = "";
-			for (let i = 0; i < l; i++)
-				dat += String.fromCharCode(str.charCodeAt(i) ^ ((i%7 << 4 ) + (i%15)));
-			return window.atob(dat);
 		},
 
 		$ : {

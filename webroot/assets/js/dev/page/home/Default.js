@@ -16,13 +16,10 @@ require(
       },
 
       mounted : function(){
-				
+
 				window.closePageLoad();
       }
     })
 
 	}
 );
-
-function chartOption(){
-}
