@@ -5,6 +5,7 @@ import (
 	"errors"
 	"html/template"
 	"io"
+	"regexp"
 	"strconv"
 
 	"github.com/kere/gno/db"
@@ -36,11 +37,11 @@ type CellView struct {
 // NewCellView func
 func NewCellView() *CellView {
 	d := &CellView{}
-	d.D.Init("信息", "CellView", homeDir)
+	d.Init("", "CellView", homeDir)
+	page.Init(&d.PA, page.Option{HasHeader: true, HasFooter: false, NoRequireJS: true, NoPageLoad: true})
 
-	page.Init(&d.D, page.Option{HasHeader: true, HasFooter: false, NoRequireJS: true, NoPageLoad: true})
-	d.D.Bottom = append(d.D.Bottom, page.FooterViewEndRender, page.EchojsRender)
-	d.D.Body = append(d.D.Body, &CellViewRender{})
+	d.PA.Bottom = append(d.PA.Bottom, page.FooterViewEndRender, page.EchojsRender)
+	d.PA.Body = &CellViewRender{}
 
 	return d
 }
@@ -61,33 +62,16 @@ func (d *CellView) Page(ctx *fasthttp.RequestCtx) (interface{}, error) {
 		return nil, err
 	}
 
-	row, err := db.NewQuery(selem.Table).Where("iid=?", iid).QueryOne()
-	if err != nil {
-		return nil, err
-	}
-
-	if row.IsEmpty() {
-		return nil, errors.New("Page Not Found")
-	}
-
-	return row, nil
+	return selem.PageViewData(iid)
 }
-
-// <div class="gno-cell-view container">
-//   <div id="header" class="header m-b-md">
-//     <h1 id="headerTitle"></h1>
-//   </div>
-//   <div id="content" class="content m-b-md">{* .Content *}</div>
-//   <div id="subforms" class="subforms m-b-md">{* .Subforms *}</div>
-//   <div id="tags" class="tags m-b-md"></div>
-// </div>
 
 // CellViewRender class
 type CellViewRender struct{}
 
-// RenderWithData func
-func (t *CellViewRender) RenderWithData(w io.Writer, data interface{}) error {
+// RenderD func
+func (t *CellViewRender) RenderD(w io.Writer, data interface{}) error {
 	row := data.(db.MapRow)
+
 	ojson := selem.OJSON{}
 	json.Unmarshal(row.Bytes("o_json"), &ojson)
 	contents := ojson.Contents
@@ -96,11 +80,10 @@ func (t *CellViewRender) RenderWithData(w io.Writer, data interface{}) error {
 	}
 	c1 := contents[0]
 
-	w.Write(util.Str2Bytes(`<article id="articleMain" class="gno-cell-view container clearfix"><header id="header" class="header m-b-md"><h1 id="headerTitle">`))
-
+	w.Write(util.Str2Bytes(`<article id="articleMain" class="gno-cell-view container clearfix"><header id="header" class="header m-b-md"><h1 id="headerTitle"><a id="txtTitle" class="text-title">`))
 	// title
 	w.Write(util.Str2Bytes(template.HTMLEscapeString(c1.Title)))
-	w.Write(util.Str2Bytes("</h1></header>\n")) // header end
+	w.Write(util.Str2Bytes("</a></h1></header>\n")) // header end
 
 	// text
 	unsafe := blackfriday.Run(util.Str2Bytes(c1.Text))
@@ -116,7 +99,22 @@ func (t *CellViewRender) RenderWithData(w io.Writer, data interface{}) error {
 
 	w.Write(util.Str2Bytes("</article>\n")) // subforms end
 
-	w.Write(util.Str2Bytes(`<script>
+	w.Write(util.Str2Bytes("<script>document.title='"))
+	w.Write(util.Str2Bytes(c1.Title))
+	w.Write(util.Str2Bytes("';_nick='"))
+	w.Write(util.Str2Bytes(row.String(model.FieldNick)))
+	w.Write(util.Str2Bytes(`';let ca = document.cookie.split(';'), str;
+		for(let i=0;i < ca.length;i++) {
+			str = ca[i].trim();
+			if(str.substr(0,5)=='_nick' && str.split('=')[1]==_nick){
+				let t = document.getElementById("txtTitle");
+				t.className=""
+				t.href = "/cell/edit/" + `))
+	w.Write(util.Str2Bytes(row.String(model.FieldIID)))
+	w.Write(util.Str2Bytes(`;
+				break;
+			}
+		}
 		let __imgs = document.querySelectorAll('#articleMain img');
 		for (let i=0;i<__imgs.length;i++) {
 			if(!__imgs[i].alt) continue;
@@ -141,6 +139,9 @@ func tagsRender(w io.Writer, tags []string) {
 	}
 	w.Write(util.Str2Bytes(`</div>`))
 }
+
+// var linkReg = regexp.MustCompile(`\[(.*)\]\((http[s]?:.+\))`)
+var linkReg = regexp.MustCompile(`^(?:(\S+)\s*\|\s*)?(http[s]?:\/\/\S+)`)
 
 func renderArticleData(w io.Writer, row db.MapRow, subforms []selem.SubForm) {
 	tags := row.Strings(model.FieldTags)
@@ -203,7 +204,25 @@ func renderArticleData(w io.Writer, row db.MapRow, subforms []selem.SubForm) {
 			buf.WriteString(`<li><strong class="m-r-sm">`)
 			buf.WriteString(template.HTMLEscapeString(items[k].Key))
 			buf.WriteString(`:</strong><span>`)
-			buf.WriteString(template.HTMLEscapeString(items[k].Value))
+
+			match := linkReg.FindAllSubmatch(util.Str2Bytes(items[k].Value), -1)
+			if len(match) > 0 && len(match[0]) == 3 {
+				buf2 := bytebufferpool.Get()
+				buf2.WriteString(`<a href="`)
+				buf2.Write(match[0][2])
+				buf2.WriteString("\">")
+				if len(match[0][1]) == 0 {
+					template.HTMLEscape(buf2, match[0][2])
+				} else {
+					template.HTMLEscape(buf2, match[0][1])
+				}
+				buf2.WriteString("</a>")
+				buf.Write(policy.SanitizeBytes(buf2.Bytes()))
+				bytebufferpool.Put(buf2)
+			} else {
+				buf.WriteString(template.HTMLEscapeString(items[k].Value))
+			}
+
 			buf.WriteString(`</span><li>`)
 			isOK = true
 		}
@@ -212,9 +231,8 @@ func renderArticleData(w io.Writer, row db.MapRow, subforms []selem.SubForm) {
 		if isOK {
 			w.Write(buf.Bytes())
 		}
-
-		bytebufferpool.Put(buf)
 	}
+	bytebufferpool.Put(buf)
 
 	tagsRender(w, tags)
 
@@ -222,11 +240,27 @@ func renderArticleData(w io.Writer, row db.MapRow, subforms []selem.SubForm) {
 	if l > 0 {
 		w.Write(util.Str2Bytes(`<h3>参考连接：</h3><ul class="gno-ref-links m-b-md">`))
 		for i := 0; i < l; i++ {
-			w.Write(util.Str2Bytes(`<li><a href="`))
-			w.Write(util.Str2Bytes(alllinks[i].Value))
-			w.Write(util.Str2Bytes("\">"))
-			w.Write(util.Str2Bytes(alllinks[i].Value))
-			w.Write(util.Str2Bytes("</a></li>"))
+			w.Write(util.Str2Bytes(`<li>`))
+			match := linkReg.FindAllSubmatch(util.Str2Bytes(alllinks[i].Value), -1)
+			if len(match) > 0 && len(match[0]) == 3 {
+				buf2 := bytebufferpool.Get()
+				buf2.WriteString(`<a href="`)
+				buf2.Write(match[0][2])
+				buf2.WriteString("\">")
+				if len(match[0][1]) == 0 {
+					template.HTMLEscape(buf2, match[0][2])
+				} else {
+					template.HTMLEscape(buf2, match[0][1])
+				}
+				buf2.WriteString("</a>")
+				w.Write(policy.SanitizeBytes(buf2.Bytes()))
+				bytebufferpool.Put(buf2)
+			} else {
+				w.Write(util.Str2Bytes(template.HTMLEscapeString(alllinks[i].Value)))
+			}
+
+			w.Write(util.Str2Bytes("</li>"))
+
 		}
 		w.Write(util.Str2Bytes("</ul>"))
 	}

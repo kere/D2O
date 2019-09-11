@@ -15,11 +15,11 @@ type Cell struct {
 func NewCell(isEdit bool) *Cell {
 	d := &Cell{}
 	if isEdit {
-		d.D.Init("编辑信息", "Cell", homeDir)
+		d.Init("编辑信息", "Cell", homeDir)
 	} else {
-		d.D.Init("新建信息", "Cell", homeDir)
+		d.Init("新建信息", "Cell", homeDir)
 	}
-	page.Init(&d.D, page.Option{HasVue: true, HasElement: true})
+	page.Init(&d.PA, page.Option{HasVue: true, HasElement: true})
 
 	return d
 }

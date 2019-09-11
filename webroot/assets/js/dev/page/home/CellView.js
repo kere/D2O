@@ -2,7 +2,7 @@ require.config(requireOpt);
 require(
 	['util', 'marked', 'purify'],
 	function (util, marked, DOMPurify){
-		
+
 		if(!pagedata){
 			document.title = "没有找到相应的数据";
 			// document.getElementById('headerTitle').innerText = document.title;
@@ -88,7 +88,6 @@ require(
 			html += '</ul>';
 		}
 		document.getElementById('subforms').innerHTML = html;
-
 
 		// tags -------
 		if(dat.tags){

@@ -21,64 +21,64 @@ type Option struct {
 }
 
 // Init page
-func Init(pd *httpd.PageData, opt Option) {
+func Init(pa *httpd.PageAttr, opt Option) {
 	siteConf := httpd.Site.C.GetConf("site")
 
 	viewport := httpd.NewStrRender(`<meta name="viewport" content="width=device-width, initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0, user-scalable=no">`)
 
-	pd.Head = make([]httpd.IRender, 3, 5)
-	pd.CSS = make([]httpd.IRenderWith, 0, 3)
-	pd.JS = make([]httpd.IRenderWith, 0, 5)
-	pd.Top = make([]httpd.IRender, 0, 2)
-	// if len(pd.Bottom) == 0 {
-	pd.Bottom = make([]httpd.IRender, 0, 4)
+	pa.Head = make([]httpd.IRender, 3, 5)
+	pa.CSS = make([]httpd.IRenderA, 0, 3)
+	pa.JS = make([]httpd.IRenderA, 0, 5)
+	pa.Top = make([]httpd.IRender, 0, 2)
+	// if len(pa.Bottom) == 0 {
+	pa.Bottom = make([]httpd.IRender, 0, 4)
 	// }
 
-	pd.Head[0] = viewport
-	pd.Head[1] = httpd.NewJSSrc(requireOpt(), nil)
-	pd.Head[2] = httpd.FaviconRender
+	pa.Head[0] = viewport
+	pa.Head[1] = httpd.NewJSSrc(requireOpt(), nil)
+	pa.Head[2] = httpd.FaviconRender
 
 	if !opt.NoPageLoad {
-		pd.Top = append(pd.Top, httpd.NewStrRender(httpd.PageLoadOpen))
+		pa.Top = append(pa.Top, httpd.NewStrRender(httpd.PageLoadOpen))
 	}
 
 	// vue
 	if opt.HasVue {
-		pd.JS = append(pd.JS, httpd.NewJS(siteConf.DefaultString("vuejs", "vue.min.js")))
+		pa.JS = append(pa.JS, httpd.NewJS(siteConf.DefaultString("vuejs", "vue.min.js")))
 	}
 
 	// element-ui
 	if opt.HasElement {
-		pd.CSS = append(pd.CSS, httpd.NewCSS(siteConf.Get("elementcss")))
-		pd.JS = append(pd.JS, httpd.NewJS(siteConf.Get("elementjs")))
+		pa.CSS = append(pa.CSS, httpd.NewCSS(siteConf.Get("elementcss")))
+		pa.JS = append(pa.JS, httpd.NewJS(siteConf.Get("elementjs")))
 	}
 
-	pd.CSS = append(pd.CSS, httpd.NewCSS("main.css"))
+	pa.CSS = append(pa.CSS, httpd.NewCSS("main.css"))
 
 	if !opt.NoRequireJS {
-		pd.JS = append(pd.JS, httpd.RequireJS(pd, requireJS()))
+		pa.JS = append(pa.JS, httpd.RequireJSWithSrc(pa, requireJS()))
 	}
 
-	pd.JSPosition = httpd.JSPositionBottom
+	pa.JSPosition = httpd.JSPositionBottom
 
 	if opt.HasHeader {
-		pd.Top = append(pd.Top, httpd.NewTemplate("app/view/_header.htm"))
+		pa.Top = append(pa.Top, httpd.NewTemplate("app/view/_header.htm"))
 	}
 
 	if !opt.NoPageLoad {
-		pd.Bottom = append(pd.Bottom, httpd.NewStrRender(httpd.PageLoadClose))
+		pa.Bottom = append(pa.Bottom, httpd.NewStrRender(httpd.PageLoadClose))
 	}
 	if opt.HasFooter {
-		pd.Bottom = append(pd.Bottom, httpd.NewTemplate("app/view/_footer.htm"))
+		pa.Bottom = append(pa.Bottom, httpd.NewTemplate("app/view/_footer.htm"))
 	}
 
-	// pd.CacheOption.PageMode = httpd.CacheModePagePath
+	// pa.CacheOption.PageMode = httpd.CacheModePagePath
 	if httpd.RunMode == httpd.ModeDev {
-		pd.CacheOption.Store = httpd.CacheStoreNone
+		pa.CacheOption.Store = httpd.CacheStoreNone
 	} else {
-		pd.CacheOption.PageMode = httpd.CacheModePage
-		pd.CacheOption.Store = httpd.CacheStoreFile
-		pd.CacheOption.HTTPHead = 1
+		pa.CacheOption.PageMode = httpd.CacheModePage
+		pa.CacheOption.Store = httpd.CacheStoreFile
+		pa.CacheOption.HTTPHead = 1
 	}
 }
 

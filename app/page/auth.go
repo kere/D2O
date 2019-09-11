@@ -3,7 +3,6 @@ package page
 import (
 	"bytes"
 	"crypto/md5"
-	"errors"
 	"fmt"
 	"time"
 
@@ -13,13 +12,6 @@ import (
 	"github.com/valyala/fasthttp"
 	"onqee.visualstudio.com/D2O/app/model"
 	"onqee.visualstudio.com/D2O/app/model/user"
-)
-
-var (
-	// ErrLogin err
-	ErrLogin = errors.New("登录验证失败")
-	// ErrUserNotFound err
-	ErrUserNotFound = errors.New("用户不存在")
 )
 
 const (
@@ -38,25 +30,28 @@ func Auth(ctx *fasthttp.RequestCtx) error {
 	uiid := ctx.Request.Header.Cookie(CookieUIID)
 	val := ctx.Request.Header.Cookie(CookieAccess)
 	if len(nick) == 0 {
-		return ErrLogin
+		return model.ErrLogin
 	}
 
 	row := user.LoginUser(util.Bytes2Str(nick))
 	if row.IsEmpty() {
-		return ErrLogin
+		return model.ErrLogin
 	}
 
 	token := model.UnDasit(util.Bytes2Str(val))
 	arr := bytes.Split(token, httpd.BDote)
 	if len(arr) != 2 {
-		return ErrLogin
+		return model.ErrLogin
 	}
 
 	dbToken := row.Bytes(model.FieldToken)
 
 	if util.Bytes2Str(arr[1]) != accessToken(arr[0], uiid, dbToken) {
-		return ErrLogin
+		return model.ErrLogin
 	}
+
+	ctx.SetUserValue(model.FieldUserID, row.Int(model.FieldID))
+	ctx.SetUserValue(model.FieldNick, row.String(model.FieldNick))
 	return nil
 }
 
@@ -66,31 +61,31 @@ func DoLogin(ctx *fasthttp.RequestCtx, nick string, srcb, signb []byte) (string,
 	pageToken := ctx.Request.Header.Peek(httpd.APIFieldPageToken)
 	uiid := ctx.Request.Header.Cookie(CookieUIID)
 	if len(uiid) == 0 {
-		return "", ErrLogin
+		return "", model.ErrLogin
 	}
 
 	src := model.UnDasit(util.Bytes2Str(srcb))
 	sign := model.UnDasit(util.Bytes2Str(signb))
 
 	if len(src) == 0 {
-		return "", ErrLogin
+		return "", model.ErrLogin
 	}
 
 	// 判断签名是否正确
 	signNew := md5.Sum(append(src, ts...))
 	if fmt.Sprintf("%x", signNew) != util.Bytes2Str(sign) {
-		return "", ErrLogin
+		return "", model.ErrLogin
 	}
 
 	row := user.LoginUser(nick)
 	if row.IsEmpty() {
-		return "", ErrUserNotFound
+		return "", model.ErrUserNotFound
 	}
 
 	dbToken := row.Bytes(model.FieldToken)
 	tokenNew := authToken(ts, pageToken, uiid, dbToken)
 	if tokenNew != util.Bytes2Str(src) {
-		return "", ErrLogin
+		return "", model.ErrLogin
 	}
 
 	expire := time.Now().AddDate(0, 1, 0)

@@ -34,7 +34,7 @@ define('tags', ['util'], function(util){
 
         let v = this.tagstr, a=' ';
         if(!v || v.length==0) return;
-        let s = v.trim().replace(/[,，]/g, a);
+        let s = v.trim().replace(/[,，。\.]/g, a);
         s = s.replace(/\s{2,}/g, a);
         this.tags = s.split(a)
         this.$emit('cc', this.tags);

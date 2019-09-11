@@ -1,6 +1,7 @@
 package model
 
 import (
+	"errors"
 	"fmt"
 	"time"
 
@@ -8,7 +9,20 @@ import (
 	"github.com/kere/gno/libs/util"
 )
 
+var (
+	// ErrDataNotFound err
+	ErrDataNotFound = errors.New("没有找到相应的数据")
+	// ErrLogin err
+	ErrLogin = errors.New("登录验证失败")
+	// ErrUserNotFound err
+	ErrUserNotFound = errors.New("用户不存在")
+)
+
 const (
+	// FieldIID string
+	FieldIID = "iid"
+	// FieldID string
+	FieldID = "id"
 	// FieldName string
 	FieldName = "name"
 	// FieldToken string
@@ -19,8 +33,6 @@ const (
 	FieldTags = "tags"
 	// FieldDateON string
 	FieldDateON = "date_on"
-	// FieldIID string
-	FieldIID = "iid"
 	// FieldCreatedAt string
 	FieldCreatedAt = "created_at"
 	// FieldUpdatedAt string

@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/kere/gno/db"
+	"onqee.visualstudio.com/D2O/app/model"
 )
 
 const (
@@ -81,7 +82,27 @@ func PageData(iid int64) (db.MapRow, error) {
 		return nil, err
 	}
 
+	if row.IsEmpty() {
+		return row, model.ErrDataNotFound
+	}
+
 	vo := VO{}
 	db.StrictDBMapRow(row, vo)
+	return row, nil
+}
+
+// PageViewData by iid
+func PageViewData(iid int64) (db.MapRow, error) {
+	q := db.NewQuery("s_elems a left join users b on (a.user_id=b.id)").Select("a.iid,a.m_iid,a.date_on,b.nick, a.o_json,a.area,a.tags,a.reles,a.status,a.itype,a.updated_at")
+	row, err := q.Where("a.iid=?", iid).QueryOne()
+	if err != nil {
+		return nil, err
+	}
+	if row.IsEmpty() {
+		return row, model.ErrDataNotFound
+	}
+
+	row.Bytes2String()
+
 	return row, nil
 }

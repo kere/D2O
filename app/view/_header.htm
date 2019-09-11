@@ -4,14 +4,15 @@
       <a href="/"><svg class="avatar" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 405 405"><defs><style>.cls-1{fill:#9e2c45;}.cls-2{fill:none;stroke:#fff;stroke-miterlimit:10;stroke-width:12px;}.cls-3{fill:#fff;}</style></defs><title>logo-a</title><g id="图层_1" data-name="图层 1"><rect class="cls-1" width="405" height="405"/></g><g id="图层_2" data-name="图层 2"><path class="cls-2" d="M65.47,150.8a22.44,22.44,0,1,0,9-1.86,22.4,22.4,0,0,0-9,1.86"/><path class="cls-3" d="M350.25,265.93a67.07,67.07,0,0,1-31.56,37.56l-21.81-21.11a112.65,112.65,0,0,1-26.18,23.81l17.93,29.11-.06.05A22.43,22.43,0,0,1,254.44,315,112.19,112.19,0,0,1,98.86,231.63L275,234,124.33,139.18a112,112,0,0,1,64.5-37.12,113.33,113.33,0,0,1,20.49-1.87,112.17,112.17,0,0,1,103.13,68,22.43,22.43,0,0,1,39.48,9.6s0,0,0,.08L318,184.69a112.4,112.4,0,0,1,3.43,27.64q0,4.46-.35,8.81l27.25-3.33A67.09,67.09,0,0,1,350.25,265.93Z"/><path class="cls-2" d="M65.47,154.8a113.94,113.94,0,0,1-1.36-17.45A67.35,67.35,0,0,1,131.46,70c24.26,0,46.51,14.83,58.37,34.06"/><circle class="cls-1" cx="189.67" cy="148.67" r="11.67"/></g></svg></a>
     </span>
     <span id="page-nav-links" class="absolute right">
-      <a href="/">add</a>
-      <a href="/">adee</a>
+      <a href="/cell/new">新建</a>
+      <a href="/cell/list">列表</a>
     </span>
   </div>
   <nav id="page-nav">
     <div id="page-nav-list">
       <a href="/">首页</a>
-      <a href="/">add</a>
+      <a href="/cell/new">新建</a>
+      <a href="/cell/list">列表</a>
 
     </div>
     <!-- Nav footer -->
@@ -28,7 +29,7 @@ var _pageReverse = document.getElementById("page-nav-menu-left");
 var _headerIcon = _pageNormal !== null ? _pageNormal : _pageReverse;
 
 // Toggle the "menu-open" % "menu-opn-left" classes
-function toggle() {
+function menuTaggle() {
   let nav = document.getElementById("page-nav");
   let button = document.getElementById("page-menu");
 
@@ -47,9 +48,9 @@ function toggle() {
 // Ensures backward compatibility with IE old versions
 function menuClick() {
 	if (document.addEventListener && _headerIcon !== null) {
-		_headerIcon.addEventListener('click', toggle);
+		_headerIcon.addEventListener('click', menuTaggle);
 	} else if (document.attachEvent && _headerIcon !== null) {
-		_headerIcon.attachEvent('onclick', toggle);
+		_headerIcon.attachEvent('onclick', menuTaggle);
 	}
 }
 

@@ -17,8 +17,8 @@ type Default struct {
 // NewDefault func
 func NewDefault() *Default {
 	d := &Default{}
-	d.D.Init("Default Page", "Default", homeDir)
-	page.Init(&d.D, page.Option{HasVue: true, HasHeader: true, HasFooter: true})
+	d.Init("Default Page", "Default", homeDir)
+	page.Init(&d.PA, page.Option{HasVue: true, HasHeader: true, HasFooter: true})
 
 	return d
 }

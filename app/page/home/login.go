@@ -13,8 +13,8 @@ type Login struct {
 // NewLogin func
 func NewLogin() *Login {
 	d := &Login{}
-	d.D.Init("用户登录", "Login", homeDir)
-	page.Init(&d.D, page.Option{HasHeader: true})
+	d.Init("用户登录", "Login", homeDir)
+	page.Init(&d.PA, page.Option{HasHeader: true})
 
 	return d
 }
