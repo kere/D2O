@@ -16,6 +16,8 @@ var (
 	ErrLogin = errors.New("登录验证失败")
 	// ErrUserNotFound err
 	ErrUserNotFound = errors.New("用户不存在")
+
+	BDivEnd = []byte("</div>\n")
 )
 
 const (

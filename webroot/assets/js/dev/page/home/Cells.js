@@ -18,7 +18,7 @@ require(
 
       mounted : function(){
 				util.$.show(this.$el);
-    		ajax.NewClient("/api/app").getData("SElems", null, {loading: true}).then((dat) => {
+    		ajax.NewClient("/api/info").getData("SElems", null, {loading: true}).then((dat) => {
           let ojsonI = dat.fields.indexOf("o_json");
           this.rows = ajax.torows(dat, (k, i) =>{
             if(k === ojsonI){
@@ -30,7 +30,7 @@ require(
           // console.log(dat);
   		    ajax.NewClient("/api/info").getData("Base");
     	  });
-				
+
       }
     })
 

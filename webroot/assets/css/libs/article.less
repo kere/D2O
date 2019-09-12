@@ -22,7 +22,7 @@
     }
     span.img-desc{
       color: #b5b5b5;
-      font-size: 13px;
+      font-size: @font-small;
       display: block;
       text-align: center;
       margin-top: -5px;
@@ -33,14 +33,14 @@
     }
   }
 
-  .tags{
-    margin-top: 30px;
-    .el-tag+.el-tag{
+  .tags, .area{
+    strong+strong{
       margin-left: 10px;
     }
     a{
+      font-size: @font-small;
       font-style: normal;
-      text-decoration: none;
+      font-weight: normal;
     }
   }
 

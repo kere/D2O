@@ -26,19 +26,13 @@ func (a *App) Auth(ctx *fasthttp.RequestCtx) error {
 	return page.Auth(ctx)
 }
 
-// SElems get SElem list
-func (a *App) SElems(ctx *fasthttp.RequestCtx, args util.MapData) (interface{}, error) {
-	q := db.NewQuery(selem.Table)
-	dat, err := q.Query()
-	db.DataSetStrf(dat)
-	return dat, err
-}
-
 // LoadSElem get SElem
 func (a *App) LoadSElem(ctx *fasthttp.RequestCtx, args util.MapData) (interface{}, error) {
 	iid := args.Int64(model.FieldIID)
 	v, err := selem.PageData(iid)
-	v[model.FieldUserID] = 0
+	if !v.IsEmpty() {
+		v[model.FieldUserID] = 0
+	}
 	return v, err
 }
 

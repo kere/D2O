@@ -37,7 +37,7 @@ function(util, ajax, Compressor, tags, subforms, areas, contents){
                 formart="yyyy-MM-dd" value-format="yyyy-MM-dd"></el-date-picker>
             </el-form-item>
             <el-form-item label="地点">
-              <areas :area="area" v-model="area" :areas="baseinfo.areas"></areas>
+              <areas ref="area" :area="area" v-model="area" :areas="baseinfo.areas"></areas>
             </el-form-item>
           </el-form>
 
@@ -67,7 +67,7 @@ function(util, ajax, Compressor, tags, subforms, areas, contents){
         </div>
 
 
-        <div class="gno-box text-right">
+        <div v-if="isPageOK" class="gno-box text-right">
           <hr class="line m-b-md"></hr>
           <el-alert v-show="isSuccess" title="成功保存数据" type="success" center show-icon :closable="false"></el-alert>
           <el-alert v-show="isError" :title="errMessage" type="error" show-icon @close="clearError"></el-alert>
@@ -92,6 +92,7 @@ function(util, ajax, Compressor, tags, subforms, areas, contents){
     },
     data() {
       return {
+        isPageOK: false,
         isSuccess : false,
         isError : false,
         errMessage: '',
@@ -120,6 +121,7 @@ function(util, ajax, Compressor, tags, subforms, areas, contents){
         this.ojson = JSON.parse(dat.o_json);
 
         this.imageList = this.ojson.images;
+        this.isPageOK = dat.iid ? true: false;
         setTimeout(() => {
           this.rebuildImagesLinkBtn();
         }, 200);
@@ -242,6 +244,7 @@ function(util, ajax, Compressor, tags, subforms, areas, contents){
         if(obj.date_on) {
           obj.date_on = util.str2date(obj.date_on)
         }
+        ojs.area = this.$refs.area.fullData();
 
     		ajax.NewClient("/api/app").send("SaveSElem", obj, {loading:true}).then((dat) => {
           this.$emit("onSaved", obj);

@@ -485,6 +485,26 @@ define('util', [], function(){
 	}
 
 	util.tool = {
+		pageErr(title, msg){
+			util.$.each(document.body.children, (e) =>{
+				if(e.tagName == "SCRIPT") return;
+				e.hidden = true
+			})
+
+			let el = document.createElement("DIV");
+			el.id="pageError"
+			el.className = 'page-not-found-div'
+			el.innerHTML = '<h1>'+title+'</h1><h5>'+msg+'</h5>'
+			document.body.appendChild(el);
+
+			let style = document.createElement("style");
+			style.type = "text/css";
+			style.innerHTML = `html,body{height: 100%;margin: 0;padding: 0}
+.page-not-found-div{line-height:4rem;text-align: center;margin: 0 auto;position: absolute;top: 36%;width: 100%}
+.page-not-found-div h1{font-size: 82px}.page-not-found-div h5{font-weight: 200;font-size: 26px;}
+body{font-family: "Helvetica Neue",Helvetica,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","微软雅黑",Arial,sans-serif; color: #343434; }`
+			document.getElementsByTagName("HEAD").item(0).appendChild(style);
+		},
 		showLoading : function(n){
 			this.loading(0, n);
 		},

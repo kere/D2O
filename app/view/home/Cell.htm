@@ -1,8 +1,7 @@
 <div id="main-div">
-  <notepad upload="/upload/image"
+  <notepad v-show="isPageOK" ref="notepad" upload="/upload/image"
       :formdata="formdata"
       :baseinfo="baseinfo"
       @onsave="_onSaved"
     ></notepad>
-  <!-- <person @saved="_onSaved" upload="/upload/image" ></person> -->
 </div>

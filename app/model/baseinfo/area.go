@@ -1,14 +1,38 @@
 package baseinfo
 
+import "sort"
+
+// AreasSort array
+type AreasSort []Area
+
+// Less sort series
+func (s AreasSort) Len() int {
+	return len(s)
+}
+
+// Less sort series
+func (s AreasSort) Less(i, j int) bool {
+	return s[i].ID < s[j].ID
+}
+
+// Swap sort series
+func (s AreasSort) Swap(i, j int) {
+	s[i], s[j] = s[j], s[i]
+}
+
 // Area class
 type Area struct {
-	ID   int    `json:"id"`
-	Name string `json:"name"`
-	EN   string `json:"en"`
+	ID int    `json:"id"`
+	CN string `json:"cn"`
+	EN string `json:"en"`
+}
+
+func init() {
+	sort.Sort(Areas)
 }
 
 // Areas data
-var Areas = []Area{
+var Areas = AreasSort([]Area{
 	Area{1, "阿布哈兹（格鲁吉亚）", "Abkhazia"},
 	Area{2, "阿富汗", "Afghanistan"},
 	Area{3, "阿尔巴尼亚", "Albania"},
@@ -376,4 +400,4 @@ var Areas = []Area{
 	Area{310, "鞑靼斯坦共和国（俄）", "Tatarstan"},
 	Area{311, "图瓦共和国（俄）", "Tuva"},
 	Area{312, "乌德穆尔特共和国（俄）", "Udmurt"},
-}
+})

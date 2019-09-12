@@ -19,6 +19,7 @@ import (
 	"github.com/kere/blackfriday"
 
 	"onqee.visualstudio.com/D2O/app/model"
+	"onqee.visualstudio.com/D2O/app/model/baseinfo"
 	"onqee.visualstudio.com/D2O/app/model/selem"
 	"onqee.visualstudio.com/D2O/app/page"
 )
@@ -40,7 +41,7 @@ func NewCellView() *CellView {
 	d.Init("", "CellView", homeDir)
 	page.Init(&d.PA, page.Option{HasHeader: true, HasFooter: false, NoRequireJS: true, NoPageLoad: true})
 
-	d.PA.Bottom = append(d.PA.Bottom, page.FooterViewEndRender, page.EchojsRender)
+	d.PA.Bottom = append(d.PA.Bottom, page.EchojsRender)
 	d.PA.Body = &CellViewRender{}
 
 	return d
@@ -90,11 +91,21 @@ func (t *CellViewRender) RenderD(w io.Writer, data interface{}) error {
 	h := policy.SanitizeBytes(unsafe)
 	w.Write(util.Str2Bytes(`<div id="content" class="content m-b-md">`))
 	w.Write(h)
-	w.Write(util.Str2Bytes("</div>\n")) // header end
+	w.Write(model.BDivEnd) // header end
 
 	// subforms
 	//   <div id="subforms" class="subforms m-b-md">{* .Subforms *}</div>
 	w.Write(util.Str2Bytes(`<div id="subforms" class="subforms m-b-md">`))
+
+	// area
+	areas := ojson.Area
+	areaRender(w, areas)
+
+	// tags
+	tags := row.Strings(model.FieldTags)
+	tagsRender(w, tags)
+
+	// datas
 	renderArticleData(w, row, ojson.SubForms)
 
 	w.Write(util.Str2Bytes("</article>\n")) // subforms end
@@ -128,23 +139,41 @@ func (t *CellViewRender) RenderD(w io.Writer, data interface{}) error {
 	return nil
 }
 
+func areaRender(w io.Writer, areas []baseinfo.Area) {
+	w.Write(util.Str2Bytes(`<div id="area" class="area">`))
+	l := len(areas)
+	buf := bytebufferpool.Get()
+	for i := 0; i < l; i++ {
+		buf.WriteString(`<strong><a href="/area/`)
+		buf.WriteString(areas[i].CN)
+		buf.WriteString(`">`)
+		buf.WriteString(areas[i].CN)
+		buf.WriteString("</a></strong>")
+	}
+	w.Write(buf.Bytes())
+	w.Write(model.BDivEnd)
+}
+
 func tagsRender(w io.Writer, tags []string) {
 	w.Write(util.Str2Bytes(`<div id="tags" class="tags m-b-md">`))
 	l := len(tags)
+	buf := bytebufferpool.Get()
 	for i := 0; i < l; i++ {
-		w.Write(util.Str2Bytes(`<strong class="el-tag el-tag--light"><a href="`))
-		w.Write(util.Str2Bytes(`">`))
-		w.Write(util.Str2Bytes(template.HTMLEscapeString(tags[i])))
-		w.Write(util.Str2Bytes("</a></strong>"))
+		buf.WriteString(`<strong><a href="/tag/`)
+		buf.WriteString(tags[i])
+		buf.WriteString(`">`)
+		buf.WriteString(tags[i])
+		buf.WriteString("</a></strong>")
 	}
-	w.Write(util.Str2Bytes(`</div>`))
+	w.Write(buf.Bytes())
+	w.Write(model.BDivEnd)
+	bytebufferpool.Put(buf)
 }
 
 // var linkReg = regexp.MustCompile(`\[(.*)\]\((http[s]?:.+\))`)
 var linkReg = regexp.MustCompile(`^(?:(\S+)\s*\|\s*)?(http[s]?:\/\/\S+)`)
 
 func renderArticleData(w io.Writer, row db.MapRow, subforms []selem.SubForm) {
-	tags := row.Strings(model.FieldTags)
 	// subforms = dat.o_json.subforms, html='', form, items, th1, th2;
 	alllinks := make([]selem.FormItem, 0, 10)
 	l := len(subforms)
@@ -234,11 +263,9 @@ func renderArticleData(w io.Writer, row db.MapRow, subforms []selem.SubForm) {
 	}
 	bytebufferpool.Put(buf)
 
-	tagsRender(w, tags)
-
 	l = len(alllinks)
 	if l > 0 {
-		w.Write(util.Str2Bytes(`<h3>参考连接：</h3><ul class="gno-ref-links m-b-md">`))
+		w.Write(util.Str2Bytes(`<strong>参考连接：</strong><ul class="gno-ref-links m-b-md">`))
 		for i := 0; i < l; i++ {
 			w.Write(util.Str2Bytes(`<li>`))
 			match := linkReg.FindAllSubmatch(util.Str2Bytes(alllinks[i].Value), -1)
@@ -270,7 +297,7 @@ func renderArticleData(w io.Writer, row db.MapRow, subforms []selem.SubForm) {
 
 func renderArticleFooter(w io.Writer, row db.MapRow) {
 	dateon := row.String(model.FieldDateON)
-	author := "someone"
+	author := row.String(model.FieldNick)
 	w.Write(util.Str2Bytes(`<footer class="article-footer"><p class="date_on">`))
 	if len(dateon) > 10 {
 		w.Write(util.Str2Bytes(dateon)[:10])
@@ -279,31 +306,3 @@ func renderArticleFooter(w io.Writer, row db.MapRow) {
 	w.Write(util.Str2Bytes(author))
 	w.Write(util.Str2Bytes(`</p></footer>`))
 }
-
-// // Auth page
-// func (d *CellView) Auth(ctx *fasthttp.RequestCtx) error {
-// 	return nil
-// }
-
-// type viewDataRender struct {
-// 	Src []byte
-// }
-//
-// var (
-// 	bViewHTMLScript    = []byte("<script>var pagedata=")
-// 	bViewHTML01        = []byte(";")
-// 	bViewHTMLScriptEnd = []byte("</script>")
-// )
-//
-// // Render func
-// func (t *viewDataRender) Render(w io.Writer) error {
-// 	w.Write(bViewHTMLScript)
-// 	if len(t.Src) == 0 {
-// 		w.Write(util.Str2Bytes("null"))
-// 	} else {
-// 		w.Write(t.Src)
-// 	}
-// 	w.Write(bViewHTML01)
-// 	w.Write(bViewHTMLScriptEnd)
-// 	return nil
-// }

@@ -13,11 +13,9 @@ require(
 				"notepad": notepad
 			},
       data: {
+        isPageOK: false,
         formdata: null,
-        baseinfo: {tags:[], fields:[], areas: []}
-      },
-      filter: {
-
+        baseinfo: {fields:[], areas: []}
       },
       methods : {
         _onSaved : function(obj){
@@ -30,13 +28,17 @@ require(
         let ths = this;
     		ajax.NewClient("/api/info").getData("Base").then((dat) => {
           this.baseinfo = {formfields: dat.formfields, areas: dat.areas};
-          if(iid !== 'new'){
+          if(iid == 'new'){
+          }else{
             ajax.NewClient("/api/app").send("LoadSElem", {iid: iid}, {busy: ths.$el}).then((formdata) => {
+              ths.isPageOK = true;
               ths.formdata = formdata;
+            }, (e) => {
+              util.tool.pageErr("错误", e.toString())
             })
           }
     	  });
-        
+
       }
     })
 

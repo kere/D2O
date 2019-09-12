@@ -1,10 +1,12 @@
 package api
 
 import (
+	"github.com/kere/gno/db"
 	"github.com/kere/gno/libs/util"
 	"github.com/valyala/fasthttp"
 	"onqee.visualstudio.com/D2O/app/model"
 	"onqee.visualstudio.com/D2O/app/model/baseinfo"
+	"onqee.visualstudio.com/D2O/app/model/selem"
 	"onqee.visualstudio.com/D2O/app/page"
 )
 
@@ -49,4 +51,12 @@ func (a *BaseInfo) Base(ctx *fasthttp.RequestCtx, args util.MapData) (interface{
 	// fields := formfield.All(0)
 
 	return util.MapData{"formfields": baseinfo.FormFields, "areas": baseinfo.Areas, "_data_version": baseinfo.Version}, nil
+}
+
+// SElems get SElem list
+func (a *BaseInfo) SElems(ctx *fasthttp.RequestCtx, args util.MapData) (interface{}, error) {
+	q := db.NewQuery(selem.Table)
+	dat, err := q.Query()
+	db.DataSetStrf(dat)
+	return dat, err
 }

@@ -5,6 +5,7 @@ import (
 
 	"github.com/kere/gno/db"
 	"onqee.visualstudio.com/D2O/app/model"
+	"onqee.visualstudio.com/D2O/app/model/baseinfo"
 )
 
 const (
@@ -20,6 +21,7 @@ type VO struct {
 	MIID   int64     `json:"m_iid"`                                       // 同步关联的 master IID
 	DateON time.Time `json:"date_on" skipempty:"all" format:"2006-01-02"` // 事件发生时间
 	UserID int       `json:"user_id" skip:"update"`
+	Nick   string    `json:"nick" skip:"all"`
 	Tags   []string  `json:"tags" skipempty:"all"`
 	Area   []int     `json:"area" skipempty:"all"`
 	// Reles  []int  `json:"reles"`
@@ -38,10 +40,11 @@ func (vo VO) Table() string {
 
 // OJSON class
 type OJSON struct {
-	Contents []Content `json:"contents"`
-	SubForms []SubForm `json:"subforms"`
-	Images   []ImageVO `json:"images"`
-	Avatar   ImageVO   `json:"avatar"`
+	Contents []Content       `json:"contents"`
+	SubForms []SubForm       `json:"subforms"`
+	Images   []ImageVO       `json:"images"`
+	Avatar   ImageVO         `json:"avatar"`
+	Area     []baseinfo.Area `json:"area"`
 }
 
 // Content class
@@ -102,7 +105,8 @@ func PageViewData(iid int64) (db.MapRow, error) {
 		return row, model.ErrDataNotFound
 	}
 
-	row.Bytes2String()
+	vo := VO{}
+	db.StrictDBMapRow(row, vo)
 
 	return row, nil
 }

@@ -270,6 +270,11 @@ define(
             e.removeAttribute("disabled");
           })
         }
+        if(opt.busy){
+          util.$.each(opt.busy, (e) => {
+            util.tool.hideBusy(e);
+          })
+        }
 
         return Promise.reject(err);
       });
