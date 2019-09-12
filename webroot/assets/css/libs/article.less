@@ -3,37 +3,15 @@
   padding: 20px;
   margin: 0 auto;
 	line-height: @post-line-height;
-  .header{
-
-  }
   .text-title{
     color: @font-color;
     text-decoration: none;
   }
 
   .content{
-    img{
-      width: 100%;
-      display: block;
-    }
-    img[data-echo]{
-      width:auto;
-      display: inherit;
-    }
-    span.img-desc{
-      color: #b5b5b5;
-      font-size: @font-small;
-      display: block;
-      text-align: center;
-      margin-top: -5px;
-    }
-    p{
-      padding-bottom: 10px;
-      text-indent: 20px;
-    }
   }
 
-  .tags, .area{
+  .areas-tags{
     strong+strong{
       margin-left: 10px;
     }
@@ -52,13 +30,33 @@
   }
 
   .subforms{
-
+    font-size: @font-small;
+    ul{
+      list-style-position: inside;
+      list-style-type: none;
+    }
   }
 
   .content{
+    ul{
+      list-style-position: inside;
+    }
     font-size: @post-font-size;
     img{
+      width: 100%;
+      display: block;
       margin: 5px auto;
+    }
+    img[data-echo]{
+      width:auto;
+      display: inherit;
+    }
+    span.img-desc{
+      color: #b5b5b5;
+      font-size: @font-small;
+      display: block;
+      text-align: center;
+      margin-top: -5px;
     }
 
     h1{
@@ -80,26 +78,13 @@
 
     }
     p{
+      padding-bottom: 10px;
+      text-indent: 20px;
       margin: 5px 0;
     }
 
   } // content
-  ul{
-    list-style-position: inside;
-  }
-  .data-list{
-    list-style: none;
-    .sub-title{
-      border-bottom: 1px dashed @border-color;
-    }
-  }
-  .gno-ref-links{
-    li{
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-    }
-  }
+
   footer{
     float: right;
     text-align: right;

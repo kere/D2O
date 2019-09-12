@@ -1,0 +1,135 @@
+{% import (
+	"bytes"
+	"github.com/kere/gno/db"
+	"github.com/kere/blackfriday"
+	"github.com/kere/gno/libs/util"
+  "onqee.visualstudio.com/D2O/app/model"
+  "onqee.visualstudio.com/D2O/app/model/selem"
+  "onqee.visualstudio.com/D2O/app/model/baseinfo"
+) %}
+
+dateON := row.String(model.FieldDateON)
+{% func CellView( row db.MapRow, ojson *selem.OJSON) %}
+{% code
+	iid := row.Int(model.FieldIID)
+	nick := row.String(model.FieldNick)
+	dateAt := row.String(model.FieldUpdatedAt)
+	tags := row.Strings("tags")
+	content := ojson.Contents[0]
+	areas := ojson.Area;
+	subforms := ojson.SubForms
+%}
+<div class="gno-cell-view container clearfix">
+  <div class="header m-b-md">
+    <h1><a href="/cell/view/{%d iid %}">{%s content.Title %}</a></h1>
+  </div>
+  <div class="content">
+    {% code
+    	unsafe := blackfriday.Run(util.Str2Bytes(content.Text))
+    	src := policy.SanitizeBytes(unsafe) %}
+    {%z= src %}
+  </div>
+	<hr class="dashed"></hr>
+	{%s= AreasTags(areas, tags) %}
+
+	{%s= Subforms(subforms) %}
+  <footer class="article-footer">
+    {% code
+      bDateAt := util.Str2Bytes(dateAt)
+    	if len(dateAt) > 10 {
+        bDateAt = bDateAt[:10]
+    	} %}
+    <p class="date_on">{%z bDateAt %}</p>
+    <p class="author">{%s nick %}</p>
+  </footer>
+</div>
+<script>
+document.title="{%s content.Title %}";let _nick="{%s nick %}";
+let ca = document.cookie.split(";"), str;
+for(let i=0;i < ca.length;i++) {
+	str = ca[i].trim();
+	if(str.substr(0,5)=='_nick' && str.split('=')[1]==_nick){
+		let t = document.getElementById("txtTitle");
+		t.className=""
+		t.href = "/cell/edit/" + {%d iid %};
+		break;
+	}
+}
+
+let __imgs = document.querySelectorAll('#articleMain img');
+for (let i=0;i<__imgs.length;i++) {
+	if(!__imgs[i].alt) continue;
+	let span=document.createElement("span");
+	span.className = 'img-desc';
+	span.innerText = '-- ' + __imgs[i].alt + ' --';
+	__imgs[i].parentNode.insertBefore(span, __imgs[i].nextSibling);
+}
+</script>
+{% endfunc %}
+
+{% func AreasTags(areas []baseinfo.Area, tags []string) %}
+	<div id="areastags" class="areas-tags m-b-md">
+	{% for _, a := range areas %}
+		<strong><a href="/area/{%s a.CN %}">{%s a.CN %}</a></strong>
+	{% endfor %}
+	{% for _, name := range tags %}
+		<strong><a href="/tag/{%s name %}">{%s name %}</a></strong>
+	{% endfor %}
+	</div>
+{% endfunc %}
+
+{% func Subforms(subforms []selem.SubForm) %}
+<div id="subforms" class="subforms m-b-md">
+	{% code
+		l := len(subforms)
+		if l == 0{
+			return
+		}
+	%}
+	<ul class="data-list m-b">
+		{% for i:=0; i<l; i++ %}
+			{% code
+				title := subforms[i].Title
+				dateON := subforms[i].DateON
+				if len(dateON)> 10{
+					dateON = dateON[:10]
+				}
+				items := subforms[i].Items
+				n := len(items)
+			%}
+			{% if title != "" || dateON != "" %}
+				<li>
+					{% if title != "" %}
+						<strong class="m-r">{%s title %}</strong>
+					{% endif %}
+					{% if dateON != "" %}
+						<strong>{%s dateON %}</strong>
+					{% endif %}
+				</li>
+			{% endif %}
+			{% for k:=0; k<n; k++ %}
+				{% code
+					match := linkReg.FindAllSubmatch(util.Str2Bytes(items[k].Value), -1)
+				%}
+				<li>
+					<span class="label">{%s items[k].Key %}：</span>
+					{% if len(match) > 0 && len(match[0]) == 3 %}
+						{% code
+							bname := bytes.TrimSpace(match[0][1])
+						%}
+						<a href="{%z match[0][2] %}">
+						{% if len(bname)==0 %}
+							{%z match[0][2] %}
+						{% else %}
+							{%z match[0][1] %}
+						{% endif %}
+						</a>
+					{% else %}
+						<span>{%s items[k].Value %}</span>
+					{% endif %}
+				</li>
+			{% endfor %}
+		{% endfor %}
+	</ul>
+</div>
+{% endfunc %}
