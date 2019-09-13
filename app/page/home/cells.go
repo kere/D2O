@@ -13,7 +13,7 @@ type Cells struct {
 // NewCells func
 func NewCells() *Cells {
 	d := &Cells{}
-	d.Init("", "Cells", homeDir)
+	d.Init("内容列表", "Cells", homeDir)
 	page.Init(&d.PA, page.Option{HasVue: true})
 
 	return d

@@ -56,7 +56,7 @@ func Init(pa *httpd.PageAttr, opt Option) {
 	pa.CSS = append(pa.CSS, httpd.NewCSS("main.css"))
 
 	if !opt.NoRequireJS {
-		pa.JS = append(pa.JS, httpd.RequireJSWithSrc(pa, requireJS()))
+		pa.JS = append(pa.JS, httpd.RequireJSWithSrc(pa, RequireJS()))
 	}
 
 	pa.JSPosition = httpd.JSPositionBottom
@@ -102,7 +102,8 @@ const (
 
 var requirejs []byte
 
-func requireJS() []byte {
+// RequireJS script src
+func RequireJS() []byte {
 	if len(requirejs) > 0 {
 		return requirejs
 	}

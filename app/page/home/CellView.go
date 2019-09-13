@@ -29,7 +29,8 @@ func NewCellView() *CellView {
 
 	d.Init("", "CellView", homeDir)
 	page.Init(&d.PA, page.Option{HasHeader: true, HasFooter: false, NoRequireJS: true, NoPageLoad: true})
-	d.PA.Bottom = append(d.PA.Bottom, page.EchojsRender)
+	// d.PA.JS = append(d.PA.JS, httpd.NewJSSrcB(page.RequireJS(), nil))
+	d.PA.Bottom = append(d.PA.Bottom, page.EchojsRender, httpd.NewJSSrcB(page.RequireJS(), nil))
 
 	return d
 }
