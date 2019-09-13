@@ -29,6 +29,7 @@ require(
     		ajax.NewClient("/api/info").getData("Base").then((dat) => {
           this.baseinfo = {formfields: dat.formfields, areas: dat.areas};
           if(iid == 'new'){
+            ths.isPageOK = true;
           }else{
             ajax.NewClient("/api/app").send("LoadSElem", {iid: iid}, {busy: ths.$el}).then((formdata) => {
               ths.isPageOK = true;
