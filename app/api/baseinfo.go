@@ -7,6 +7,7 @@ import (
 	"onqee.visualstudio.com/D2O/app/model"
 	"onqee.visualstudio.com/D2O/app/model/baseinfo"
 	"onqee.visualstudio.com/D2O/app/model/selem"
+	"onqee.visualstudio.com/D2O/app/model/tag"
 	"onqee.visualstudio.com/D2O/app/page"
 )
 
@@ -47,15 +48,15 @@ func (a *BaseInfo) DoUserLogin(ctx *fasthttp.RequestCtx, args util.MapData) (int
 
 // Base func
 func (a *BaseInfo) Base(ctx *fasthttp.RequestCtx, args util.MapData) (interface{}, error) {
-	// tags := tag.All(0)
+	tags := tag.All()
 	// fields := formfield.All(0)
 
-	return util.MapData{"formfields": baseinfo.FormFields, "areas": baseinfo.Areas, "_data_version": baseinfo.Version}, nil
+	return util.MapData{"tags": tags, "formfields": baseinfo.FormFields, "areas": baseinfo.Areas, "_data_version": baseinfo.Version}, nil
 }
 
 // SElems get SElem list
 func (a *BaseInfo) SElems(ctx *fasthttp.RequestCtx, args util.MapData) (interface{}, error) {
-	q := db.NewQuery(selem.Table)
+	q := db.NewQuery(selem.Table).Order("date_on desc")
 	dat, err := q.Query()
 	db.DataSetStrf(dat)
 	return dat, err

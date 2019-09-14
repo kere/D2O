@@ -27,7 +27,8 @@ require(
         let iid = util.getRouterParam(0);
         let ths = this;
     		ajax.NewClient("/api/info").getData("Base").then((dat) => {
-          this.baseinfo = {formfields: dat.formfields, areas: dat.areas};
+          dat.tags = ajax.torows(dat.tags);
+          this.baseinfo = dat;
           if(iid == 'new'){
             ths.isPageOK = true;
           }else{

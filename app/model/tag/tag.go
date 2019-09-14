@@ -7,8 +7,34 @@ const (
 	Table = "tags"
 )
 
-// All 返回全部，user id 可以=0；0代表是默认字段
-func All(userID int) db.DataSet {
-	d, _ := db.NewQuery(Table).Where("user_id=?", userID).Query()
-	return d
+// VO data
+type VO struct {
+	ID     int    `json:"id" skip:"all"`
+	Name   string `json:"name"`
+	CataID int    `json:"cata_id"`
+}
+
+// TxCreate tags
+func TxCreate(tx *db.Tx, name string, cataID int) (bool, error) {
+	isE, err := tx.Exists(Table, "name=?", name)
+	if tx.DoError(err) {
+		return false, err
+	}
+	if isE {
+		return false, nil
+	}
+
+	ins := db.NewInsert(Table)
+	_, err = ins.TxInsert(tx, db.MapRow{"name": name, "cata_id": cataID})
+	if tx.DoError(err) {
+		return false, err
+	}
+
+	return true, nil
+}
+
+// All 返回全部
+func All() db.DataSet {
+	dat, _ := db.NewQuery(Table).Select("id,name").Where("cata_id=?", 1).Query()
+	return dat
 }

@@ -5,7 +5,9 @@ import (
 	"github.com/kere/gno/libs/util"
 	"github.com/valyala/fasthttp"
 	"onqee.visualstudio.com/D2O/app/model"
+	"onqee.visualstudio.com/D2O/app/model/baseinfo"
 	"onqee.visualstudio.com/D2O/app/model/selem"
+	"onqee.visualstudio.com/D2O/app/model/tag"
 	"onqee.visualstudio.com/D2O/app/page"
 	"onqee.visualstudio.com/D2O/app/page/home"
 )
@@ -55,6 +57,29 @@ func (a *App) SaveSElem(ctx *fasthttp.RequestCtx, args util.MapData) (interface{
 
 		// clear page cache
 		home.GetCellView().ClearCache(vo.IID)
+	}
+
+	// 添加tags
+	nick := ctx.UserValue(model.FieldNick).(string)
+	if nick == "d2o" {
+		tx := db.NewTx()
+		tx.Begin()
+		l := len(vo.Tags)
+		var isCreated bool
+		var isChanged bool
+		for i := 0; i < l; i++ {
+			isCreated, err = tag.TxCreate(tx, vo.Tags[i], 1)
+			if err != nil {
+				tx.DoError(err)
+				return vo.IID, nil
+			}
+			isChanged = isCreated || isChanged
+		}
+
+		tx.End()
+		if isChanged {
+			baseinfo.Plus()
+		}
 	}
 
 	return vo.IID, err

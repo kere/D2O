@@ -13,10 +13,12 @@ define('tags', ['util'], function(util){
             v-on:keyup.native.enter="confirm">
           <el-button @click="confirm()" slot="append" icon="el-icon-check"></el-button>
         </el-input>
+        <strong @click="_onTagAdd(item.name)" :class="{'el-tag--gray': isNotExists(item.name)}" v-for="item in basetags" class="el-tag">{{ item.name }}</strong>
       </div>
     </div>`,
     props : {
-      tags: Array
+      tags: Array,
+      basetags: Array
     },
     model: {
       props: 'tags',
@@ -35,6 +37,16 @@ define('tags', ['util'], function(util){
       }
     },
     methods: {
+      isNotExists(name){
+        return this.tags.indexOf(name) === -1
+      },
+      _onTagAdd(name){
+        let index= this.tags.indexOf(name)
+        if(index == -1)
+          this.tags.push(name);
+        else
+          this.tags.splice(index, 1);
+      },
       getData(){
         if(this.oval == this.tagstr) return this.tags;
 

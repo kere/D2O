@@ -63,7 +63,7 @@ function(util, ajax, Compressor, tags, subforms, areas, contents){
 
         <div class="gno-tags">
           <el-divider>标签</el-divider>
-          <tags ref="tags" :tags="tags" v-model="tags"></tags>
+          <tags ref="tags" :tags="tags" :basetags="baseinfo.tags" v-model="tags"></tags>
         </div>
 
 
