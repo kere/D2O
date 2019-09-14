@@ -21,20 +21,19 @@ dateON := row.String(model.FieldDateON)
 %}
 
 <div class="gno-cell-view container">
-  <div class="header m-b-md">
+  <div class="header">
     <h1 onclick="_onTitleClicked()">{%s content.Title %}</h1>
   </div>
 	<div id="barDiv" class="bar-div hide fade">
-		<hr class="line"></hr>
 		{%s= AreasTags(areas, tags) %}
 		<hr class="dashed"></hr>
 		<div id="bar-btn" class="bar-btn">
 			<a href="/cell/edit/{%d iid %}">修改</a>
 			<a href="javascript:;" onclick="_onDelClicked({%d iid %})">删除</a>
+			<hr class="dashed"></hr>
 		</div>
-		<hr class="dashed"></hr>
 	</div>
-  <div class="content">
+  <div class="content m-b-md">
     {% code
     	unsafe := blackfriday.Run(util.Str2Bytes(content.Text))
     	src := policy.SanitizeBytes(unsafe) %}
@@ -59,9 +58,8 @@ let ca = document.cookie.split(";"), str;
 for(let i=0;i < ca.length;i++) {
 	str = ca[i].trim();
 	if(str.substr(0,5)=='_nick' && str.split('=')[1]==_nick){
-		// let t = document.getElementById("txtTitle");
-		// t.className=""
-		// t.href = "/cell/edit/" + {%d iid %};
+		let t = document.getElementById("bar-btn");
+		t.className="bar-btn current-user"
 		break;
 	}
 }
