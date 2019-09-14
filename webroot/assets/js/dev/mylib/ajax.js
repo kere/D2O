@@ -78,7 +78,7 @@ define(
 
       torows : (dat, callback) => {
         let n = dat.fields.length;
-        if(!dat || !dat.columns || dat.columns.length==0 || n===0){
+        if(!dat || !dat.columns || dat.columns.length==0 || n===0 || !dat.columns[0]){
           return [];
         }
 
