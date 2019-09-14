@@ -76,58 +76,59 @@ func StreamCellView(qw422016 *qt422016.Writer, row db.MapRow, ojson *selem.OJSON
 			<hr class="dashed"></hr>
 		</div>
 	</div>
+	`)
+//line app/qtpl/CellView.qtpl:36
+	if ojson.Avatar.URL != "" {
+//line app/qtpl/CellView.qtpl:36
+		qw422016.N().S(`
+		<img class="avatar" src="`)
+//line app/qtpl/CellView.qtpl:37
+		qw422016.E().S(ojson.Avatar.URL)
+//line app/qtpl/CellView.qtpl:37
+		qw422016.N().S(`"/>
+	`)
+//line app/qtpl/CellView.qtpl:38
+	}
+//line app/qtpl/CellView.qtpl:38
+	qw422016.N().S(`
+	
   <div class="content m-b-md">
     `)
-//line app/qtpl/CellView.qtpl:38
+//line app/qtpl/CellView.qtpl:42
 	unsafe := blackfriday.Run(util.Str2Bytes(content.Text))
 	src := policy.SanitizeBytes(unsafe)
 
-//line app/qtpl/CellView.qtpl:39
+//line app/qtpl/CellView.qtpl:43
 	qw422016.N().S(`
     `)
-//line app/qtpl/CellView.qtpl:40
+//line app/qtpl/CellView.qtpl:44
 	qw422016.N().Z(src)
-//line app/qtpl/CellView.qtpl:40
+//line app/qtpl/CellView.qtpl:44
 	qw422016.N().S(`
   </div>
 
 	`)
-//line app/qtpl/CellView.qtpl:43
+//line app/qtpl/CellView.qtpl:47
 	qw422016.N().S(Subforms(subforms))
-//line app/qtpl/CellView.qtpl:43
+//line app/qtpl/CellView.qtpl:47
 	qw422016.N().S(`
-  <footer class="article-footer">
-    `)
-//line app/qtpl/CellView.qtpl:46
-	bDateAt := util.Str2Bytes(dateAt)
-	if len(dateAt) > 10 {
-		bDateAt = bDateAt[:10]
-	}
-
-//line app/qtpl/CellView.qtpl:49
+	`)
+//line app/qtpl/CellView.qtpl:48
+	qw422016.N().S(CellFooter(dateAt, nick))
+//line app/qtpl/CellView.qtpl:48
 	qw422016.N().S(`
-    <p class="date_on">`)
-//line app/qtpl/CellView.qtpl:50
-	qw422016.E().Z(bDateAt)
-//line app/qtpl/CellView.qtpl:50
-	qw422016.N().S(`</p>
-    <p class="author">`)
-//line app/qtpl/CellView.qtpl:51
-	qw422016.E().S(nick)
-//line app/qtpl/CellView.qtpl:51
-	qw422016.N().S(`</p>
-  </footer>
 </div>
+
 <script>
 document.title="`)
-//line app/qtpl/CellView.qtpl:55
+//line app/qtpl/CellView.qtpl:52
 	qw422016.E().S(content.Title)
-//line app/qtpl/CellView.qtpl:55
+//line app/qtpl/CellView.qtpl:52
 	qw422016.N().S(`";
 let _nick="`)
-//line app/qtpl/CellView.qtpl:56
+//line app/qtpl/CellView.qtpl:53
 	qw422016.E().S(nick)
-//line app/qtpl/CellView.qtpl:56
+//line app/qtpl/CellView.qtpl:53
 	qw422016.N().S(`";
 let ca = document.cookie.split(";"), str;
 for(let i=0;i < ca.length;i++) {
@@ -171,131 +172,131 @@ function _onTitleClicked(){
 }
 </script>
 `)
-//line app/qtpl/CellView.qtpl:98
+//line app/qtpl/CellView.qtpl:95
 }
 
-//line app/qtpl/CellView.qtpl:98
+//line app/qtpl/CellView.qtpl:95
 func WriteCellView(qq422016 qtio422016.Writer, row db.MapRow, ojson *selem.OJSON) {
-//line app/qtpl/CellView.qtpl:98
+//line app/qtpl/CellView.qtpl:95
 	qw422016 := qt422016.AcquireWriter(qq422016)
-//line app/qtpl/CellView.qtpl:98
+//line app/qtpl/CellView.qtpl:95
 	StreamCellView(qw422016, row, ojson)
-//line app/qtpl/CellView.qtpl:98
+//line app/qtpl/CellView.qtpl:95
 	qt422016.ReleaseWriter(qw422016)
-//line app/qtpl/CellView.qtpl:98
+//line app/qtpl/CellView.qtpl:95
 }
 
-//line app/qtpl/CellView.qtpl:98
+//line app/qtpl/CellView.qtpl:95
 func CellView(row db.MapRow, ojson *selem.OJSON) string {
-//line app/qtpl/CellView.qtpl:98
+//line app/qtpl/CellView.qtpl:95
 	qb422016 := qt422016.AcquireByteBuffer()
-//line app/qtpl/CellView.qtpl:98
+//line app/qtpl/CellView.qtpl:95
 	WriteCellView(qb422016, row, ojson)
-//line app/qtpl/CellView.qtpl:98
+//line app/qtpl/CellView.qtpl:95
 	qs422016 := string(qb422016.B)
-//line app/qtpl/CellView.qtpl:98
+//line app/qtpl/CellView.qtpl:95
 	qt422016.ReleaseByteBuffer(qb422016)
-//line app/qtpl/CellView.qtpl:98
+//line app/qtpl/CellView.qtpl:95
 	return qs422016
-//line app/qtpl/CellView.qtpl:98
+//line app/qtpl/CellView.qtpl:95
 }
 
-//line app/qtpl/CellView.qtpl:100
+//line app/qtpl/CellView.qtpl:97
 func StreamAreasTags(qw422016 *qt422016.Writer, areas []baseinfo.Area, tags []string) {
-//line app/qtpl/CellView.qtpl:100
+//line app/qtpl/CellView.qtpl:97
 	qw422016.N().S(`
 	<div id="areastags" class="areas-tags">
 	`)
-//line app/qtpl/CellView.qtpl:102
+//line app/qtpl/CellView.qtpl:99
 	for _, a := range areas {
-//line app/qtpl/CellView.qtpl:102
+//line app/qtpl/CellView.qtpl:99
 		qw422016.N().S(`
 		<strong class="el-tag el-tag--orange"><a href="/area/`)
-//line app/qtpl/CellView.qtpl:103
+//line app/qtpl/CellView.qtpl:100
 		qw422016.E().S(a.CN)
-//line app/qtpl/CellView.qtpl:103
+//line app/qtpl/CellView.qtpl:100
 		qw422016.N().S(`">`)
-//line app/qtpl/CellView.qtpl:103
+//line app/qtpl/CellView.qtpl:100
 		qw422016.E().S(a.CN)
-//line app/qtpl/CellView.qtpl:103
+//line app/qtpl/CellView.qtpl:100
 		qw422016.N().S(`</a></strong>
 	`)
-//line app/qtpl/CellView.qtpl:104
+//line app/qtpl/CellView.qtpl:101
 	}
-//line app/qtpl/CellView.qtpl:104
+//line app/qtpl/CellView.qtpl:101
 	qw422016.N().S(`
 	`)
-//line app/qtpl/CellView.qtpl:105
+//line app/qtpl/CellView.qtpl:102
 	for _, name := range tags {
-//line app/qtpl/CellView.qtpl:105
+//line app/qtpl/CellView.qtpl:102
 		qw422016.N().S(`
 		<strong class="el-tag"><a href="/tag/`)
-//line app/qtpl/CellView.qtpl:106
+//line app/qtpl/CellView.qtpl:103
 		qw422016.E().S(name)
-//line app/qtpl/CellView.qtpl:106
+//line app/qtpl/CellView.qtpl:103
 		qw422016.N().S(`">`)
-//line app/qtpl/CellView.qtpl:106
+//line app/qtpl/CellView.qtpl:103
 		qw422016.E().S(name)
-//line app/qtpl/CellView.qtpl:106
+//line app/qtpl/CellView.qtpl:103
 		qw422016.N().S(`</a></strong>
 	`)
-//line app/qtpl/CellView.qtpl:107
+//line app/qtpl/CellView.qtpl:104
 	}
-//line app/qtpl/CellView.qtpl:107
+//line app/qtpl/CellView.qtpl:104
 	qw422016.N().S(`
 	</div>
 `)
-//line app/qtpl/CellView.qtpl:109
+//line app/qtpl/CellView.qtpl:106
 }
 
-//line app/qtpl/CellView.qtpl:109
+//line app/qtpl/CellView.qtpl:106
 func WriteAreasTags(qq422016 qtio422016.Writer, areas []baseinfo.Area, tags []string) {
-//line app/qtpl/CellView.qtpl:109
+//line app/qtpl/CellView.qtpl:106
 	qw422016 := qt422016.AcquireWriter(qq422016)
-//line app/qtpl/CellView.qtpl:109
+//line app/qtpl/CellView.qtpl:106
 	StreamAreasTags(qw422016, areas, tags)
-//line app/qtpl/CellView.qtpl:109
+//line app/qtpl/CellView.qtpl:106
 	qt422016.ReleaseWriter(qw422016)
-//line app/qtpl/CellView.qtpl:109
+//line app/qtpl/CellView.qtpl:106
 }
 
-//line app/qtpl/CellView.qtpl:109
+//line app/qtpl/CellView.qtpl:106
 func AreasTags(areas []baseinfo.Area, tags []string) string {
-//line app/qtpl/CellView.qtpl:109
+//line app/qtpl/CellView.qtpl:106
 	qb422016 := qt422016.AcquireByteBuffer()
-//line app/qtpl/CellView.qtpl:109
+//line app/qtpl/CellView.qtpl:106
 	WriteAreasTags(qb422016, areas, tags)
-//line app/qtpl/CellView.qtpl:109
+//line app/qtpl/CellView.qtpl:106
 	qs422016 := string(qb422016.B)
-//line app/qtpl/CellView.qtpl:109
+//line app/qtpl/CellView.qtpl:106
 	qt422016.ReleaseByteBuffer(qb422016)
-//line app/qtpl/CellView.qtpl:109
+//line app/qtpl/CellView.qtpl:106
 	return qs422016
-//line app/qtpl/CellView.qtpl:109
+//line app/qtpl/CellView.qtpl:106
 }
 
-//line app/qtpl/CellView.qtpl:111
+//line app/qtpl/CellView.qtpl:108
 func StreamSubforms(qw422016 *qt422016.Writer, subforms []selem.SubForm) {
-//line app/qtpl/CellView.qtpl:111
+//line app/qtpl/CellView.qtpl:108
 	qw422016.N().S(`
 <div id="subforms" class="subforms m-b-md">
 	`)
-//line app/qtpl/CellView.qtpl:114
+//line app/qtpl/CellView.qtpl:111
 	l := len(subforms)
 	if l == 0 {
 		return
 	}
 
-//line app/qtpl/CellView.qtpl:118
+//line app/qtpl/CellView.qtpl:115
 	qw422016.N().S(`
 	<ul class="data-list m-b">
 		`)
-//line app/qtpl/CellView.qtpl:120
+//line app/qtpl/CellView.qtpl:117
 	for i := 0; i < l; i++ {
-//line app/qtpl/CellView.qtpl:120
+//line app/qtpl/CellView.qtpl:117
 		qw422016.N().S(`
 			`)
-//line app/qtpl/CellView.qtpl:122
+//line app/qtpl/CellView.qtpl:119
 		title := subforms[i].Title
 		dateON := subforms[i].DateON
 		if len(dateON) > 10 {
@@ -304,163 +305,231 @@ func StreamSubforms(qw422016 *qt422016.Writer, subforms []selem.SubForm) {
 		items := subforms[i].Items
 		n := len(items)
 
-//line app/qtpl/CellView.qtpl:129
+//line app/qtpl/CellView.qtpl:126
 		qw422016.N().S(`
 			`)
-//line app/qtpl/CellView.qtpl:130
+//line app/qtpl/CellView.qtpl:127
 		if title != "" || dateON != "" {
-//line app/qtpl/CellView.qtpl:130
+//line app/qtpl/CellView.qtpl:127
 			qw422016.N().S(`
 				<li>
 					`)
-//line app/qtpl/CellView.qtpl:132
+//line app/qtpl/CellView.qtpl:129
 			if title != "" {
-//line app/qtpl/CellView.qtpl:132
+//line app/qtpl/CellView.qtpl:129
 				qw422016.N().S(`
 						<strong class="m-r">`)
-//line app/qtpl/CellView.qtpl:133
+//line app/qtpl/CellView.qtpl:130
 				qw422016.E().S(title)
-//line app/qtpl/CellView.qtpl:133
+//line app/qtpl/CellView.qtpl:130
 				qw422016.N().S(`</strong>
 					`)
-//line app/qtpl/CellView.qtpl:134
+//line app/qtpl/CellView.qtpl:131
 			}
-//line app/qtpl/CellView.qtpl:134
+//line app/qtpl/CellView.qtpl:131
 			qw422016.N().S(`
 					`)
-//line app/qtpl/CellView.qtpl:135
+//line app/qtpl/CellView.qtpl:132
 			if dateON != "" {
-//line app/qtpl/CellView.qtpl:135
+//line app/qtpl/CellView.qtpl:132
 				qw422016.N().S(`
 						<strong>`)
-//line app/qtpl/CellView.qtpl:136
+//line app/qtpl/CellView.qtpl:133
 				qw422016.E().S(dateON)
-//line app/qtpl/CellView.qtpl:136
+//line app/qtpl/CellView.qtpl:133
 				qw422016.N().S(`</strong>
 					`)
-//line app/qtpl/CellView.qtpl:137
+//line app/qtpl/CellView.qtpl:134
 			}
-//line app/qtpl/CellView.qtpl:137
+//line app/qtpl/CellView.qtpl:134
 			qw422016.N().S(`
 				</li>
 			`)
-//line app/qtpl/CellView.qtpl:139
+//line app/qtpl/CellView.qtpl:136
 		}
-//line app/qtpl/CellView.qtpl:139
+//line app/qtpl/CellView.qtpl:136
 		qw422016.N().S(`
 			`)
-//line app/qtpl/CellView.qtpl:140
+//line app/qtpl/CellView.qtpl:137
 		for k := 0; k < n; k++ {
-//line app/qtpl/CellView.qtpl:140
+//line app/qtpl/CellView.qtpl:137
 			qw422016.N().S(`
 				`)
-//line app/qtpl/CellView.qtpl:142
+//line app/qtpl/CellView.qtpl:139
 			match := linkReg.FindAllSubmatch(util.Str2Bytes(items[k].Value), -1)
 
-//line app/qtpl/CellView.qtpl:143
+//line app/qtpl/CellView.qtpl:140
 			qw422016.N().S(`
 				<li>
 					<span class="label">`)
-//line app/qtpl/CellView.qtpl:145
+//line app/qtpl/CellView.qtpl:142
 			qw422016.E().S(items[k].Key)
-//line app/qtpl/CellView.qtpl:145
+//line app/qtpl/CellView.qtpl:142
 			qw422016.N().S(`：</span>
 					`)
-//line app/qtpl/CellView.qtpl:146
+//line app/qtpl/CellView.qtpl:143
 			if len(match) > 0 && len(match[0]) == 3 {
-//line app/qtpl/CellView.qtpl:146
+//line app/qtpl/CellView.qtpl:143
 				qw422016.N().S(`
 						`)
-//line app/qtpl/CellView.qtpl:148
+//line app/qtpl/CellView.qtpl:145
 				bname := bytes.TrimSpace(match[0][1])
 
-//line app/qtpl/CellView.qtpl:149
+//line app/qtpl/CellView.qtpl:146
 				qw422016.N().S(`
 						<a href="`)
-//line app/qtpl/CellView.qtpl:150
+//line app/qtpl/CellView.qtpl:147
 				qw422016.E().Z(match[0][2])
-//line app/qtpl/CellView.qtpl:150
+//line app/qtpl/CellView.qtpl:147
 				qw422016.N().S(`">
 						`)
-//line app/qtpl/CellView.qtpl:151
+//line app/qtpl/CellView.qtpl:148
 				if len(bname) == 0 {
+//line app/qtpl/CellView.qtpl:148
+					qw422016.N().S(`
+							`)
+//line app/qtpl/CellView.qtpl:149
+					qw422016.E().Z(match[0][2])
+//line app/qtpl/CellView.qtpl:149
+					qw422016.N().S(`
+						`)
+//line app/qtpl/CellView.qtpl:150
+				} else {
+//line app/qtpl/CellView.qtpl:150
+					qw422016.N().S(`
+							`)
+//line app/qtpl/CellView.qtpl:151
+					qw422016.E().Z(match[0][1])
 //line app/qtpl/CellView.qtpl:151
 					qw422016.N().S(`
-							`)
-//line app/qtpl/CellView.qtpl:152
-					qw422016.E().Z(match[0][2])
-//line app/qtpl/CellView.qtpl:152
-					qw422016.N().S(`
 						`)
-//line app/qtpl/CellView.qtpl:153
-				} else {
-//line app/qtpl/CellView.qtpl:153
-					qw422016.N().S(`
-							`)
-//line app/qtpl/CellView.qtpl:154
-					qw422016.E().Z(match[0][1])
-//line app/qtpl/CellView.qtpl:154
-					qw422016.N().S(`
-						`)
-//line app/qtpl/CellView.qtpl:155
+//line app/qtpl/CellView.qtpl:152
 				}
-//line app/qtpl/CellView.qtpl:155
+//line app/qtpl/CellView.qtpl:152
 				qw422016.N().S(`
 						</a>
 					`)
-//line app/qtpl/CellView.qtpl:157
+//line app/qtpl/CellView.qtpl:154
 			} else {
-//line app/qtpl/CellView.qtpl:157
+//line app/qtpl/CellView.qtpl:154
 				qw422016.N().S(`
 						<span>`)
-//line app/qtpl/CellView.qtpl:158
+//line app/qtpl/CellView.qtpl:155
 				qw422016.E().S(items[k].Value)
-//line app/qtpl/CellView.qtpl:158
+//line app/qtpl/CellView.qtpl:155
 				qw422016.N().S(`</span>
 					`)
-//line app/qtpl/CellView.qtpl:159
+//line app/qtpl/CellView.qtpl:156
 			}
-//line app/qtpl/CellView.qtpl:159
+//line app/qtpl/CellView.qtpl:156
 			qw422016.N().S(`
 				</li>
 			`)
-//line app/qtpl/CellView.qtpl:161
+//line app/qtpl/CellView.qtpl:158
 		}
-//line app/qtpl/CellView.qtpl:161
+//line app/qtpl/CellView.qtpl:158
 		qw422016.N().S(`
 		`)
-//line app/qtpl/CellView.qtpl:162
+//line app/qtpl/CellView.qtpl:159
 	}
-//line app/qtpl/CellView.qtpl:162
+//line app/qtpl/CellView.qtpl:159
 	qw422016.N().S(`
 	</ul>
 </div>
 `)
-//line app/qtpl/CellView.qtpl:165
+//line app/qtpl/CellView.qtpl:162
 }
 
-//line app/qtpl/CellView.qtpl:165
+//line app/qtpl/CellView.qtpl:162
 func WriteSubforms(qq422016 qtio422016.Writer, subforms []selem.SubForm) {
-//line app/qtpl/CellView.qtpl:165
+//line app/qtpl/CellView.qtpl:162
 	qw422016 := qt422016.AcquireWriter(qq422016)
-//line app/qtpl/CellView.qtpl:165
+//line app/qtpl/CellView.qtpl:162
 	StreamSubforms(qw422016, subforms)
-//line app/qtpl/CellView.qtpl:165
+//line app/qtpl/CellView.qtpl:162
 	qt422016.ReleaseWriter(qw422016)
-//line app/qtpl/CellView.qtpl:165
+//line app/qtpl/CellView.qtpl:162
 }
 
-//line app/qtpl/CellView.qtpl:165
+//line app/qtpl/CellView.qtpl:162
 func Subforms(subforms []selem.SubForm) string {
-//line app/qtpl/CellView.qtpl:165
+//line app/qtpl/CellView.qtpl:162
 	qb422016 := qt422016.AcquireByteBuffer()
-//line app/qtpl/CellView.qtpl:165
+//line app/qtpl/CellView.qtpl:162
 	WriteSubforms(qb422016, subforms)
-//line app/qtpl/CellView.qtpl:165
+//line app/qtpl/CellView.qtpl:162
 	qs422016 := string(qb422016.B)
-//line app/qtpl/CellView.qtpl:165
+//line app/qtpl/CellView.qtpl:162
 	qt422016.ReleaseByteBuffer(qb422016)
-//line app/qtpl/CellView.qtpl:165
+//line app/qtpl/CellView.qtpl:162
 	return qs422016
+//line app/qtpl/CellView.qtpl:162
+}
+
+//line app/qtpl/CellView.qtpl:164
+func StreamCellFooter(qw422016 *qt422016.Writer, dateAt, nick string) {
+//line app/qtpl/CellView.qtpl:164
+	qw422016.N().S(`
+	`)
 //line app/qtpl/CellView.qtpl:165
+	if nick == "" {
+//line app/qtpl/CellView.qtpl:165
+		qw422016.N().S(`
+		`)
+//line app/qtpl/CellView.qtpl:166
+		return
+//line app/qtpl/CellView.qtpl:167
+	}
+//line app/qtpl/CellView.qtpl:167
+	qw422016.N().S(`
+
+  <footer class="article-footer">
+    `)
+//line app/qtpl/CellView.qtpl:171
+	bDateAt := util.Str2Bytes(dateAt)
+	if len(dateAt) > 10 {
+		bDateAt = bDateAt[:10]
+	}
+
+//line app/qtpl/CellView.qtpl:174
+	qw422016.N().S(`
+    <p class="date_on">`)
+//line app/qtpl/CellView.qtpl:175
+	qw422016.E().Z(bDateAt)
+//line app/qtpl/CellView.qtpl:175
+	qw422016.N().S(`</p>
+    <p class="author">`)
+//line app/qtpl/CellView.qtpl:176
+	qw422016.E().S(nick)
+//line app/qtpl/CellView.qtpl:176
+	qw422016.N().S(`</p>
+  </footer>
+`)
+//line app/qtpl/CellView.qtpl:178
+}
+
+//line app/qtpl/CellView.qtpl:178
+func WriteCellFooter(qq422016 qtio422016.Writer, dateAt, nick string) {
+//line app/qtpl/CellView.qtpl:178
+	qw422016 := qt422016.AcquireWriter(qq422016)
+//line app/qtpl/CellView.qtpl:178
+	StreamCellFooter(qw422016, dateAt, nick)
+//line app/qtpl/CellView.qtpl:178
+	qt422016.ReleaseWriter(qw422016)
+//line app/qtpl/CellView.qtpl:178
+}
+
+//line app/qtpl/CellView.qtpl:178
+func CellFooter(dateAt, nick string) string {
+//line app/qtpl/CellView.qtpl:178
+	qb422016 := qt422016.AcquireByteBuffer()
+//line app/qtpl/CellView.qtpl:178
+	WriteCellFooter(qb422016, dateAt, nick)
+//line app/qtpl/CellView.qtpl:178
+	qs422016 := string(qb422016.B)
+//line app/qtpl/CellView.qtpl:178
+	qt422016.ReleaseByteBuffer(qb422016)
+//line app/qtpl/CellView.qtpl:178
+	return qs422016
+//line app/qtpl/CellView.qtpl:178
 }
