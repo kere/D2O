@@ -246,13 +246,14 @@ function(util, ajax, Compressor, tags, subforms, areas, contents){
         }
         ojs.area = this.$refs.area.fullData();
 
+        let cls = this;
     		ajax.NewClient("/api/app").send("SaveSElem", obj, {loading:true}).then((dat) => {
           this.$emit("onSaved", obj);
           this.isSuccess = true;
           this.clearError();
-          let cls = this;
           setTimeout(() => {
             cls.isSuccess = false;
+            cls.$emit('onsaved', dat);
           }, 1000);
 
     	  }).catch((err) =>{

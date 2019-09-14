@@ -57,5 +57,5 @@ func (a *App) SaveSElem(ctx *fasthttp.RequestCtx, args util.MapData) (interface{
 		home.GetCellView().ClearCache(vo.IID)
 	}
 
-	return 1, err
+	return vo.IID, err
 }

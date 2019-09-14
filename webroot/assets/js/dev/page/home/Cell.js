@@ -18,8 +18,8 @@ require(
         baseinfo: {fields:[], areas: []}
       },
       methods : {
-        _onSaved : function(obj){
-      	  // console.log(obj);
+        _onSaved : function(iid){
+          window.location = "/cell/view/"+iid;
         }
       },
 
