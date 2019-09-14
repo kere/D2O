@@ -8,7 +8,7 @@ import (
 
 var (
 	policy  = bluemonday.UGCPolicy()
-	linkReg = regexp.MustCompile(`^(?:(\S+)\s*\|\s*)?(http[s]?:\/\/\S+)`)
+	linkReg = regexp.MustCompile(`^(?:(.+)\s*\|\s*)?(http[s]?:\/\/\S+)`)
 )
 
 func init() {
