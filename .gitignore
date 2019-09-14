@@ -27,7 +27,6 @@ _testmain.go
 app.run
 debug.test
 debug
-*.png
 
 *.dll
 *.lib
