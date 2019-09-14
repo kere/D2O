@@ -22,6 +22,12 @@ define('tags', ['util'], function(util){
       props: 'tags',
       event: 'cc'
     },
+    watch:{
+      tags(v){
+        if(!v || v.length== 0) return;
+        this.tagstr = v.join(' , ')
+      }
+    },
     data(){
       return {
         oval: '',// 打开input时的value，用于判断十分有改动

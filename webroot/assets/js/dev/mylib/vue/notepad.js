@@ -67,7 +67,7 @@ function(util, ajax, Compressor, tags, subforms, areas, contents){
         </div>
 
 
-        <div v-show="isPageOK" class="gno-box text-right">
+        <div class="gno-box text-right">
           <hr class="line m-b-md"></hr>
           <el-alert v-show="isSuccess" title="成功保存数据" type="success" center show-icon :closable="false"></el-alert>
           <el-alert v-show="isError" :title="errMessage" type="error" show-icon @close="clearError"></el-alert>

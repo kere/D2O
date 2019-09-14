@@ -25,6 +25,7 @@ define('areas', ['util'], function(util){
     },
     methods: {
       fullData(){
+        if(!this.area || this.area.length == 0) return null;
         let arr = new Array(this.area.length);
         for (var i = 0; i < this.area.length; i++) {
           let k = util.findSortedI('id', this.area[i], this.areas)
