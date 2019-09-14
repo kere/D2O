@@ -26,7 +26,7 @@ func Init(pa *httpd.PageAttr, opt Option) {
 
 	viewport := httpd.NewStrRender(`<meta name="viewport" content="width=device-width, initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0, user-scalable=no">`)
 
-	pa.Head = make([]httpd.IRender, 3, 5)
+	pa.Head = make([]httpd.IRender, 2, 5)
 	pa.CSS = make([]httpd.IRenderA, 0, 3)
 	pa.JS = make([]httpd.IRenderA, 0, 5)
 	pa.Top = make([]httpd.IRender, 0, 2)
