@@ -34,7 +34,6 @@ func Init(pa *httpd.PageAttr, opt Option) {
 
 	pa.Head[0] = viewport
 	pa.Head[1] = httpd.NewJSSrc(requireOpt(), nil)
-	pa.Head[2] = httpd.FaviconRender
 
 	if !opt.NoPageLoad {
 		pa.Top = append(pa.Top, httpd.NewStrRender(httpd.PageLoadOpen))
