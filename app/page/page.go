@@ -30,9 +30,7 @@ func Init(pa *httpd.PageAttr, opt Option) {
 	pa.CSS = make([]httpd.IRenderA, 0, 3)
 	pa.JS = make([]httpd.IRenderA, 0, 5)
 	pa.Top = make([]httpd.IRender, 0, 2)
-	// if len(pa.Bottom) == 0 {
 	pa.Bottom = make([]httpd.IRender, 0, 4)
-	// }
 
 	pa.Head[0] = viewport
 	pa.Head[1] = httpd.NewJSSrc(requireOpt(), nil)
@@ -73,13 +71,13 @@ func Init(pa *httpd.PageAttr, opt Option) {
 	}
 
 	// pa.CacheOption.PageMode = httpd.CacheModePagePath
-	if httpd.RunMode == httpd.ModeDev {
-		pa.CacheOption.Store = httpd.CacheStoreNone
-	} else {
-		pa.CacheOption.PageMode = httpd.CacheModePage
-		pa.CacheOption.Store = httpd.CacheStoreFile
-		pa.CacheOption.HTTPHead = 1
-	}
+	// if httpd.RunMode == httpd.ModeDev {
+	// 	pa.CacheOption.Store = httpd.CacheStoreNone
+	// } else {
+	pa.CacheOption.PageMode = httpd.CacheModePage
+	pa.CacheOption.Store = httpd.CacheStoreFile
+	pa.CacheOption.HTTPHead = 1
+	// }
 }
 
 const (

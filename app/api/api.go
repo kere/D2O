@@ -1,14 +1,13 @@
 package api
 
 import (
-	"fmt"
-
 	"github.com/kere/gno/db"
 	"github.com/kere/gno/libs/util"
 	"github.com/valyala/fasthttp"
 	"onqee.visualstudio.com/D2O/app/model"
 	"onqee.visualstudio.com/D2O/app/model/selem"
 	"onqee.visualstudio.com/D2O/app/page"
+	"onqee.visualstudio.com/D2O/app/page/home"
 )
 
 // App class
@@ -22,7 +21,6 @@ func NewApp() *App {
 // Auth page auth
 // if require is true then do auth
 func (a *App) Auth(ctx *fasthttp.RequestCtx) error {
-	fmt.Println("auth:")
 	return page.Auth(ctx)
 }
 
@@ -54,6 +52,9 @@ func (a *App) SaveSElem(ctx *fasthttp.RequestCtx, args util.MapData) (interface{
 		err = db.VOCreate(vo)
 	} else {
 		err = db.VOUpdate(vo, "iid=?", vo.IID)
+
+		// clear page cache
+		home.GetCellView().ClearCache(vo.IID)
 	}
 
 	return 1, err

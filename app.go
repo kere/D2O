@@ -21,7 +21,6 @@ func main() {
 	flag.Parse()
 	flag.StringVar(&cf, "conf", "app/app.conf", "conf file name")
 	httpd.Init(cf)
-	httpd.DisablePageCache = true
 
 	site := httpd.Site
 	c := site.C.GetConf("site")
@@ -34,7 +33,9 @@ func main() {
 	site.RegistGet("/cell/new", home.NewCell(false))
 	site.RegistGet("/cell/edit/:iid", home.NewCell(true))
 	site.RegistGet("/cell/list", home.NewCells())
-	site.RegistGet("/cell/view/:iid", home.NewCellView())
+
+	// page cached
+	site.RegistGet("/cell/view/:iid", home.GetCellView())
 
 	// api
 	site.RegistOpenAPI("/api/app", api.NewApp())

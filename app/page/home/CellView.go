@@ -2,11 +2,13 @@ package home
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 	"strconv"
 
 	"github.com/kere/gno/db"
 	"github.com/kere/gno/httpd"
+	"github.com/valyala/bytebufferpool"
 	"github.com/valyala/fasthttp"
 	// blackfriday "gopkg.in/russross/blackfriday.v2"
 
@@ -21,18 +23,35 @@ type CellView struct {
 	httpd.P
 }
 
-// NewCellView func
-func NewCellView() *CellView {
-	d := &CellView{}
+var currentPage *CellView
 
-	d.PA.Body = &CellViewRender{}
+// GetCellView var
+func GetCellView() *CellView {
+	if currentPage != nil {
+		return currentPage
+	}
+	currentPage := &CellView{}
 
-	d.Init("", "CellView", homeDir)
-	page.Init(&d.PA, page.Option{HasHeader: true, HasFooter: false, NoRequireJS: true, NoPageLoad: true})
-	// d.PA.JS = append(d.PA.JS, httpd.NewJSSrcB(page.RequireJS(), nil))
-	d.PA.Bottom = append(d.PA.Bottom, page.EchojsRender, httpd.NewJSSrcB(page.RequireJS(), nil))
+	currentPage.PA.Body = &CellViewRender{}
 
-	return d
+	currentPage.Init("", "CellView", homeDir)
+	page.Init(&currentPage.PA, page.Option{HasHeader: true, HasFooter: false, NoRequireJS: true, NoPageLoad: true})
+	currentPage.PA.Bottom = append(currentPage.PA.Bottom, page.EchojsRender, httpd.NewJSSrcB(page.RequireJS(), nil))
+
+	// set cache
+	currentPage.PA.CacheOption.PageMode = httpd.CacheModePagePath
+
+	return currentPage
+}
+
+// ClearCache page
+func (d *CellView) ClearCache(iid int64) {
+	// clear page cache
+	buf := bytebufferpool.Get()
+	buf.WriteString("/cell/view/")
+	buf.WriteString(fmt.Sprint(iid))
+	httpd.ClearCache(buf.Bytes(), d)
+	bytebufferpool.Put(buf)
 }
 
 // Page page
