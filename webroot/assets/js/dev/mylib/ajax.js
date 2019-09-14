@@ -146,7 +146,7 @@ define(
     }
 
     Client.prototype.trySetDataVer = function(result) {
-      if(typeof(result) != "object" || !result[this.verField]){
+      if(!result || typeof(result) != "object" || !result[this.verField]){
         return;
       }
       let ver = result[this.verField];
@@ -162,7 +162,7 @@ define(
 
         let doit = (resolve, reject) =>{
           this.send(method, args, opt).then(result =>{
-            if(result[this.verField]){
+            if(result && result[this.verField]){
               window.localStorage.setItem(key, JSON.stringify(result));
             }
             resolve(result);
