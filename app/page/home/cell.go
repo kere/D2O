@@ -19,12 +19,12 @@ func NewCell(isEdit bool) *Cell {
 	} else {
 		d.Init("新建信息", "Cell", homeDir)
 	}
-	page.Init(&d.PA, page.Option{HasVue: true, HasElement: true})
+	page.Init(&d.PA, httpd.PageOption{HasVue: true, HasElement: true})
 
 	return d
 }
 
 // Auth page
 func (d *Cell) Auth(ctx *fasthttp.RequestCtx) error {
-	return page.Auth(ctx)
+	return httpd.Auth(ctx)
 }

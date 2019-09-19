@@ -18,7 +18,7 @@ type Default struct {
 func NewDefault() *Default {
 	d := &Default{}
 	d.Init("Default Page", "Default", homeDir)
-	page.Init(&d.PA, page.Option{HasVue: true, HasHeader: true, HasFooter: true})
+	page.Init(&d.PA, httpd.PageOption{HasVue: true, HasHeader: true, HasFooter: true})
 
 	return d
 }

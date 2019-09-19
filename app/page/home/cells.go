@@ -14,7 +14,7 @@ type Cells struct {
 func NewCells() *Cells {
 	d := &Cells{}
 	d.Init("内容列表", "Cells", homeDir)
-	page.Init(&d.PA, page.Option{HasVue: true, HasHeader: true})
+	page.Init(&d.PA, httpd.PageOption{HasVue: true, HasHeader: true})
 
 	return d
 }

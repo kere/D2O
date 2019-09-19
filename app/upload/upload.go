@@ -42,7 +42,7 @@ var filepool bytebufferpool.Pool
 func (m *Image) Do(ctx *fasthttp.RequestCtx, fileHeader *multipart.FileHeader) error {
 	name := ctx.FormValue(model.FieldName)
 
-	fileName, err := httpd.DoUpload(util.Bytes2Str(name), StoreDir, fileHeader)
+	fileName, err := httpd.DoUpload(util.Bytes2Str(name), StoreDir, fileHeader, "md5")
 	if err != nil {
 		return err
 	}

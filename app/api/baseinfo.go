@@ -2,13 +2,13 @@ package api
 
 import (
 	"github.com/kere/gno/db"
+	"github.com/kere/gno/httpd"
 	"github.com/kere/gno/libs/util"
 	"github.com/valyala/fasthttp"
 	"onqee.visualstudio.com/D2O/app/model"
 	"onqee.visualstudio.com/D2O/app/model/baseinfo"
 	"onqee.visualstudio.com/D2O/app/model/selem"
 	"onqee.visualstudio.com/D2O/app/model/tag"
-	"onqee.visualstudio.com/D2O/app/page"
 )
 
 // BaseInfo class
@@ -28,7 +28,7 @@ func (a *BaseInfo) Auth(ctx *fasthttp.RequestCtx) error {
 
 // IsLogin user
 func (a *BaseInfo) IsLogin(ctx *fasthttp.RequestCtx, args util.MapData) (interface{}, error) {
-	err := page.Auth(ctx)
+	err := httpd.Auth(ctx)
 	if err != nil {
 		return 0, nil
 	}
@@ -38,7 +38,8 @@ func (a *BaseInfo) IsLogin(ctx *fasthttp.RequestCtx, args util.MapData) (interfa
 // DoUserLogin user
 func (a *BaseInfo) DoUserLogin(ctx *fasthttp.RequestCtx, args util.MapData) (interface{}, error) {
 	nick := args.String(model.FieldNick)
-	token, err := page.DoLogin(ctx, nick, args.Bytes("src"), args.Bytes("sign"))
+	opt := httpd.LoginInOption{CookieMaxAge: httpd.CookieMaxAge}
+	token, err := httpd.DoLogin(ctx, nick, args.Bytes("src"), args.Bytes("sign"), opt)
 	if err != nil {
 		return util.MapData{"value": "", "message": err.Error()}, nil
 	}

@@ -14,7 +14,7 @@ type Login struct {
 func NewLogin() *Login {
 	d := &Login{}
 	d.Init("用户登录", "Login", homeDir)
-	page.Init(&d.PA, page.Option{HasHeader: true})
+	page.Init(&d.PA, httpd.PageOption{HasHeader: true})
 
 	return d
 }

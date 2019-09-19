@@ -2,13 +2,13 @@ package api
 
 import (
 	"github.com/kere/gno/db"
+	"github.com/kere/gno/httpd"
 	"github.com/kere/gno/libs/util"
 	"github.com/valyala/fasthttp"
 	"onqee.visualstudio.com/D2O/app/model"
 	"onqee.visualstudio.com/D2O/app/model/baseinfo"
 	"onqee.visualstudio.com/D2O/app/model/selem"
 	"onqee.visualstudio.com/D2O/app/model/tag"
-	"onqee.visualstudio.com/D2O/app/page"
 	"onqee.visualstudio.com/D2O/app/page/home"
 )
 
@@ -23,7 +23,7 @@ func NewApp() *App {
 // Auth page auth
 // if require is true then do auth
 func (a *App) Auth(ctx *fasthttp.RequestCtx) error {
-	return page.Auth(ctx)
+	return httpd.Auth(ctx)
 }
 
 // LoadSElem get SElem

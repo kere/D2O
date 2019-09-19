@@ -23,25 +23,25 @@ type CellView struct {
 	httpd.P
 }
 
-var currentPage *CellView
+var cpage *CellView
 
 // GetCellView var
 func GetCellView() *CellView {
-	if currentPage != nil {
-		return currentPage
+	if cpage != nil {
+		return cpage
 	}
-	currentPage := &CellView{}
+	cpage := &CellView{}
 
-	currentPage.PA.Body = &CellViewRender{}
+	cpage.PA.Body = &CellViewRender{}
 
-	currentPage.Init("", "CellView", homeDir)
-	page.Init(&currentPage.PA, page.Option{HasHeader: true, HasFooter: false, NoRequireJS: true, NoPageLoad: true})
-	currentPage.PA.Bottom = append(currentPage.PA.Bottom, page.EchojsRender, httpd.NewJSSrcB(page.RequireJS(), nil))
+	cpage.Init("", "CellView", homeDir)
+	page.Init(&cpage.PA, httpd.PageOption{HasHeader: true, HasFooter: false, NoRequireJS: true, NoPageLoad: true})
+	cpage.PA.Bottom = append(cpage.PA.Bottom, page.EchojsRender, httpd.RequireJSWithSrc(&cpage.PA, httpd.ReadRequireJS()))
 
 	// set cache
-	currentPage.PA.CacheOption.PageMode = httpd.CacheModePagePath
+	cpage.PA.CacheOption.PageMode = httpd.CacheModePagePath
 
-	return currentPage
+	return cpage
 }
 
 // ClearCache page
